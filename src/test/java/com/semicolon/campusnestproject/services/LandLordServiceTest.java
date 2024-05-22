@@ -3,10 +3,7 @@ package com.semicolon.campusnestproject.services;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.semicolon.campusnestproject.data.model.ApartmentType;
-import com.semicolon.campusnestproject.dtos.requests.PostApartmentRequest;
-import com.semicolon.campusnestproject.dtos.requests.RegisterLandLordRequest;
-import com.semicolon.campusnestproject.dtos.requests.RegisterStudentRequest;
-import com.semicolon.campusnestproject.dtos.requests.UploadApartmentImageRequest;
+import com.semicolon.campusnestproject.dtos.requests.*;
 import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
 import com.semicolon.campusnestproject.dtos.responses.PostApartmentResponse;
 import com.semicolon.campusnestproject.exception.InvalidDetailsException;
@@ -48,6 +45,13 @@ public class LandLordServiceTest {
 
     }
 
+    public LoginRequest loginDetails(String email,String password){
+        LoginRequest request = new LoginRequest();
+        request.setEmail(email);
+        request.setPassword(password);
+        return request;
+    }
+
     @Test void testThatALandlordCanRegister() throws NumberParseException {
         RegisterLandLordRequest request = landlordDetails("Landlord","Musa","landlord@gmail.com","PassKey@123","Ogun","09034567893","Benin");
         AuthenticationResponse response = landLordService.register(request);
@@ -81,6 +85,13 @@ public class LandLordServiceTest {
         RegisterLandLordRequest request2 = landlordDetails("Landlord","Musa","landlord@gmailcom","PassKey@","Ogun","09034567893","Benin");
 
         assertThrows(InvalidDetailsException.class,()->landLordService.register(request2));
+    }
+
+    @Test void testThatLandlordCanLogin(){
+        LoginRequest request = loginDetails("landlord@gmail.com","PassKey@123");
+        AuthenticationResponse response = landLordService.login(request);
+        log.info("{}",response);
+        assertThat(response).isNotNull();
     }
 
 
