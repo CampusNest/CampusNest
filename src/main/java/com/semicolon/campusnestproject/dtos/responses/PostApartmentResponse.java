@@ -7,5 +7,5 @@ import lombok.Setter;
 @Getter
 public class PostApartmentResponse{
 
-    private String id;
+    private Long id;
 }

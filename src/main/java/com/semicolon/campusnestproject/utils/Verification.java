@@ -1,8 +1,6 @@
 package com.semicolon.campusnestproject.utils;
 
 import com.google.i18n.phonenumbers.NumberParseException;
-import com.semicolon.campusnestproject.data.model.Role;
-import com.semicolon.campusnestproject.dtos.requests.LoginRequest;
 import com.semicolon.campusnestproject.exception.EmptyDetailsException;
 import com.semicolon.campusnestproject.exception.InvalidDetailsException;
 
@@ -32,7 +30,7 @@ public class Verification {
         if (email == null || email.trim().isEmpty()) {
             throw new EmptyDetailsException("email field is empty, kindly provide your email");
         }
-        if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[a-zA-Z]{2,}$")){
+        if (!email.matches("[A-z0-9!#$%^&():;.*_~`+{}]+@[a-z]+[.][a-z]{2,3}")){
             throw new InvalidDetailsException("email address is not valid");
         }
     }

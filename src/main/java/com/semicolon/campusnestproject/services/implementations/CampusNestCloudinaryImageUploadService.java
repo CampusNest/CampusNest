@@ -28,8 +28,8 @@ public class CampusNestCloudinaryImageUploadService implements CloudinaryImageUp
         UploadApartmentImageResponse response = new UploadApartmentImageResponse();
         List<String> urls = new ArrayList<>();
         for (MultipartFile file : request.getMultipartFiles()){
-            File convertedFile = convert(file);
-            Map uploadedResult = cloudinary.uploader().upload(convertedFile, ObjectUtils.emptyMap());
+//            File convertedFile = convert(file);
+            Map uploadedResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
             String  url = uploadedResult.get("url").toString();
             urls.add(url);
         }
@@ -37,12 +37,12 @@ public class CampusNestCloudinaryImageUploadService implements CloudinaryImageUp
         return response;
     }
 
-    private File convert(MultipartFile file) throws IOException {
-        File newFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
-        FileOutputStream fileOutputStream = new FileOutputStream(newFile);
-        fileOutputStream.write(file.getBytes());
-        fileOutputStream.close();
-        return newFile;
-    }
+//    private File convert(MultipartFile file) throws IOException {
+//        File newFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
+//        FileOutputStream fileOutputStream = new FileOutputStream(newFile);
+//        fileOutputStream.write(file.getBytes());
+//        fileOutputStream.close();
+//        return newFile;
+//    }
 
 }
