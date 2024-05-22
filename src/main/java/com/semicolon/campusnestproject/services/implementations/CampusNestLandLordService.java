@@ -4,7 +4,6 @@ import com.semicolon.campusnestproject.data.model.Apartment;
 import com.semicolon.campusnestproject.data.model.LandLord;
 import com.semicolon.campusnestproject.data.repositories.LandLordRepository;
 import com.semicolon.campusnestproject.dtos.requests.PostApartmentRequest;
-import com.semicolon.campusnestproject.dtos.requests.UploadApartmentImageRequest;
 import com.semicolon.campusnestproject.dtos.responses.PostApartmentResponse;
 import com.semicolon.campusnestproject.dtos.responses.UploadApartmentImageResponse;
 import com.semicolon.campusnestproject.exception.UserDoesNotExistException;
@@ -19,7 +18,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class CampusNextLandLordService implements LandLordService {
+public class CampusNestLandLordService implements LandLordService {
 
     private final LandLordRepository landLordRepository;
     private final ApartmentService apartmentService;

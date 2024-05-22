@@ -6,12 +6,10 @@ import com.semicolon.campusnestproject.dtos.requests.UploadApartmentImageRequest
 import com.semicolon.campusnestproject.dtos.responses.UploadApartmentImageResponse;
 import com.semicolon.campusnestproject.services.CloudinaryImageUploadService;
 import lombok.AllArgsConstructor;
-import org.apache.tomcat.util.http.fileupload.disk.DiskFileItem;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,7 +19,7 @@ import java.util.Objects;
 
 @Service
 @AllArgsConstructor
-public class CampusNextCloudinaryImageUploadService implements CloudinaryImageUploadService {
+public class CampusNestCloudinaryImageUploadService implements CloudinaryImageUploadService {
 
     private final Cloudinary cloudinary;
 
