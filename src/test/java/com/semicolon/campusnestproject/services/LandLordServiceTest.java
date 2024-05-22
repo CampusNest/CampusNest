@@ -9,6 +9,7 @@ import com.semicolon.campusnestproject.dtos.requests.RegisterStudentRequest;
 import com.semicolon.campusnestproject.dtos.requests.UploadApartmentImageRequest;
 import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
 import com.semicolon.campusnestproject.dtos.responses.PostApartmentResponse;
+import com.semicolon.campusnestproject.exception.InvalidDetailsException;
 import com.semicolon.campusnestproject.exception.UserExistException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -60,6 +61,28 @@ public class LandLordServiceTest {
 
         assertThrows(UserExistException.class,()->landLordService.register(request));
     }
+
+    @Test void testThatLandlordCannotRegisterWithPasswordThatDidNotMatchTheVerification(){
+        RegisterLandLordRequest request = landlordDetails("Landlord","Musa","landlord2@gmail.com","PassK","Ogun","09034567893","Benin");
+        assertThrows(InvalidDetailsException.class,()->landLordService.register(request));
+
+        RegisterLandLordRequest request2 = landlordDetails("Landlord","Musa","landlord2@gmail.com","PassK123","Ogun","09034567893","Benin");
+        assertThrows(InvalidDetailsException.class,()->landLordService.register(request2));
+
+        RegisterLandLordRequest request3 = landlordDetails("Landlord","Musa","landlord2@gmail.com","@123","Ogun","09034567893","Benin");
+        assertThrows(InvalidDetailsException.class,()->landLordService.register(request3));
+    }
+
+    @Test void testThatLandlordCannotRegisterWithEmailThatDidNotMatchTheVerification(){
+        RegisterLandLordRequest request = landlordDetails("Landlord","Musa","landlordgmail.com","PassKey@","Ogun","09034567893","Benin");
+
+        assertThrows(InvalidDetailsException.class,()->landLordService.register(request));
+
+        RegisterLandLordRequest request2 = landlordDetails("Landlord","Musa","landlord@gmailcom","PassKey@","Ogun","09034567893","Benin");
+
+        assertThrows(InvalidDetailsException.class,()->landLordService.register(request2));
+    }
+
 
 
     @Test
