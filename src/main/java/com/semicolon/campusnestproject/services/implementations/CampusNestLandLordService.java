@@ -59,8 +59,7 @@ public class CampusNestLandLordService implements LandLordService {
         userRepository.save(user);
         welcomeMessage(request);
 
-        var token = jwtService.generateToken(user);
-        return AuthenticationResponse.builder().token(token).build();
+
     }
 
     @Override
@@ -98,8 +97,7 @@ public class CampusNestLandLordService implements LandLordService {
         var student = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UserNotFoundException("No account found with such details"));
 
-        var jwtToken = jwtService.generateToken(student);
-        return AuthenticationResponse.builder().token(jwtToken).build();
+
     }
 
     private void verifyLandlordDetails(RegisterLandLordRequest request) throws NumberParseException {

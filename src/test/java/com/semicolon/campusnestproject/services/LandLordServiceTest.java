@@ -87,6 +87,14 @@ public class LandLordServiceTest {
         assertThrows(InvalidDetailsException.class,()->landLordService.register(request2));
     }
 
+    @Test void testThatLandlordCannotRegisterWithPhoneNumberThatDidNotMatchTheVerification(){
+
+        RegisterLandLordRequest request2 = landlordDetails("Landlord","Musa","landlord@gmailcom","PassKey@123","Ogun","0900000000000","Benin");
+
+        assertThrows(InvalidDetailsException.class,()->landLordService.register(request2));
+    }
+
+
     @Test void testThatLandlordCanLogin(){
         LoginRequest request = loginDetails("landlord@gmail.com","PassKey@123");
         AuthenticationResponse response = landLordService.login(request);

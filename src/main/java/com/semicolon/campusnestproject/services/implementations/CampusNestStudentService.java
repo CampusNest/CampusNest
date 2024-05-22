@@ -16,15 +16,12 @@ import com.semicolon.campusnestproject.exception.InvalidCredentialsException;
 import com.semicolon.campusnestproject.exception.UserExistException;
 import com.semicolon.campusnestproject.exception.UserNotFoundException;
 import com.semicolon.campusnestproject.services.ApartmentService;
-import com.semicolon.campusnestproject.services.JwtService;
 import com.semicolon.campusnestproject.services.NotificationSenderService;
 import com.semicolon.campusnestproject.services.StudentService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -61,8 +58,7 @@ public class CampusNestStudentService implements StudentService {
                 .build();
         userRepository.save(user);
         welcomeMessage(request);
-var jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder().token(jwtToken).build();
+
     }
 
     @Override
