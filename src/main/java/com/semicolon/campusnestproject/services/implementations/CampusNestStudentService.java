@@ -1,7 +1,9 @@
 package com.semicolon.campusnestproject.services.implementations;
 
 import com.semicolon.campusnestproject.data.model.Apartment;
+import com.semicolon.campusnestproject.dtos.requests.RegisterStudentRequest;
 import com.semicolon.campusnestproject.dtos.requests.SearchApartmentRequest;
+import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
 import com.semicolon.campusnestproject.dtos.responses.SearchApartmentResponse;
 import com.semicolon.campusnestproject.exception.BudgetMustOnlyContainNumbersException;
 import com.semicolon.campusnestproject.services.ApartmentService;
@@ -19,6 +21,12 @@ import static com.semicolon.campusnestproject.utils.Validation.budgetContainsNum
 public class CampusNestStudentService implements StudentService {
 
     public final ApartmentService apartmentService;
+
+    @Override
+    public AuthenticationResponse register(RegisterStudentRequest request) {
+        return null;
+    }
+
     @Override
     public SearchApartmentResponse searchApartment(SearchApartmentRequest aptRequest) throws BudgetMustOnlyContainNumbersException {
         budgetContainsNumbersOnly(aptRequest.getBudget());
@@ -31,4 +39,6 @@ public class CampusNestStudentService implements StudentService {
         apartmentResponse.setApartments(apartmentResult);
         return apartmentResponse;
     }
+
+
 }

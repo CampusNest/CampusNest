@@ -1,4 +1,4 @@
-package com.semicolon.campusnestproject;
+package com.semicolon.campusnestproject.config;
 
 import com.semicolon.campusnestproject.data.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
