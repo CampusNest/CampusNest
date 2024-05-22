@@ -5,17 +5,26 @@ import com.semicolon.campusnestproject.data.model.Apartment;
 import com.semicolon.campusnestproject.data.model.Role;
 import com.semicolon.campusnestproject.data.model.User;
 import com.semicolon.campusnestproject.data.repositories.UserRepository;
+import com.semicolon.campusnestproject.dtos.requests.LoginRequest;
 import com.semicolon.campusnestproject.dtos.requests.RegisterStudentRequest;
 import com.semicolon.campusnestproject.dtos.requests.SearchApartmentRequest;
+import com.semicolon.campusnestproject.dtos.requests.WelcomeMessageRequest;
 import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
 import com.semicolon.campusnestproject.dtos.responses.SearchApartmentResponse;
 import com.semicolon.campusnestproject.exception.BudgetMustOnlyContainNumbersException;
+import com.semicolon.campusnestproject.exception.InvalidCredentialsException;
 import com.semicolon.campusnestproject.exception.UserExistException;
+import com.semicolon.campusnestproject.exception.UserNotFoundException;
 import com.semicolon.campusnestproject.services.ApartmentService;
 import com.semicolon.campusnestproject.services.JwtService;
+import com.semicolon.campusnestproject.services.NotificationSenderService;
 import com.semicolon.campusnestproject.services.StudentService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +44,7 @@ public class CampusNestStudentService implements StudentService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final NotificationSenderService notificationService;
 
     @Override
     public AuthenticationResponse register(RegisterStudentRequest request) throws NumberParseException {
@@ -50,6 +60,7 @@ public class CampusNestStudentService implements StudentService {
                 .role(Role.STUDENT)
                 .build();
         userRepository.save(user);
+        welcomeMessage(request);
 var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder().token(jwtToken).build();
     }
@@ -65,6 +76,39 @@ var jwtToken = jwtService.generateToken(user);
                 .collect(Collectors.toList());
         apartmentResponse.setApartments(apartmentResult);
         return apartmentResponse;
+    }
+
+    @Override
+    public AuthenticationResponse login(LoginRequest request) {
+        verifyLoginDetails(request);
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+            );
+        } catch (BadCredentialsException ex) {
+
+            Optional<User> studentOptional = userRepository.findByEmail(request.getEmail());
+
+            if (studentOptional.isPresent()) {
+                throw new InvalidCredentialsException("Invalid password");
+            } else {
+                throw new InvalidCredentialsException("Invalid email");
+            }
+        }
+
+        var student = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UserNotFoundException("No account found with such details"));
+
+        var jwtToken = jwtService.generateToken(student);
+        return AuthenticationResponse.builder().token(jwtToken).build();
+    }
+
+    private void welcomeMessage(RegisterStudentRequest request) {
+        WelcomeMessageRequest welcomeMessageRequest = new WelcomeMessageRequest();
+        welcomeMessageRequest.setFirstName(request.getFirstName());
+        welcomeMessageRequest.setLastName(request.getLastName());
+        welcomeMessageRequest.setEmail(request.getEmail());
+        notificationService.welcomeMail(welcomeMessageRequest);
     }
 
     private void verifyStudentDetails(RegisterStudentRequest request) throws NumberParseException {
