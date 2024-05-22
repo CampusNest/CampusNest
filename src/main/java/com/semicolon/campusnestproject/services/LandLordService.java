@@ -10,6 +10,7 @@ import com.semicolon.campusnestproject.dtos.requests.RegisterLandLordRequest;
 import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
 import com.semicolon.campusnestproject.dtos.responses.PostApartmentResponse;
 
+import java.io.IOException;
 import java.util.Optional;
 
 public interface LandLordService {

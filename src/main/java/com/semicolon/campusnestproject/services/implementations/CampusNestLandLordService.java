@@ -1,24 +1,5 @@
 package com.semicolon.campusnestproject.services.implementations;
 
-import com.semicolon.campusnestproject.data.model.LandLord;
-import com.semicolon.campusnestproject.dtos.requests.UpdateApartmentRequest;
-import com.semicolon.campusnestproject.services.LandLordService;
-import jakarta.persistence.metamodel.IdentifiableType;
-import org.springframework.stereotype.Service;
-
-import java.util.Optional;
-
-@Service
-public class CampusNestLandLordService implements LandLordService {
-
-    @Override
-    public Optional<LandLord> findByEmail(String email) {
-        return null;
-    }
-
-    @Override
-    public void updateApartmentDescription(Long landLordId, UpdateApartmentRequest updateApartmentRequest) {
-
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.semicolon.campusnestproject.data.model.Apartment;
 import com.semicolon.campusnestproject.data.model.LandLord;
@@ -34,12 +15,11 @@ import com.semicolon.campusnestproject.exception.InvalidCredentialsException;
 import com.semicolon.campusnestproject.exception.UserExistException;
 import com.semicolon.campusnestproject.exception.UserNotFoundException;
 import com.semicolon.campusnestproject.services.*;
+import jakarta.persistence.metamodel.IdentifiableType;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -47,7 +27,18 @@ import java.io.IOException;
 import java.util.Optional;
 
 import static com.semicolon.campusnestproject.utils.Verification.*;
-import static com.semicolon.campusnestproject.utils.Verification.verifyPassword;
+
+@Service
+public class CampusNestLandLordService implements LandLordService {
+
+    @Override
+    public Optional<LandLord> findByEmail(String email) {
+        return null;
+    }
+
+    @Override
+    public void updateApartmentDescription(Long landLordId, UpdateApartmentRequest updateApartmentRequest) {
+
 
 @Service
 @AllArgsConstructor
