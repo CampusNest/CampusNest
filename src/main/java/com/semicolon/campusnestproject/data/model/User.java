@@ -17,7 +17,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class User implements UserDetails {
+public class User implements UserDetails{
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
@@ -32,6 +32,7 @@ public class User implements UserDetails {
     private Role role;
     @OneToMany(fetch = FetchType.EAGER)
     private List<Apartment> apartments;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

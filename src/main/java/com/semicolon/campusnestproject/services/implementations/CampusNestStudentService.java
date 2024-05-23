@@ -2,6 +2,7 @@ package com.semicolon.campusnestproject.services.implementations;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.semicolon.campusnestproject.data.model.Apartment;
+import com.semicolon.campusnestproject.dtos.requests.SearchApartmentRequest;
 import com.semicolon.campusnestproject.data.model.Role;
 import com.semicolon.campusnestproject.data.model.User;
 import com.semicolon.campusnestproject.data.repositories.UserRepository;
@@ -10,6 +11,8 @@ import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
 import com.semicolon.campusnestproject.dtos.responses.ForgotPasswordResponse;
 import com.semicolon.campusnestproject.dtos.responses.SearchApartmentResponse;
 import com.semicolon.campusnestproject.exception.BudgetMustOnlyContainNumbersException;
+import com.semicolon.campusnestproject.services.ApartmentService;
+import com.semicolon.campusnestproject.services.StudentService;
 import com.semicolon.campusnestproject.exception.InvalidCredentialsException;
 import com.semicolon.campusnestproject.exception.UserExistException;
 import com.semicolon.campusnestproject.exception.UserNotFoundException;
@@ -128,13 +131,6 @@ public class CampusNestStudentService implements StudentService {
         }
     }
 
-    private void welcomeMessage(RegisterStudentRequest request) {
-        WelcomeMessageRequest welcomeMessageRequest = new WelcomeMessageRequest();
-        welcomeMessageRequest.setFirstName(request.getFirstName());
-        welcomeMessageRequest.setLastName(request.getLastName());
-        welcomeMessageRequest.setEmail(request.getEmail());
-        notificationService.welcomeMail(welcomeMessageRequest);
-    }
 
     private void verifyStudentDetails(RegisterStudentRequest request) throws NumberParseException {
         if (exist(request.getEmail())) throw new UserExistException("a user with that email already exist, please provide another email");
@@ -148,10 +144,20 @@ public class CampusNestStudentService implements StudentService {
 
     }
 
+    private void welcomeMessage(RegisterLandLordRequest request) {
+        WelcomeMessageRequest welcomeMessageRequest = new WelcomeMessageRequest();
+        welcomeMessageRequest.setFirstName(request.getFirstName());
+        welcomeMessageRequest.setLastName(request.getLastName());
+        welcomeMessageRequest.setEmail(request.getEmail());
+        notificationService.welcomeMail(welcomeMessageRequest);
+    }
+
     private boolean exist(String email) {
         Optional<User> student = userRepository.findByEmail(email);
         return student.isPresent();
     }
+
+
 
 
 }

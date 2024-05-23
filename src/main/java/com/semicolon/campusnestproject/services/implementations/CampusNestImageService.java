@@ -26,4 +26,9 @@ public class CampusNestImageService implements ImageService {
         images.add(image);
         return images;
     }
+
+    @Override
+    public void deleteImage(List<Image> images) {
+        imageRepository.deleteAll(images);
+    }
 }

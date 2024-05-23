@@ -7,6 +7,7 @@ import com.semicolon.campusnestproject.dtos.UpdateLandLordResponse;
 import com.semicolon.campusnestproject.dtos.requests.*;
 import com.semicolon.campusnestproject.dtos.responses.ApiResponse;
 import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
+import com.semicolon.campusnestproject.dtos.responses.DeleteApartmentResponse;
 import com.semicolon.campusnestproject.dtos.responses.PostApartmentResponse;
 import com.semicolon.campusnestproject.exception.EmptyDetailsException;
 import com.semicolon.campusnestproject.exception.InvalidCredentialsException;
@@ -19,7 +20,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.mock.web.MockMultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -132,7 +136,6 @@ public class LandLordServiceTest {
 
     @Test
     public void postApartmentTest() throws IOException {
-
         List<MultipartFile> multipartFiles = new ArrayList<>();
         PostApartmentRequest request = new PostApartmentRequest();
         request.setLandLordId(1L);
@@ -142,12 +145,9 @@ public class LandLordServiceTest {
         request.setAnnualRentFee("150000");
         request.setAgreementAndCommission("10000");
         UploadApartmentImageRequest imageRequest = new UploadApartmentImageRequest();
-        byte[] imageBytes = "example image content".getBytes();
-        MultipartFile multipartFile = new MockMultipartFile(
-                "example.jpg",
-                "example.jpg",
-                "image/jpeg",
-                imageBytes);
+        File file = new File("C:\\Users\\USER\\Pictures\\1char.png");
+        FileInputStream inputStream = new FileInputStream(file);
+        MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
         multipartFiles.add(multipartFile);
         imageRequest.setMultipartFiles(multipartFiles);
         request.setUploadApartmentImageRequest(imageRequest);
@@ -169,5 +169,14 @@ public class LandLordServiceTest {
         assertThat(response).isNotNull();
         assertThat(response.getData().getMessage()).isNotNull();
 
+    }
+
+    @Test
+    public void deleteApartmentTest() throws IOException {
+        DeleteApartmentRequest deleteApartmentRequest = new DeleteApartmentRequest();
+        deleteApartmentRequest.setId(1L);
+        deleteApartmentRequest.setApartmentId(4L);
+        DeleteApartmentResponse response =  landLordService.deleteApartment(deleteApartmentRequest);
+        assertThat(response).isNotNull();
     }
 }

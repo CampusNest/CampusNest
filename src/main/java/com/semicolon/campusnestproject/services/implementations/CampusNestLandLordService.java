@@ -1,12 +1,5 @@
 package com.semicolon.campusnestproject.services.implementations;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.TextNode;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
-import com.github.fge.jsonpatch.JsonPatch;
-import com.github.fge.jsonpatch.JsonPatchOperation;
-import com.github.fge.jsonpatch.ReplaceOperation;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.semicolon.campusnestproject.data.model.Apartment;
 import com.semicolon.campusnestproject.data.model.LandLord;
@@ -14,7 +7,6 @@ import com.semicolon.campusnestproject.data.model.Role;
 import com.semicolon.campusnestproject.data.model.User;
 import com.semicolon.campusnestproject.data.repositories.LandLordRepository;
 import com.semicolon.campusnestproject.data.repositories.UserRepository;
-import com.semicolon.campusnestproject.dtos.UpdateLandLordResponse;
 import com.semicolon.campusnestproject.dtos.requests.*;
 import com.semicolon.campusnestproject.dtos.responses.ApiResponse;
 import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
@@ -30,6 +22,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -86,14 +80,14 @@ public class CampusNestLandLordService implements LandLordService {
     @Override
     public PostApartmentResponse postApartment(PostApartmentRequest request) throws IOException {
         PostApartmentResponse response = new PostApartmentResponse();
-        Optional<LandLord> landLord = landLordRepository.findById(request.getLandLordId());
-        if (landLord.isEmpty()) {
+        Optional<User> landLord = userRepository.findById(request.getLandLordId());
+        if (landLord.isEmpty()){
             throw new UserExistException("user doesn't exist");
         }
         UploadApartmentImageResponse imageRequest = uploadService.uploadImage(request.getUploadApartmentImageRequest());
         Apartment apartment = apartmentService.saveApartment(request, imageRequest);
         landLord.get().getApartments().add(apartment);
-        response.setId(String.valueOf(landLord.get().getId()));
+        response.setId(landLord.get().getId());
         return response;
     }
 
@@ -129,6 +123,17 @@ public class CampusNestLandLordService implements LandLordService {
         return response;
     }
 
+    @Override
+    public DeleteApartmentResponse deleteApartment(DeleteApartmentRequest deleteApartmentRequest) throws IOException {
+        DeleteApartmentResponse response = new DeleteApartmentResponse();
+//        Optional<User> landLord = userRepository.findById(deleteApartmentRequest.getId());
+        Optional<User> landLord = userRepository.findById(deleteApartmentRequest.getId());
+        if (landLord.isEmpty()) {
+            throw new UserExistException("user doesn't exist");
+        }
+        return null;
+    }
+
     private void authenticate(LoginRequest request) {
         try {
             authenticationManager.authenticate(
@@ -142,9 +147,9 @@ public class CampusNestLandLordService implements LandLordService {
                 throw new InvalidCredentialsException("Invalid password");
             } else {
                 throw new InvalidCredentialsException("Invalid email");
-            }
-        }
-    }
+            }}}
+
+
 
     @Override
     public ApiResponse<UpdateLandLordResponse> updateLandLordApartmentDetails(Long landLordId, Long apartmentId, UpdateLandLordApartmentRequest request) {
@@ -223,8 +228,7 @@ public class CampusNestLandLordService implements LandLordService {
 
 
     private void verifyLandlordDetails(RegisterLandLordRequest request) throws NumberParseException {
-        if (exist(request.getEmail()))
-            throw new UserExistException("a user with that email already exist, please provide another email");
+        if (exist(request.getEmail())) throw new UserExistException("a user with that email already exist, please provide another email");
         verifyFirstName(request.getFirstName());
         verifyLastName(request.getLastName());
         verifyPhoneNumber(request.getPhoneNumber());
@@ -247,14 +251,4 @@ public class CampusNestLandLordService implements LandLordService {
         Optional<User> student = userRepository.findByEmail(email);
         return student.isPresent();
     }
-
-//    @Override
-//    public Optional<LandLord> findByEmail(String email) {
-//        return null;
-//    }
-
-
-
-
 }
-

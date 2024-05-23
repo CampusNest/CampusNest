@@ -1,6 +1,7 @@
 package com.semicolon.campusnestproject.services;
 
 import com.semicolon.campusnestproject.data.model.Apartment;
+import com.semicolon.campusnestproject.data.model.Image;
 import com.semicolon.campusnestproject.dtos.requests.PostApartmentRequest;
 import com.semicolon.campusnestproject.dtos.responses.UploadApartmentImageResponse;
 
@@ -15,4 +16,8 @@ public interface ApartmentService {
     Apartment findById(Long apartmentId);
 
     void save(Apartment apartment);
+
+    void deleteApartment(List<Apartment> apartments, Long apartmentId);
+
+    List<Image> getApartmentImage(List<Apartment> apartments, Long apartmentId);
 }

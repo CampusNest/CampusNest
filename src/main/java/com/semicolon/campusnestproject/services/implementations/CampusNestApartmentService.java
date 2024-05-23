@@ -12,7 +12,9 @@ import com.semicolon.campusnestproject.services.ImageService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -43,6 +45,31 @@ public class CampusNestApartmentService implements ApartmentService {
         apartment1.get().setApartmentImage(images);
         apartmentRepository.save(apartment1.get());
         return apartment;
+    }
+
+
+
+
+    @Override
+    public void deleteApartment(List<Apartment> apartments, Long apartmentId) {
+        for (Apartment apartment : apartments){
+            if (Objects.equals(apartment.getId(), apartmentId)){
+                apartmentRepository.delete(apartment);
+                break;
+            }
+        }
+    }
+
+    @Override
+    public List<Image> getApartmentImage(List<Apartment> apartments, Long apartmentId) {
+        List<Image> images = new ArrayList<>();
+        for (Apartment apartment : apartments){
+            if (Objects.equals(apartment.getId(), apartmentId)){
+                images = apartment.getApartmentImage();
+                break;
+            }
+        }
+        return images;
     }
 
     @Override
