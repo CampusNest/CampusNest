@@ -7,7 +7,9 @@ import com.semicolon.campusnestproject.data.model.Role;
 import com.semicolon.campusnestproject.data.model.User;
 import com.semicolon.campusnestproject.data.repositories.LandLordRepository;
 import com.semicolon.campusnestproject.data.repositories.UserRepository;
+import com.semicolon.campusnestproject.dtos.UpdateLandLordResponse;
 import com.semicolon.campusnestproject.dtos.requests.*;
+import com.semicolon.campusnestproject.dtos.responses.ApiResponse;
 import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
 import com.semicolon.campusnestproject.dtos.responses.PostApartmentResponse;
 import com.semicolon.campusnestproject.dtos.responses.UploadApartmentImageResponse;
@@ -27,18 +29,6 @@ import java.io.IOException;
 import java.util.Optional;
 
 import static com.semicolon.campusnestproject.utils.Verification.*;
-
-@Service
-public class CampusNestLandLordService implements LandLordService {
-
-    @Override
-    public Optional<LandLord> findByEmail(String email) {
-        return null;
-    }
-
-    @Override
-    public void updateApartmentDescription(Long landLordId, UpdateApartmentRequest updateApartmentRequest) {
-
 
 @Service
 @AllArgsConstructor
@@ -77,11 +67,11 @@ public class CampusNestLandLordService implements LandLordService {
     public PostApartmentResponse postApartment(PostApartmentRequest request) throws IOException {
         PostApartmentResponse response = new PostApartmentResponse();
         Optional<LandLord> landLord = landLordRepository.findById(request.getLandLordId());
-        if (landLord.isEmpty()){
+        if (landLord.isEmpty()) {
             throw new UserExistException("user doesn't exist");
         }
         UploadApartmentImageResponse imageRequest = uploadService.uploadImage(request.getUploadApartmentImageRequest());
-        Apartment apartment = apartmentService.saveApartment(request,imageRequest);
+        Apartment apartment = apartmentService.saveApartment(request, imageRequest);
         landLord.get().getApartments().add(apartment);
         response.setId(String.valueOf(landLord.get().getId()));
         return response;
@@ -112,8 +102,14 @@ public class CampusNestLandLordService implements LandLordService {
         return AuthenticationResponse.builder().token(jwtToken).build();
     }
 
+    @Override
+    public ApiResponse<UpdateLandLordResponse> updateLandLordApartmentDetails(long landLordId, UpdateLandLordApartmentRequest request) {
+        return null;
+    }
+
     private void verifyLandlordDetails(RegisterLandLordRequest request) throws NumberParseException {
-        if (exist(request.getEmail())) throw new UserExistException("a user with that email already exist, please provide another email");
+        if (exist(request.getEmail()))
+            throw new UserExistException("a user with that email already exist, please provide another email");
         verifyFirstName(request.getFirstName());
         verifyLastName(request.getLastName());
         verifyPhoneNumber(request.getPhoneNumber());
@@ -136,4 +132,14 @@ public class CampusNestLandLordService implements LandLordService {
         Optional<User> student = userRepository.findByEmail(email);
         return student.isPresent();
     }
+
+    @Override
+    public Optional<LandLord> findByEmail(String email) {
+        return null;
+    }
+
+
+
+
 }
+

@@ -3,7 +3,9 @@ package com.semicolon.campusnestproject.services;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.semicolon.campusnestproject.data.model.ApartmentType;
+import com.semicolon.campusnestproject.dtos.UpdateLandLordResponse;
 import com.semicolon.campusnestproject.dtos.requests.*;
+import com.semicolon.campusnestproject.dtos.responses.ApiResponse;
 import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
 import com.semicolon.campusnestproject.dtos.responses.PostApartmentResponse;
 import com.semicolon.campusnestproject.exception.InvalidDetailsException;
@@ -119,5 +121,20 @@ public class LandLordServiceTest {
         request.setUploadApartmentImageRequest(imageRequest);
         PostApartmentResponse response = landLordService.postApartment(request);
         assertThat(response).isNotNull();
+    }
+
+    @Test
+    public void updateLandLordApartmentDetailsTest(){
+        UpdateLandLordApartmentRequest request = new UpdateLandLordApartmentRequest();
+        request.setHouseType("john@email.com");
+        request.setLocation("313, Herbert Macaulay way, Sabo-Yaba");
+
+        ApiResponse<UpdateLandLordResponse> response =
+                landLordService.updateLandLordApartmentDetails(2L, request);
+
+
+        assertThat(response).isNotNull();
+        assertThat(response.getData().getMessage()).isNotNull();
+
     }
 }
