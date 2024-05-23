@@ -1,6 +1,9 @@
 package com.semicolon.campusnestproject.utils;
 
 import com.google.i18n.phonenumbers.NumberParseException;
+import com.semicolon.campusnestproject.data.model.Role;
+import com.semicolon.campusnestproject.dtos.requests.ForgotPasswordRequest;
+import com.semicolon.campusnestproject.dtos.requests.LoginRequest;
 import com.semicolon.campusnestproject.exception.EmptyDetailsException;
 import com.semicolon.campusnestproject.exception.InvalidDetailsException;
 
@@ -64,6 +67,25 @@ public class Verification {
 //            throw new EmptyDetailsException("email field cannot be empty, kindly provide your email");
 //        }
 //    }
+    public static void verifyLoginDetails(LoginRequest request){
+        if (request.getPassword() == null || request.getPassword().trim().isEmpty()){
+            throw new EmptyDetailsException("password field cannot be empty, kindly provide your password");
+        }
+
+        if (request.getEmail() == null || request.getEmail().trim().isEmpty()){
+            throw new EmptyDetailsException("email field cannot be empty, kindly provide your email");
+        }
+    }
+
+    public static void verifyForgotPasswordDetails(ForgotPasswordRequest request){
+        if (request.getPassword() == null || request.getPassword().trim().isEmpty()){
+            throw new EmptyDetailsException("password field cannot be empty, kindly provide your password");
+        }
+
+        if (request.getEmail() == null || request.getEmail().trim().isEmpty()){
+            throw new EmptyDetailsException("email field cannot be empty, kindly provide your email");
+        }
+    }
 
 
 
