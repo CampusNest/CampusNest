@@ -2,9 +2,11 @@ package com.semicolon.campusnestproject.services;
 
 
 import com.google.i18n.phonenumbers.NumberParseException;
+import com.semicolon.campusnestproject.dtos.requests.ForgotPasswordRequest;
 import com.semicolon.campusnestproject.dtos.requests.LoginRequest;
 import com.semicolon.campusnestproject.dtos.requests.RegisterStudentRequest;
 import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
+import com.semicolon.campusnestproject.dtos.responses.ForgotPasswordResponse;
 import com.semicolon.campusnestproject.exception.EmptyDetailsException;
 import com.semicolon.campusnestproject.exception.InvalidCredentialsException;
 import com.semicolon.campusnestproject.exception.UserExistException;
@@ -43,10 +45,16 @@ class StudentServiceTest {
         request.setPassword(password);
         return request;
     }
+    public ForgotPasswordRequest forgotPasswordDetails(String email, String password){
+        ForgotPasswordRequest request = new ForgotPasswordRequest();
+        request.setEmail(email);
+        request.setPassword(password);
+        return request;
+    }
 
 
     @Test void testThatStudentCanRegister() throws NumberParseException {
-        RegisterStudentRequest request = studentDetails("divine","james","iamoluchimercy@gmail.com","Password@123","Lagos","09062346551","Lagos");
+        RegisterStudentRequest request = studentDetails("divine","james","iamoluchimercy6@gmail.com","Password@123","Lagos","09062346551","Lagos");
         AuthenticationResponse response = studentService.register(request);
         log.info("->{}",response);
         assertThat(response).isNotNull();
@@ -126,6 +134,20 @@ class StudentServiceTest {
         LoginRequest request = loginDetails("iamoluchimercy@gmail.com","");
         assertThrows(EmptyDetailsException.class, ()->studentService.login(request));
     }
+
+    @Test void testThatAPasswordCanBeChangedIfForgotten(){
+        ForgotPasswordRequest request = forgotPasswordDetails("iamoluchimercy@gmail.com","dee@123");
+        ForgotPasswordResponse  response = studentService.forgotPassword(request);
+        log.info("{}",response);
+        assertThat(response).isNotNull();
+    }
+    @Test void testThatStudentCanLoginWithChangedPassword(){
+        LoginRequest request = loginDetails("iamoluchimercy@gmail.com","dee@123");
+        AuthenticationResponse response = studentService.login(request);
+        log.info("{}",response);
+        assertThat(response).isNotNull();
+    }
+
 
 
 }

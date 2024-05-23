@@ -6,6 +6,8 @@ import com.semicolon.campusnestproject.data.model.ApartmentType;
 import com.semicolon.campusnestproject.dtos.requests.*;
 import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
 import com.semicolon.campusnestproject.dtos.responses.PostApartmentResponse;
+import com.semicolon.campusnestproject.exception.EmptyDetailsException;
+import com.semicolon.campusnestproject.exception.InvalidCredentialsException;
 import com.semicolon.campusnestproject.exception.InvalidDetailsException;
 import com.semicolon.campusnestproject.exception.UserExistException;
 import lombok.extern.slf4j.Slf4j;
@@ -101,6 +103,28 @@ public class LandLordServiceTest {
         log.info("{}",response);
         assertThat(response).isNotNull();
     }
+
+    @Test void testThatLandlordCannotLoginWithWrongEmail(){
+        LoginRequest request = loginDetails("land@gmail.com","PassKey@123");
+      assertThrows(InvalidCredentialsException.class,()->landLordService.login(request));
+    }
+
+    @Test void testThatLandlordCannotLoginWithWrongPassword(){
+        LoginRequest request = loginDetails("landlord@gmail.com","Pass@123");
+        assertThrows(InvalidCredentialsException.class,()->landLordService.login(request));
+    }
+
+    @Test void testThatLandlordCannotLoginWithoutInputtingEmail(){
+        LoginRequest request = loginDetails("","PassKey@123");
+        assertThrows(EmptyDetailsException.class,()->landLordService.login(request));
+    }
+
+    @Test void testThatLandlordCannotLoginWithoutInputtingPassword(){
+        LoginRequest request = loginDetails("landlord@gmail.com","");
+        assertThrows(EmptyDetailsException.class,()->landLordService.login(request));
+    }
+
+
 
 
 

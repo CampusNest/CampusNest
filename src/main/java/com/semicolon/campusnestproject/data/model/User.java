@@ -30,6 +30,8 @@ public class User implements UserDetails {
     private String location;
     @Enumerated(EnumType.STRING)
     private Role role;
+    @OneToMany(fetch = FetchType.EAGER)
+    private List<Apartment> apartments;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
