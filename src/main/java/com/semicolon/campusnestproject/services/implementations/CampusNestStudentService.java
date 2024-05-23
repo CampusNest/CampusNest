@@ -57,7 +57,7 @@ public class CampusNestStudentService implements StudentService {
                 .role(Role.STUDENT)
                 .build();
         userRepository.save(user);
-//        welcomeMessage(request);
+        welcomeMessage(request);
 
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
@@ -144,7 +144,7 @@ public class CampusNestStudentService implements StudentService {
 
     }
 
-    private void welcomeMessage(RegisterLandLordRequest request) {
+    private void welcomeMessage(RegisterStudentRequest request) {
         WelcomeMessageRequest welcomeMessageRequest = new WelcomeMessageRequest();
         welcomeMessageRequest.setFirstName(request.getFirstName());
         welcomeMessageRequest.setLastName(request.getLastName());

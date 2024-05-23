@@ -56,7 +56,7 @@ public class CampusNestLandLordService implements LandLordService {
                 .role(Role.LANDLORD)
                 .build();
         userRepository.save(user);
-//        welcomeMessage(request);
+        welcomeMessage(request);
 
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
