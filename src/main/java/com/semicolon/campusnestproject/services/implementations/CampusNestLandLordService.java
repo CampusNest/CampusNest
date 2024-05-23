@@ -21,6 +21,7 @@ import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
 import com.semicolon.campusnestproject.dtos.responses.ForgotPasswordResponse;
 import com.semicolon.campusnestproject.dtos.responses.PostApartmentResponse;
 import com.semicolon.campusnestproject.dtos.responses.UploadApartmentImageResponse;
+import com.semicolon.campusnestproject.exception.CampusNestException;
 import com.semicolon.campusnestproject.exception.InvalidCredentialsException;
 import com.semicolon.campusnestproject.exception.UserExistException;
 import com.semicolon.campusnestproject.exception.UserNotFoundException;
@@ -147,7 +148,8 @@ public class CampusNestLandLordService implements LandLordService {
 
     @Override
     public ApiResponse<UpdateLandLordResponse> updateLandLordApartmentDetails(Long landLordId, Long apartmentId, UpdateLandLordApartmentRequest request) {
-        Optional<User> landLord = userRepository.findById(landLordId);
+        User landLord = userRepository.findById(landLordId)
+                 . orElseThrow();
         Apartment apartment = apartmentService.findById(apartmentId);
 
                 List<JsonPatchOperation> jsonPatchOperations = new ArrayList<>();
@@ -159,11 +161,11 @@ public class CampusNestLandLordService implements LandLordService {
         return new ApiResponse<>(buildUpdateLandLordResponse());
     }
 
-    private void updateApartmentMailSender(Optional<User> landLord) {
+    private void updateApartmentMailSender(User landLord) {
         UpdateApartmentMessageRequest mailRequest = new UpdateApartmentMessageRequest();
-        mailRequest.setLastName(landLord.get().getLastName());
-        mailRequest.setLastName(landLord.get().getFirstName());
-        mailRequest.setLastName(landLord.get().getEmail());
+        mailRequest.setLastName(landLord.getLastName());
+        mailRequest.setLastName(landLord.getFirstName());
+        mailRequest.setLastName(landLord.getEmail());
         notificationService.updateLandLordApartmentRequestMail(mailRequest);
     }
 
@@ -177,6 +179,7 @@ public class CampusNestLandLordService implements LandLordService {
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonPatch jsonPatch = new JsonPatch(jsonPatchOperations);
+            System.out.println(jsonPatch);
             JsonNode customerNode = mapper.convertValue(landLord, JsonNode.class);
             JsonNode updatedNode = jsonPatch.apply(customerNode);
             landLord = mapper.convertValue(updatedNode, Apartment.class);
@@ -207,7 +210,7 @@ public class CampusNestLandLordService implements LandLordService {
         }
     }
 
-    private boolean isValidUpdate(Field field, UpdateLandLordApartmentRequest request) {
+    private boolean  isValidUpdate(Field field, UpdateLandLordApartmentRequest request) {
         field.setAccessible(true);
         try {
             return field.get(request) != null;

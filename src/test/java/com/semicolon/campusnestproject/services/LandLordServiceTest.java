@@ -158,11 +158,12 @@ public class LandLordServiceTest {
     @Test
     public void updateLandLordApartmentDetailsTest(){
         UpdateLandLordApartmentRequest request = new UpdateLandLordApartmentRequest();
-        request.setHouseType("john@email.com");
+//        request.setHouseType("MINIFLAT");
         request.setLocation("313, Herbert Macaulay way, Sabo-Yaba");
 
+
         ApiResponse<UpdateLandLordResponse> response =
-                landLordService.updateLandLordApartmentDetails(1L, 1L,request);
+                landLordService.updateLandLordApartmentDetails(2L, 1L,request);
 
 
         assertThat(response).isNotNull();
