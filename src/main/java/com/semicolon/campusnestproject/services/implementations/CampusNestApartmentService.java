@@ -46,10 +46,10 @@ public class CampusNestApartmentService implements ApartmentService {
     }
 
     @Override
-    public Optional<Apartment> findById(Long apartmentId) {
-        return Optional.ofNullable(apartmentRepository.findById(apartmentId)
+    public Apartment findById(Long apartmentId) {
+        return apartmentRepository.findById(apartmentId)
                 .orElseThrow(() -> new UserNotFoundException(
-                        String.format("landlord with id %d not found", apartmentId))));
+                        String.format("landlord with id %d not found", apartmentId)));
     }
 
     @Override

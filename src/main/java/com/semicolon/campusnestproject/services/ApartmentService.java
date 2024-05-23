@@ -12,7 +12,7 @@ public interface ApartmentService {
 
     Apartment saveApartment(PostApartmentRequest request,UploadApartmentImageResponse imageRequest);
 
-    Optional<Apartment> findById(Long apartmentId);
+    Apartment findById(Long apartmentId);
 
     void save(Apartment apartment);
 }

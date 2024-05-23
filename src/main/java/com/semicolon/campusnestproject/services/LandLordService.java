@@ -1,10 +1,9 @@
 package com.semicolon.campusnestproject.services;
 
 import com.google.i18n.phonenumbers.NumberParseException;
-import com.semicolon.campusnestproject.dtos.requests.ForgotPasswordRequest;
-import com.semicolon.campusnestproject.dtos.requests.LoginRequest;
-import com.semicolon.campusnestproject.dtos.requests.PostApartmentRequest;
-import com.semicolon.campusnestproject.dtos.requests.RegisterLandLordRequest;
+import com.semicolon.campusnestproject.dtos.UpdateLandLordResponse;
+import com.semicolon.campusnestproject.dtos.requests.*;
+import com.semicolon.campusnestproject.dtos.responses.ApiResponse;
 import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
 import com.semicolon.campusnestproject.dtos.responses.ForgotPasswordResponse;
 import com.semicolon.campusnestproject.dtos.responses.PostApartmentResponse;
@@ -17,4 +16,7 @@ public interface LandLordService {
     PostApartmentResponse postApartment(PostApartmentRequest request) throws IOException;
     AuthenticationResponse login(LoginRequest request);
     ForgotPasswordResponse forgotPassword(ForgotPasswordRequest request);
+
+
+    ApiResponse<UpdateLandLordResponse> updateLandLordApartmentDetails(Long landLordId, Long apartmentId, UpdateLandLordApartmentRequest request);
 }

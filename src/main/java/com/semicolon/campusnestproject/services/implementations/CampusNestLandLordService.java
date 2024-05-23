@@ -148,11 +148,12 @@ public class CampusNestLandLordService implements LandLordService {
     @Override
     public ApiResponse<UpdateLandLordResponse> updateLandLordApartmentDetails(Long landLordId, Long apartmentId, UpdateLandLordApartmentRequest request) {
         Optional<User> landLord = userRepository.findById(landLordId);
-        Optional<Apartment> apartment = apartmentService.findById(landLordId);
+        Apartment apartment = apartmentService.findById(apartmentId);
+
                 List<JsonPatchOperation> jsonPatchOperations = new ArrayList<>();
                 buildPatchOperations(request, jsonPatchOperations);
                 apartment = applyPatch(jsonPatchOperations, apartment);
-                apartmentService.save(apartment.get());
+                apartmentService.save(apartment);
                 updateApartmentMailSender(landLord);
 
         return new ApiResponse<>(buildUpdateLandLordResponse());
@@ -172,13 +173,13 @@ public class CampusNestLandLordService implements LandLordService {
         return response;
     }
 
-    private Optional<Apartment> applyPatch(List<JsonPatchOperation> jsonPatchOperations, Optional<Apartment> landLord) {
+    private Apartment applyPatch(List<JsonPatchOperation> jsonPatchOperations, Apartment landLord) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonPatch jsonPatch = new JsonPatch(jsonPatchOperations);
             JsonNode customerNode = mapper.convertValue(landLord, JsonNode.class);
             JsonNode updatedNode = jsonPatch.apply(customerNode);
-            landLord = Optional.ofNullable(mapper.convertValue(updatedNode, Apartment.class));
+            landLord = mapper.convertValue(updatedNode, Apartment.class);
 
         }catch (Exception exception){
             throw new RuntimeException(exception);
@@ -244,10 +245,10 @@ public class CampusNestLandLordService implements LandLordService {
         return student.isPresent();
     }
 
-    @Override
-    public Optional<LandLord> findByEmail(String email) {
-        return null;
-    }
+//    @Override
+//    public Optional<LandLord> findByEmail(String email) {
+//        return null;
+//    }
 
 
 
