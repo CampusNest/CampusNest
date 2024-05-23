@@ -1,5 +1,12 @@
 package com.semicolon.campusnestproject.services.implementations;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.TextNode;
+import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchOperation;
+import com.github.fge.jsonpatch.ReplaceOperation;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.semicolon.campusnestproject.data.model.Apartment;
 import com.semicolon.campusnestproject.data.model.LandLord;
@@ -17,7 +24,6 @@ import com.semicolon.campusnestproject.exception.InvalidCredentialsException;
 import com.semicolon.campusnestproject.exception.UserExistException;
 import com.semicolon.campusnestproject.exception.UserNotFoundException;
 import com.semicolon.campusnestproject.services.*;
-import jakarta.persistence.metamodel.IdentifiableType;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -26,9 +32,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static com.semicolon.campusnestproject.utils.Verification.*;
+import static java.util.Arrays.stream;
 
 @Service
 @AllArgsConstructor
@@ -104,7 +115,69 @@ public class CampusNestLandLordService implements LandLordService {
 
     @Override
     public ApiResponse<UpdateLandLordResponse> updateLandLordApartmentDetails(long landLordId, UpdateLandLordApartmentRequest request) {
-        return null;
+        Optional<LandLord> landLord = findCustomerBy(landLordId);
+        List<JsonPatchOperation> jsonPatchOperations = new ArrayList<>();
+        buildPatchOperations(request, jsonPatchOperations);
+        landLord = applyPatch(jsonPatchOperations, landLord);
+        landLordRepository.save(landLord.get());
+//        notify(landLordId, notificationService.createNotification(new SendNotificationRequest(id, "account updated successfully")));
+        return new ApiResponse<>(buildUpdateLandLordResponse());
+    }
+
+    private UpdateLandLordResponse buildUpdateLandLordResponse() {
+        UpdateLandLordResponse response = new UpdateLandLordResponse();
+        response.setMessage("Account updated successfully");
+        return response;
+    }
+
+    private Optional<LandLord> applyPatch(List<JsonPatchOperation> jsonPatchOperations, Optional<LandLord> landLord) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonPatch jsonPatch = new JsonPatch(jsonPatchOperations);
+            JsonNode customerNode = mapper.convertValue(landLord, JsonNode.class);
+            JsonNode updatedNode = jsonPatch.apply(customerNode);
+            landLord = Optional.ofNullable(mapper.convertValue(updatedNode, LandLord.class));
+
+        }catch (Exception exception){
+            throw new RuntimeException(exception);
+        }
+        return landLord;
+    }
+
+    private void buildPatchOperations(UpdateLandLordApartmentRequest request, List<JsonPatchOperation> jsonPatchOperations) {
+        Class<?> requestClass = request.getClass();
+        Field[] requestClassFields = requestClass.getDeclaredFields();
+        System.out.println(Arrays.toString(requestClassFields));
+        stream(requestClassFields)
+                .filter(field->isValidUpdate(field, request))
+                .forEach(field->addOperation(request, field, jsonPatchOperations));
+    }
+
+    private void addOperation(UpdateLandLordApartmentRequest request, Field field, List<JsonPatchOperation> jsonPatchOperations) {
+        try {
+            JsonPointer path = new JsonPointer("/"+ field.getName());
+            JsonNode value = new TextNode(field.get(request).toString());
+            ReplaceOperation replaceOperation = new ReplaceOperation(path, value);
+            jsonPatchOperations.add(replaceOperation);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private boolean isValidUpdate(Field field, UpdateLandLordApartmentRequest request) {
+        field.setAccessible(true);
+        try {
+            return field.get(request) != null;
+
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Optional<LandLord> findCustomerBy(Long landLordId){
+        return Optional.ofNullable(landLordRepository.findById(landLordId)
+                .orElseThrow(() -> new UserNotFoundException(
+                        String.format("landlord with id %d not found", landLordId))));
     }
 
     private void verifyLandlordDetails(RegisterLandLordRequest request) throws NumberParseException {

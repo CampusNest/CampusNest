@@ -21,4 +21,5 @@ public interface LandLordService {
     AuthenticationResponse login(LoginRequest request);
 
     ApiResponse<UpdateLandLordResponse> updateLandLordApartmentDetails(long l, UpdateLandLordApartmentRequest request);
+
 }
