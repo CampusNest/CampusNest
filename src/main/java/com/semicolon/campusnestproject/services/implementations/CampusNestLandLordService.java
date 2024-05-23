@@ -1,19 +1,21 @@
 package com.semicolon.campusnestproject.services.implementations;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.TextNode;
+import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchOperation;
+import com.github.fge.jsonpatch.ReplaceOperation;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.semicolon.campusnestproject.data.model.Apartment;
-import com.semicolon.campusnestproject.data.model.LandLord;
 import com.semicolon.campusnestproject.data.model.Role;
 import com.semicolon.campusnestproject.data.model.User;
 import com.semicolon.campusnestproject.data.repositories.LandLordRepository;
 import com.semicolon.campusnestproject.data.repositories.UserRepository;
+import com.semicolon.campusnestproject.dtos.UpdateLandLordResponse;
 import com.semicolon.campusnestproject.dtos.requests.*;
-import com.semicolon.campusnestproject.dtos.responses.ApiResponse;
-import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
-import com.semicolon.campusnestproject.dtos.responses.ForgotPasswordResponse;
-import com.semicolon.campusnestproject.dtos.responses.PostApartmentResponse;
-import com.semicolon.campusnestproject.dtos.responses.UploadApartmentImageResponse;
-import com.semicolon.campusnestproject.exception.CampusNestException;
+import com.semicolon.campusnestproject.dtos.responses.*;
 import com.semicolon.campusnestproject.exception.InvalidCredentialsException;
 import com.semicolon.campusnestproject.exception.UserExistException;
 import com.semicolon.campusnestproject.exception.UserNotFoundException;
@@ -22,8 +24,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -153,15 +153,14 @@ public class CampusNestLandLordService implements LandLordService {
 
     @Override
     public ApiResponse<UpdateLandLordResponse> updateLandLordApartmentDetails(Long landLordId, Long apartmentId, UpdateLandLordApartmentRequest request) {
-        User landLord = userRepository.findById(landLordId)
-                 . orElseThrow();
+        User landLord = userRepository.findById(landLordId).orElseThrow();
         Apartment apartment = apartmentService.findById(apartmentId);
 
                 List<JsonPatchOperation> jsonPatchOperations = new ArrayList<>();
                 buildPatchOperations(request, jsonPatchOperations);
                 apartment = applyPatch(jsonPatchOperations, apartment);
                 apartmentService.save(apartment);
-                updateApartmentMailSender(landLord);
+//                updateApartmentMailSender(landLord);
 
         return new ApiResponse<>(buildUpdateLandLordResponse());
     }
