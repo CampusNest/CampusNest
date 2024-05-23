@@ -18,6 +18,7 @@ import com.semicolon.campusnestproject.dtos.UpdateLandLordResponse;
 import com.semicolon.campusnestproject.dtos.requests.*;
 import com.semicolon.campusnestproject.dtos.responses.ApiResponse;
 import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
+import com.semicolon.campusnestproject.dtos.responses.ForgotPasswordResponse;
 import com.semicolon.campusnestproject.dtos.responses.PostApartmentResponse;
 import com.semicolon.campusnestproject.dtos.responses.UploadApartmentImageResponse;
 import com.semicolon.campusnestproject.exception.InvalidCredentialsException;
@@ -53,6 +54,7 @@ public class CampusNestLandLordService implements LandLordService {
     private final PasswordEncoder passwordEncoder;
     private final NotificationSenderService notificationService;
     private final AuthenticationManager authenticationManager;
+    private final AuthenticationService authenticationService;
 
     @Override
     public AuthenticationResponse register(RegisterLandLordRequest request) throws NumberParseException {
@@ -68,11 +70,17 @@ public class CampusNestLandLordService implements LandLordService {
                 .role(Role.LANDLORD)
                 .build();
         userRepository.save(user);
-        welcomeMessage(request);
+//        welcomeMessage(request);
 
-        var token = jwtService.generateToken(user);
-        return AuthenticationResponse.builder().token(token).build();
+        String accessToken = jwtService.generateAccessToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
+
+        authenticationService.saveUserToken(accessToken, refreshToken, user);
+
+        return new AuthenticationResponse(accessToken, refreshToken,"User registration was successful");
+
     }
+
 
     @Override
     public PostApartmentResponse postApartment(PostApartmentRequest request) throws IOException {
@@ -91,6 +99,36 @@ public class CampusNestLandLordService implements LandLordService {
     @Override
     public AuthenticationResponse login(LoginRequest request) {
         verifyLoginDetails(request);
+        authenticate(request);
+
+        var user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UserNotFoundException("No account found with such details"));
+
+        String accessToken = jwtService.generateAccessToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
+
+        authenticationService.revokeAllTokenByUser(user);
+       authenticationService.saveUserToken(accessToken, refreshToken, user);
+
+        return new AuthenticationResponse(accessToken, refreshToken, "User login was successful");
+    }
+
+    @Override
+    public ForgotPasswordResponse forgotPassword(ForgotPasswordRequest request) {
+        verifyForgotPasswordDetails(request);
+        verifyPassword(request.getPassword());
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(()-> new UserNotFoundException("user not found"));
+
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        userRepository.save(user);
+
+        ForgotPasswordResponse response = new ForgotPasswordResponse();
+        response.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        return response;
+    }
+
+    private void authenticate(LoginRequest request) {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
@@ -105,12 +143,6 @@ public class CampusNestLandLordService implements LandLordService {
                 throw new InvalidCredentialsException("Invalid email");
             }
         }
-
-        var student = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("No account found with such details"));
-
-        var jwtToken = jwtService.generateToken(student);
-        return AuthenticationResponse.builder().token(jwtToken).build();
     }
 
     @Override
