@@ -5,6 +5,7 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.semicolon.campusnestproject.data.model.ApartmentType;
 import com.semicolon.campusnestproject.dtos.requests.*;
 import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
+import com.semicolon.campusnestproject.dtos.responses.DeleteApartmentResponse;
 import com.semicolon.campusnestproject.dtos.responses.PostApartmentResponse;
 import com.semicolon.campusnestproject.exception.InvalidDetailsException;
 import com.semicolon.campusnestproject.exception.UserExistException;
@@ -53,6 +54,15 @@ public class LandLordServiceTest {
         imageRequest.setMultipartFiles(multipartFiles);
         request.setUploadApartmentImageRequest(imageRequest);
         PostApartmentResponse response = landLordService.postApartment(request);
+        assertThat(response).isNotNull();
+    }
+
+    @Test
+    public void deleteApartmentTest() throws IOException {
+        DeleteApartmentRequest deleteApartmentRequest = new DeleteApartmentRequest();
+        deleteApartmentRequest.setId(1L);
+        deleteApartmentRequest.setApartmentId(4L);
+        DeleteApartmentResponse response =  landLordService.deleteApartment(deleteApartmentRequest);
         assertThat(response).isNotNull();
     }
 }

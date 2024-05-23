@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface ImageService {
     List<Image> SaveImage(UploadApartmentImageResponse imageRequest);
+
+    void deleteImage(List<Image> images);
 }

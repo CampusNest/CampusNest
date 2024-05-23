@@ -55,15 +55,15 @@ public class Verification {
         if (location == null || location.trim().isEmpty()) throw new EmptyDetailsException("StateOfOrigin field is empty, please kindly provide your state Of origin");
     }
 
-    public static void verifyLoginDetails(LoginRequest request){
-        if (request.getPassword() == null || request.getPassword().trim().isEmpty()){
-            throw new EmptyDetailsException("password field cannot be empty, kindly provide your password");
-        }
-
-        if (request.getEmail() == null || request.getEmail().trim().isEmpty()){
-            throw new EmptyDetailsException("email field cannot be empty, kindly provide your email");
-        }
-    }
+//    public static void verifyLoginDetails(LoginRequest request){
+//        if (request.getPassword() == null || request.getPassword().trim().isEmpty()){
+//            throw new EmptyDetailsException("password field cannot be empty, kindly provide your password");
+//        }
+//
+//        if (request.getEmail() == null || request.getEmail().trim().isEmpty()){
+//            throw new EmptyDetailsException("email field cannot be empty, kindly provide your email");
+//        }
+//    }
 
 
 
