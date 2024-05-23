@@ -11,6 +11,7 @@ import com.semicolon.campusnestproject.exception.EmptyDetailsException;
 import com.semicolon.campusnestproject.exception.InvalidCredentialsException;
 import com.semicolon.campusnestproject.exception.UserExistException;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -52,7 +53,8 @@ class StudentServiceTest {
     }
 
 
-    @Test void testThatStudentCanRegister() throws NumberParseException {
+    @Test
+    void testThatStudentCanRegister() throws NumberParseException {
         RegisterStudentRequest request = studentDetails("divine","james","iamoluchimercy6@gmail.com","Password@123","Lagos","09062346551","Lagos");
         AuthenticationResponse response = studentService.register(request);
         log.info("->{}",response);
@@ -60,7 +62,7 @@ class StudentServiceTest {
     }
 
     @Test void testThatStudentCannotRegisterWithSameEmail(){
-        RegisterStudentRequest request = studentDetails("divine","james","iamoluchimercy@gmail.com","Password@123","Lagos","09062346551","Lagos");
+        RegisterStudentRequest request = studentDetails("divine","james","iamoluchimercy6@gmail.com","Password@123","Lagos","09062346551","Lagos");
 
         assertThrows(UserExistException.class,()->studentService.register(request));
     }

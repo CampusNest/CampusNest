@@ -114,6 +114,17 @@ public class CampusNestLandLordService implements LandLordService {
         return response;
     }
 
+    @Override
+    public DeleteApartmentResponse deleteApartment(DeleteApartmentRequest deleteApartmentRequest) throws IOException {
+        DeleteApartmentResponse response = new DeleteApartmentResponse();
+//        Optional<User> landLord = userRepository.findById(deleteApartmentRequest.getId());
+        Optional<User> landLord = userRepository.findById(deleteApartmentRequest.getId());
+        if (landLord.isEmpty()) {
+            throw new UserExistException("user doesn't exist");
+        }
+        return null;
+    }
+
     private void authenticate(LoginRequest request) {
         try {
             authenticationManager.authenticate(
@@ -127,11 +138,11 @@ public class CampusNestLandLordService implements LandLordService {
                 throw new InvalidCredentialsException("Invalid password");
             } else {
                 throw new InvalidCredentialsException("Invalid email");
-            }}
+            }}}
 
 
 
-    private void verifyLandlordDetails(RegisterLandLordRequest request)  {
+    private void verifyLandlordDetails(RegisterLandLordRequest request) throws NumberParseException {
         if (exist(request.getEmail())) throw new UserExistException("a user with that email already exist, please provide another email");
         verifyFirstName(request.getFirstName());
         verifyLastName(request.getLastName());

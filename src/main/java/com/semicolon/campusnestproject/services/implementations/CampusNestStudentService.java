@@ -1,5 +1,6 @@
 package com.semicolon.campusnestproject.services.implementations;
 
+import com.google.i18n.phonenumbers.NumberParseException;
 import com.semicolon.campusnestproject.data.model.Apartment;
 import com.semicolon.campusnestproject.dtos.requests.SearchApartmentRequest;
 import com.semicolon.campusnestproject.data.model.Role;
@@ -24,9 +25,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.semicolon.campusnestproject.utils.Validation.budgetContainsNumbersOnly;
+import static com.semicolon.campusnestproject.utils.Verification.*;
 
 @Service
 @AllArgsConstructor
@@ -126,6 +129,32 @@ public class CampusNestStudentService implements StudentService {
                 throw new InvalidCredentialsException("Invalid email");
             }
         }
+    }
+
+
+    private void verifyStudentDetails(RegisterStudentRequest request) throws NumberParseException {
+        if (exist(request.getEmail())) throw new UserExistException("a user with that email already exist, please provide another email");
+        verifyFirstName(request.getFirstName());
+        verifyLastName(request.getLastName());
+        verifyPhoneNumber(request.getPhoneNumber());
+        verifyEmail(request.getEmail());
+        verifyStateOfOrigin(request.getStateOfOrigin());
+        verifyPassword(request.getPassword());
+        verifyLocation(request.getLocation());
+
+    }
+
+    private void welcomeMessage(RegisterLandLordRequest request) {
+        WelcomeMessageRequest welcomeMessageRequest = new WelcomeMessageRequest();
+        welcomeMessageRequest.setFirstName(request.getFirstName());
+        welcomeMessageRequest.setLastName(request.getLastName());
+        welcomeMessageRequest.setEmail(request.getEmail());
+        notificationService.welcomeMail(welcomeMessageRequest);
+    }
+
+    private boolean exist(String email) {
+        Optional<User> student = userRepository.findByEmail(email);
+        return student.isPresent();
     }
 
 
