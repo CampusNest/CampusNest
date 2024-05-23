@@ -114,14 +114,24 @@ public class CampusNestLandLordService implements LandLordService {
     }
 
     @Override
-    public ApiResponse<UpdateLandLordResponse> updateLandLordApartmentDetails(long landLordId, UpdateLandLordApartmentRequest request) {
-        Optional<LandLord> landLord = findCustomerBy(landLordId);
-        List<JsonPatchOperation> jsonPatchOperations = new ArrayList<>();
-        buildPatchOperations(request, jsonPatchOperations);
-        landLord = applyPatch(jsonPatchOperations, landLord);
-        landLordRepository.save(landLord.get());
-//        notify(landLordId, notificationService.createNotification(new SendNotificationRequest(id, "account updated successfully")));
+    public ApiResponse<UpdateLandLordResponse> updateLandLordApartmentDetails(Long landLordId, Long apartmentId, UpdateLandLordApartmentRequest request) {
+        Optional<User> landLord = userRepository.findById(landLordId);
+        Optional<Apartment> apartment = apartmentService.findById(landLordId);
+                List<JsonPatchOperation> jsonPatchOperations = new ArrayList<>();
+                buildPatchOperations(request, jsonPatchOperations);
+                apartment = applyPatch(jsonPatchOperations, apartment);
+                apartmentService.save(apartment.get());
+                updateApartmentMailSender(landLord);
+
         return new ApiResponse<>(buildUpdateLandLordResponse());
+    }
+
+    private void updateApartmentMailSender(Optional<User> landLord) {
+        UpdateApartmentMessageRequest mailRequest = new UpdateApartmentMessageRequest();
+        mailRequest.setLastName(landLord.get().getLastName());
+        mailRequest.setLastName(landLord.get().getFirstName());
+        mailRequest.setLastName(landLord.get().getEmail());
+        notificationService.updateLandLordApartmentRequestMail(mailRequest);
     }
 
     private UpdateLandLordResponse buildUpdateLandLordResponse() {
@@ -130,13 +140,13 @@ public class CampusNestLandLordService implements LandLordService {
         return response;
     }
 
-    private Optional<LandLord> applyPatch(List<JsonPatchOperation> jsonPatchOperations, Optional<LandLord> landLord) {
+    private Optional<Apartment> applyPatch(List<JsonPatchOperation> jsonPatchOperations, Optional<Apartment> landLord) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonPatch jsonPatch = new JsonPatch(jsonPatchOperations);
             JsonNode customerNode = mapper.convertValue(landLord, JsonNode.class);
             JsonNode updatedNode = jsonPatch.apply(customerNode);
-            landLord = Optional.ofNullable(mapper.convertValue(updatedNode, LandLord.class));
+            landLord = Optional.ofNullable(mapper.convertValue(updatedNode, Apartment.class));
 
         }catch (Exception exception){
             throw new RuntimeException(exception);
@@ -174,11 +184,7 @@ public class CampusNestLandLordService implements LandLordService {
         }
     }
 
-    public Optional<LandLord> findCustomerBy(Long landLordId){
-        return Optional.ofNullable(landLordRepository.findById(landLordId)
-                .orElseThrow(() -> new UserNotFoundException(
-                        String.format("landlord with id %d not found", landLordId))));
-    }
+
 
     private void verifyLandlordDetails(RegisterLandLordRequest request) throws NumberParseException {
         if (exist(request.getEmail()))

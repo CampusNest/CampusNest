@@ -1,8 +1,6 @@
 package com.semicolon.campusnestproject.services.implementations;
 
-import com.semicolon.campusnestproject.dtos.requests.NotificationSenderRequest;
-import com.semicolon.campusnestproject.dtos.requests.ReceiverRequest;
-import com.semicolon.campusnestproject.dtos.requests.WelcomeMessageRequest;
+import com.semicolon.campusnestproject.dtos.requests.*;
 import com.semicolon.campusnestproject.services.NotificationSenderService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,5 +28,21 @@ public class CampusNestNotificationSenderService implements NotificationSenderSe
         String subject = "Registration";
         String htmlContent = receiverRequest.getName()+" welcome";
         notificationSetUp.sendNotification(senderRequest,subject,htmlContent);
+    }
+
+    @Override
+    public void updateLandLordApartmentRequestMail(UpdateApartmentMessageRequest request) {
+        UpdateApartmentNotificationSenderRequest notificationRequest = new UpdateApartmentNotificationSenderRequest();
+        notificationRequest.setEmail("qudusa55@gmail.com");
+        notificationRequest.setName("Campus Nest");
+        ReceiverRequest receiverRequest = new ReceiverRequest();
+        receiverRequest.setName(request.getFirstName()+" "+request.getLastName());
+        receiverRequest.setEmail(request.getEmail());
+        notificationRequest.setRecipient(receiverRequest);
+
+        String subject = "Update Apartment Details";
+        String htmlContent = receiverRequest.getName()+" apartment details updated successfully";
+        notificationSetUp.updateLandLordApartmentNotification(notificationRequest,subject, htmlContent);
+
     }
 }

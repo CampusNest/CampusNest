@@ -20,6 +20,6 @@ public interface LandLordService {
     PostApartmentResponse postApartment(PostApartmentRequest request) throws IOException;
     AuthenticationResponse login(LoginRequest request);
 
-    ApiResponse<UpdateLandLordResponse> updateLandLordApartmentDetails(long l, UpdateLandLordApartmentRequest request);
+    ApiResponse<UpdateLandLordResponse> updateLandLordApartmentDetails(Long landLordId, Long apartmentId, UpdateLandLordApartmentRequest request);
 
 }

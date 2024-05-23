@@ -5,9 +5,14 @@ import com.semicolon.campusnestproject.dtos.requests.PostApartmentRequest;
 import com.semicolon.campusnestproject.dtos.responses.UploadApartmentImageResponse;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ApartmentService {
     List<Apartment> findApartmentBy(String apartmentType);
 
     Apartment saveApartment(PostApartmentRequest request,UploadApartmentImageResponse imageRequest);
+
+    Optional<Apartment> findById(Long apartmentId);
+
+    void save(Apartment apartment);
 }

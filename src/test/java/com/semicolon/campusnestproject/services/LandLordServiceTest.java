@@ -130,7 +130,7 @@ public class LandLordServiceTest {
         request.setLocation("313, Herbert Macaulay way, Sabo-Yaba");
 
         ApiResponse<UpdateLandLordResponse> response =
-                landLordService.updateLandLordApartmentDetails(2L, request);
+                landLordService.updateLandLordApartmentDetails(1L, 1L,request);
 
 
         assertThat(response).isNotNull();
