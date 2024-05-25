@@ -50,10 +50,7 @@ public class CampusNestStudentService implements StudentService {
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .phoneNumber(request.getPhoneNumber())
-                .location(request.getLocation())
                 .email(request.getEmail())
-                .stateOfOrigin(request.getStateOfOrigin())
                 .role(Role.STUDENT)
                 .build();
         userRepository.save(user);
@@ -100,6 +97,20 @@ public class CampusNestStudentService implements StudentService {
     }
 
     @Override
+    public void completeRegistration(CompleteRegistrationRequest request, String email) throws NumberParseException {
+        verifyPhoneNumber(request.getPhoneNumber());
+        verifyStateOfOrigin(request.getStateOfOrigin());
+        verifyLocation(request.getLocation());
+
+        User user = userRepository.findByEmail(email).orElseThrow(()->new UserNotFoundException("user not found"));
+
+         user.setPhoneNumber(request.getPhoneNumber());
+         user.setLocation(request.getLocation());
+         user.setStateOfOrigin(request.getStateOfOrigin());
+         userRepository.save(user);
+    }
+
+    @Override
     public ForgotPasswordResponse forgotPassword(ForgotPasswordRequest request) {
         verifyForgotPasswordDetails(request);
         verifyPassword(request.getPassword());
@@ -136,15 +147,12 @@ public class CampusNestStudentService implements StudentService {
         if (exist(request.getEmail())) throw new UserExistException("a user with that email already exist, please provide another email");
         verifyFirstName(request.getFirstName());
         verifyLastName(request.getLastName());
-        verifyPhoneNumber(request.getPhoneNumber());
         verifyEmail(request.getEmail());
-        verifyStateOfOrigin(request.getStateOfOrigin());
         verifyPassword(request.getPassword());
-        verifyLocation(request.getLocation());
 
     }
 
-    private void welcomeMessage(RegisterLandLordRequest request) {
+    private void welcomeMessage(RegisterStudentRequest request) {
         WelcomeMessageRequest welcomeMessageRequest = new WelcomeMessageRequest();
         welcomeMessageRequest.setFirstName(request.getFirstName());
         welcomeMessageRequest.setLastName(request.getLastName());
