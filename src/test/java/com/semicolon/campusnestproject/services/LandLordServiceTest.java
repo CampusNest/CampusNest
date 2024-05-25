@@ -9,10 +9,7 @@ import com.semicolon.campusnestproject.dtos.responses.ApiResponse;
 import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
 import com.semicolon.campusnestproject.dtos.responses.DeleteApartmentResponse;
 import com.semicolon.campusnestproject.dtos.responses.PostApartmentResponse;
-import com.semicolon.campusnestproject.exception.EmptyDetailsException;
-import com.semicolon.campusnestproject.exception.InvalidCredentialsException;
-import com.semicolon.campusnestproject.exception.InvalidDetailsException;
-import com.semicolon.campusnestproject.exception.UserExistException;
+import com.semicolon.campusnestproject.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,15 +36,12 @@ public class LandLordServiceTest {
 
 
     public RegisterLandLordRequest landlordDetails(String firstName, String lastName, String email,
-                                                   String password, String stateOfOrigin, String phoneNumber, String location){
+                                                   String password){
         RegisterLandLordRequest registerLandlordRequest = new RegisterLandLordRequest();
         registerLandlordRequest.setFirstName(firstName);
         registerLandlordRequest.setLastName(lastName);
         registerLandlordRequest.setEmail(email);
         registerLandlordRequest.setPassword(password);
-        registerLandlordRequest.setStateOfOrigin(stateOfOrigin);
-        registerLandlordRequest.setPhoneNumber(phoneNumber);
-        registerLandlordRequest.setLocation(location);
 
         return registerLandlordRequest;
 
@@ -60,8 +54,17 @@ public class LandLordServiceTest {
         return request;
     }
 
+    public CompleteRegistrationRequest completeRegistrationRequest(String location,String phoneNumber, String stateOfOrigin){
+        CompleteRegistrationRequest request = new CompleteRegistrationRequest();
+        request.setLocation(location);
+        request.setPhoneNumber(phoneNumber);
+        request.setStateOfOrigin(stateOfOrigin);
+
+        return request;
+    }
+
     @Test void testThatALandlordCanRegister() throws NumberParseException {
-        RegisterLandLordRequest request = landlordDetails("Landlord","Musa","landlord@gmail.com","PassKey@123","Ogun","09034567893","Benin");
+        RegisterLandLordRequest request = landlordDetails("Landlord","Musa","landlord@gmail.com","PassKey@123");
         AuthenticationResponse response = landLordService.register(request);
         log.info("{}",response);
         assertThat(response).isNotNull();
@@ -69,35 +72,28 @@ public class LandLordServiceTest {
     }
 
     @Test void testThatLandlordCannotRegisterWithSameEmail(){
-     RegisterLandLordRequest request = landlordDetails("Landlord","Musa","landlord@gmail.com","PassKey@123","Ogun","09034567893","Benin");
+     RegisterLandLordRequest request = landlordDetails("Landlord","Musa","landlord@gmail.com","PassKey@123");
 
         assertThrows(UserExistException.class,()->landLordService.register(request));
     }
 
     @Test void testThatLandlordCannotRegisterWithPasswordThatDidNotMatchTheVerification(){
-        RegisterLandLordRequest request = landlordDetails("Landlord","Musa","landlord2@gmail.com","PassK","Ogun","09034567893","Benin");
+        RegisterLandLordRequest request = landlordDetails("Landlord","Musa","landlord2@gmail.com","PassK");
         assertThrows(InvalidDetailsException.class,()->landLordService.register(request));
 
-        RegisterLandLordRequest request2 = landlordDetails("Landlord","Musa","landlord2@gmail.com","PassK123","Ogun","09034567893","Benin");
+        RegisterLandLordRequest request2 = landlordDetails("Landlord","Musa","landlord2@gmail.com","PassK123");
         assertThrows(InvalidDetailsException.class,()->landLordService.register(request2));
 
-        RegisterLandLordRequest request3 = landlordDetails("Landlord","Musa","landlord2@gmail.com","@123","Ogun","09034567893","Benin");
+        RegisterLandLordRequest request3 = landlordDetails("Landlord","Musa","landlord2@gmail.com","@123");
         assertThrows(InvalidDetailsException.class,()->landLordService.register(request3));
     }
 
     @Test void testThatLandlordCannotRegisterWithEmailThatDidNotMatchTheVerification(){
-        RegisterLandLordRequest request = landlordDetails("Landlord","Musa","landlordgmail.com","PassKey@","Ogun","09034567893","Benin");
+        RegisterLandLordRequest request = landlordDetails("Landlord","Musa","landlordgmail.com","PassKey@");
 
         assertThrows(InvalidDetailsException.class,()->landLordService.register(request));
 
-        RegisterLandLordRequest request2 = landlordDetails("Landlord","Musa","landlord@gmailcom","PassKey@","Ogun","09034567893","Benin");
-
-        assertThrows(InvalidDetailsException.class,()->landLordService.register(request2));
-    }
-
-    @Test void testThatLandlordCannotRegisterWithPhoneNumberThatDidNotMatchTheVerification(){
-
-        RegisterLandLordRequest request2 = landlordDetails("Landlord","Musa","landlord@gmailcom","PassKey@123","Ogun","0900000000000","Benin");
+        RegisterLandLordRequest request2 = landlordDetails("Landlord","Musa","landlord@gmailcom","PassKey@");
 
         assertThrows(InvalidDetailsException.class,()->landLordService.register(request2));
     }
@@ -130,8 +126,42 @@ public class LandLordServiceTest {
         assertThrows(EmptyDetailsException.class,()->landLordService.login(request));
     }
 
+    @Test void testThatAUserCanCompleteRegistrationAfterRegistering() throws NumberParseException {
+        CompleteRegistrationRequest request = completeRegistrationRequest("Lagos","09062346551","Abuja");
+        landLordService.completeRegistration(request,"landlord@gmail.com");
+
+    }
+
+    @Test void testThatAUserCannotCompleteRegistrationIfNotRegistered() throws NumberParseException {
+        CompleteRegistrationRequest request = completeRegistrationRequest("ikeja","09062346551","Ilorin");
+        assertThrows(UserNotFoundException.class,()-> landLordService.completeRegistration(request,"deej@gmail.com"));
+    }
 
 
+    @Test void testThatStateOfOriginFieldCannotBeEmpty(){
+        CompleteRegistrationRequest request = completeRegistrationRequest("Lagos","09062346551","");
+
+        assertThrows(EmptyDetailsException.class,()->landLordService.completeRegistration(request,"iamoluchimercy6@gmail.com"));
+    }
+
+    @Test void testThatPhoneNumberFieldCannotBeEmpty(){
+        CompleteRegistrationRequest request = completeRegistrationRequest("Lagos","","Ilorin");
+
+        assertThrows(EmptyDetailsException.class,()->landLordService.completeRegistration(request,"iamoluchimercy6@gmail.com"));
+    }
+
+    @Test void testThatLocationFieldCannotBeEmpty(){
+        CompleteRegistrationRequest request = completeRegistrationRequest("","09062346551","Ilorin");
+
+        assertThrows(EmptyDetailsException.class,()->landLordService.completeRegistration(request,"iamoluchimercy6@gmail.com"));
+    }
+
+    @Test void testThatLandlordCannotCompleteProfileWithPhoneNumberThatDidNotMatchTheVerification(){
+
+        CompleteRegistrationRequest request = completeRegistrationRequest("Kwara","090765488900000","Ilorin");
+
+        assertThrows(InvalidDetailsException.class,()->landLordService.completeRegistration(request,"landlordgmail.com"));
+    }
 
 
     @Test
@@ -145,7 +175,7 @@ public class LandLordServiceTest {
         request.setAnnualRentFee("150000");
         request.setAgreementAndCommission("10000");
         UploadApartmentImageRequest imageRequest = new UploadApartmentImageRequest();
-        File file = new File("C:\\Users\\USER\\Pictures\\1char.png");
+        File file = new File("/home/user/Pictures/mmov.jpg");
         FileInputStream inputStream = new FileInputStream(file);
         MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
         multipartFiles.add(multipartFile);

@@ -57,11 +57,8 @@ public class CampusNestLandLordService implements LandLordService {
         var user = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
-                .phoneNumber(request.getPhoneNumber())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .email(request.getEmail())
-                .location(request.getLocation())
-                .stateOfOrigin(request.getStateOfOrigin())
                 .role(Role.LANDLORD)
                 .build();
         userRepository.save(user);
@@ -106,6 +103,20 @@ public class CampusNestLandLordService implements LandLordService {
        authenticationService.saveUserToken(accessToken, refreshToken, user);
 
         return new AuthenticationResponse(accessToken, refreshToken, "User login was successful");
+    }
+
+    @Override
+    public void completeRegistration(CompleteRegistrationRequest request, String email) throws NumberParseException {
+        verifyPhoneNumber(request.getPhoneNumber());
+        verifyStateOfOrigin(request.getStateOfOrigin());
+        verifyLocation(request.getLocation());
+
+        User user = userRepository.findByEmail(email).orElseThrow(()->new UserNotFoundException("user not found"));
+
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setLocation(request.getLocation());
+        user.setStateOfOrigin(request.getStateOfOrigin());
+        userRepository.save(user);
     }
 
     @Override
@@ -230,11 +241,8 @@ public class CampusNestLandLordService implements LandLordService {
         if (exist(request.getEmail())) throw new UserExistException("a user with that email already exist, please provide another email");
         verifyFirstName(request.getFirstName());
         verifyLastName(request.getLastName());
-        verifyPhoneNumber(request.getPhoneNumber());
         verifyEmail(request.getEmail());
-        verifyStateOfOrigin(request.getStateOfOrigin());
         verifyPassword(request.getPassword());
-        verifyLocation(request.getLocation());
 
     }
 

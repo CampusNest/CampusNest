@@ -10,7 +10,5 @@ public class RegisterLandLordRequest {
     private String lastName;
     private String email;
     private String password;
-    private String stateOfOrigin;
-    private String phoneNumber;
-    private String location;
+
 }

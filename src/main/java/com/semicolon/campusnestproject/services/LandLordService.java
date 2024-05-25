@@ -11,6 +11,7 @@ public interface LandLordService {
     AuthenticationResponse register(RegisterLandLordRequest request) throws NumberParseException;
     PostApartmentResponse postApartment(PostApartmentRequest request) throws IOException;
     AuthenticationResponse login(LoginRequest request);
+    void completeRegistration(CompleteRegistrationRequest request,String email) throws NumberParseException;
     ForgotPasswordResponse forgotPassword(ForgotPasswordRequest request);
 
 
