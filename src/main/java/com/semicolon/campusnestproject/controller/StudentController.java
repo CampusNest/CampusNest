@@ -5,13 +5,15 @@ import com.semicolon.campusnestproject.dtos.requests.RegisterStudentRequest;
 import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
 import com.semicolon.campusnestproject.services.implementations.CampusNestStudentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1")
-@RequiredArgsConstructor
+
 public class StudentController {
+    @Autowired
     private CampusNestStudentService studentService;
 
     @PostMapping("/register")
