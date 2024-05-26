@@ -46,10 +46,10 @@ public class CampusNestLandLordService implements LandLordService {
     public AuthenticationResponse register(RegisterLandLordRequest request) throws NumberParseException {
         verifyLandlordDetails(request);
         var user = User.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .email(request.getEmail())
+                .firstName(request.getFirstName().trim())
+                .lastName(request.getLastName().trim())
+                .password(passwordEncoder.encode(request.getPassword().trim()))
+                .email(request.getEmail().trim())
                 .role(Role.LANDLORD)
                 .build();
         userRepository.save(user);
@@ -104,9 +104,9 @@ public class CampusNestLandLordService implements LandLordService {
 
         User user = userRepository.findByEmail(email).orElseThrow(()->new UserNotFoundException("user not found"));
 
-        user.setPhoneNumber(request.getPhoneNumber());
-        user.setLocation(request.getLocation());
-        user.setStateOfOrigin(request.getStateOfOrigin());
+        user.setPhoneNumber(request.getPhoneNumber().trim());
+        user.setLocation(request.getLocation().trim());
+        user.setStateOfOrigin(request.getStateOfOrigin().trim());
         userRepository.save(user);
     }
 
@@ -114,9 +114,9 @@ public class CampusNestLandLordService implements LandLordService {
     public ForgotPasswordResponse forgotPassword(ForgotPasswordRequest request) {
         verifyForgotPasswordDetails(request);
         verifyPassword(request.getPassword());
-        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(()-> new UserNotFoundException("user not found"));
+        User user = userRepository.findByEmail(request.getEmail().trim()).orElseThrow(()-> new UserNotFoundException("user not found"));
 
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setPassword(passwordEncoder.encode(request.getPassword().trim()));
         userRepository.save(user);
 
         ForgotPasswordResponse response = new ForgotPasswordResponse();
@@ -139,7 +139,7 @@ public class CampusNestLandLordService implements LandLordService {
     private void authenticate(LoginRequest request) {
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+                    new UsernamePasswordAuthenticationToken(request.getEmail().trim(), request.getPassword().trim())
             );
         } catch (BadCredentialsException ex) {
 
