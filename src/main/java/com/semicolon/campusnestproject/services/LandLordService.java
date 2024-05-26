@@ -17,5 +17,5 @@ public interface LandLordService {
 
     DeleteApartmentResponse deleteApartment(DeleteApartmentRequest deleteApartmentRequest) throws IOException;
 
-    ApiResponse<UpdateLandLordResponse> updateLandLordApartmentDetails(Long landLordId, Long apartmentId, UpdateLandLordApartmentRequest request);
+    ApiResponse<UpdateLandLordResponse> updateLandLordApartmentDetails(Long apartmentId, UpdateLandLordApartmentRequest request);
 }

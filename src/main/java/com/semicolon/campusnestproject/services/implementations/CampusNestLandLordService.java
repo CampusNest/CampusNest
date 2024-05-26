@@ -163,8 +163,8 @@ public class CampusNestLandLordService implements LandLordService {
 
 
     @Override
-    public ApiResponse<UpdateLandLordResponse> updateLandLordApartmentDetails(Long landLordId, Long apartmentId, UpdateLandLordApartmentRequest request) {
-        User landLord = userRepository.findById(landLordId).orElseThrow();
+    public ApiResponse<UpdateLandLordResponse> updateLandLordApartmentDetails(Long apartmentId, UpdateLandLordApartmentRequest request) {
+//        User landLord = userRepository.findById(landLordId).orElseThrow();
         Apartment apartment = apartmentService.findById(apartmentId);
 
                 List<JsonPatchOperation> jsonPatchOperations = new ArrayList<>();
