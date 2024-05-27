@@ -54,13 +54,6 @@ public class CampusNestLandLordService implements LandLordService {
                 .lastName(request.getLastName().trim())
                 .password(passwordEncoder.encode(request.getPassword().trim()))
                 .email(request.getEmail().trim())
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .phoneNumber(request.getPhoneNumber())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .email(request.getEmail())
-                .location(request.getLocation())
-                .stateOfOrigin(request.getStateOfOrigin())
                 .role(Role.LANDLORD)
                 .build();
         userRepository.save(user);
@@ -73,7 +66,6 @@ public class CampusNestLandLordService implements LandLordService {
         return new AuthenticationResponse(accessToken, refreshToken,"User registration was successful");
 
     }
-
 
     @Override
     public PostApartmentResponse postApartment(PostApartmentRequest request) throws IOException {
