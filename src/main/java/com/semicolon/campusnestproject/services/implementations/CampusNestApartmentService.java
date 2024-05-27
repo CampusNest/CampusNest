@@ -85,8 +85,12 @@ public class CampusNestApartmentService implements ApartmentService {
                         String.format("landlord with id %d not found", apartmentId)));
     }
 
-//    @Override
-//    public void save(Apartment apartment) {
-//        apartmentRepository.save(apartment);
-//    }
+    @Override
+    public void save(Apartment apartment) {
+        apartmentRepository.save(apartment);
+    }
+
+
+
+
 }

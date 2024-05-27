@@ -1,5 +1,12 @@
 package com.semicolon.campusnestproject.services.implementations;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.TextNode;
+import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchOperation;
+import com.github.fge.jsonpatch.ReplaceOperation;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.semicolon.campusnestproject.data.model.Apartment;
 import com.semicolon.campusnestproject.data.model.Image;
@@ -24,11 +31,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static com.semicolon.campusnestproject.utils.Verification.*;
 import static com.semicolon.campusnestproject.utils.Verification.verifyPassword;
+import static java.util.Arrays.stream;
 
 @Service
 @AllArgsConstructor
@@ -75,6 +86,7 @@ public class CampusNestLandLordService implements LandLordService {
         if (landLord.isEmpty()){
             throw new UserExistException("user doesn't exist");
         }
+
         UploadApartmentImageResponse imageRequest = cloudinaryService.uploadImage(request.getUploadApartmentImageRequest());
         Apartment apartment = apartmentService.saveApartment(request,imageRequest);
         landLord.get().getApartments().add(apartment);
@@ -152,11 +164,6 @@ public class CampusNestLandLordService implements LandLordService {
         return response;
     }
 
-    @Override
-    public ApiResponse<UpdateLandLordResponse> updateLandLordApartmentDetails(Long apartmentId, UpdateLandLordApartmentRequest request) {
-        return null;
-    }
-
     private void authenticate(LoginRequest request) {
         try {
             authenticationManager.authenticate(
@@ -171,6 +178,81 @@ public class CampusNestLandLordService implements LandLordService {
             } else {
                 throw new InvalidCredentialsException("Invalid email");
             }}}
+
+
+
+    @Override
+    public ApiResponse<UpdateLandLordResponse> updateLandLordApartmentDetails(Long apartmentId, UpdateLandLordApartmentRequest request) {
+//        User landLord = userRepository.findById(landLordId).orElseThrow();
+        Apartment apartment = apartmentService.findById(apartmentId);
+
+                List<JsonPatchOperation> jsonPatchOperations = new ArrayList<>();
+                buildPatchOperations(request, jsonPatchOperations);
+                apartment = applyPatch(jsonPatchOperations, apartment);
+                apartmentService.save(apartment);
+//                updateApartmentMailSender(landLord);
+
+        return new ApiResponse<>(buildUpdateLandLordResponse());
+    }
+
+    private void updateApartmentMailSender(User landLord) {
+        UpdateApartmentMessageRequest mailRequest = new UpdateApartmentMessageRequest();
+        mailRequest.setLastName(landLord.getLastName());
+        mailRequest.setLastName(landLord.getFirstName());
+        mailRequest.setLastName(landLord.getEmail());
+        notificationService.updateLandLordApartmentMail(mailRequest);
+    }
+
+    private UpdateLandLordResponse buildUpdateLandLordResponse() {
+        UpdateLandLordResponse response = new UpdateLandLordResponse();
+        response.setMessage("Account updated successfully");
+        return response;
+    }
+
+    private Apartment applyPatch(List<JsonPatchOperation> jsonPatchOperations, Apartment landLord) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonPatch jsonPatch = new JsonPatch(jsonPatchOperations);
+            System.out.println(jsonPatch);
+            JsonNode customerNode = mapper.convertValue(landLord, JsonNode.class);
+            JsonNode updatedNode = jsonPatch.apply(customerNode);
+            landLord = mapper.convertValue(updatedNode, Apartment.class);
+
+        }catch (Exception exception){
+            throw new RuntimeException(exception);
+        }
+        return landLord;
+    }
+
+    private void buildPatchOperations(UpdateLandLordApartmentRequest request, List<JsonPatchOperation> jsonPatchOperations) {
+        Class<?> requestClass = request.getClass();
+        Field[] requestClassFields = requestClass.getDeclaredFields();
+        System.out.println(Arrays.toString(requestClassFields));
+        stream(requestClassFields)
+                .filter(field->isValidUpdate(field, request))
+                .forEach(field->addOperation(request, field, jsonPatchOperations));
+    }
+
+    private void addOperation(UpdateLandLordApartmentRequest request, Field field, List<JsonPatchOperation> jsonPatchOperations) {
+        try {
+            JsonPointer path = new JsonPointer("/"+ field.getName());
+            JsonNode value = new TextNode(field.get(request).toString());
+            ReplaceOperation replaceOperation = new ReplaceOperation(path, value);
+            jsonPatchOperations.add(replaceOperation);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private boolean  isValidUpdate(Field field, UpdateLandLordApartmentRequest request) {
+        field.setAccessible(true);
+        try {
+            return field.get(request) != null;
+
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
 
