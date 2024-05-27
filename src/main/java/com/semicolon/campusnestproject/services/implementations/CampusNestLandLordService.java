@@ -57,8 +57,7 @@ public class CampusNestLandLordService implements LandLordService {
                 .role(Role.LANDLORD)
                 .build();
         userRepository.save(user);
-//        welcomeMessage(request);
-
+   //     welcomeMessage(request);
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
 
@@ -67,6 +66,7 @@ public class CampusNestLandLordService implements LandLordService {
         return new AuthenticationResponse(accessToken, refreshToken,"User registration was successful");
 
     }
+
 
     @Override
     public PostApartmentResponse postApartment(PostApartmentRequest request) throws IOException {
