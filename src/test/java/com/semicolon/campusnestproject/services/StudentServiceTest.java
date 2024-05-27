@@ -77,6 +77,13 @@ class StudentServiceTest {
         log.info("->{}",response);
         assertThat(response).isNotNull();
     }
+    @Test
+    void testThatStudentCanRegister3() throws NumberParseException {
+        RegisterStudentRequest request = studentDetails("divine","james","register@gmail.com","Password@123");
+        AuthenticationResponse response = studentService.register(request);
+        log.info("->{}",response);
+        assertThat(response).isNotNull();
+    }
 
     @Test void testThatStudentCannotRegisterWithSameEmail(){
         RegisterStudentRequest request = studentDetails("divine","james","iamoluchimercy6@gmail.com","Password@123");

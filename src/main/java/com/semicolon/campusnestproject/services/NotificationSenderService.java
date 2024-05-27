@@ -7,5 +7,5 @@ public interface NotificationSenderService {
 
     void welcomeMail(WelcomeMessageRequest request);
 
-    void updateLandLordApartmentRequestMail(UpdateApartmentMessageRequest request);
+    void updateLandLordApartmentMail(UpdateApartmentMessageRequest mailRequest);
 }

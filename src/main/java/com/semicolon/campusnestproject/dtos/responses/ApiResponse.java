@@ -4,9 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
 @AllArgsConstructor
 @Setter
-@Getter
+
 public class ApiResponse<T> {
-    public T data;
+    private T data;
 }
