@@ -14,7 +14,6 @@ public interface ApartmentService {
     Apartment saveApartment(PostApartmentRequest request,UploadApartmentImageResponse imageRequest);
     Apartment findById(Long apartmentId);
 
-    void save(Apartment apartment);
 
     void deleteApartment( Long apartmentId);
     List<Image> getApartmentImage( Long apartmentId);

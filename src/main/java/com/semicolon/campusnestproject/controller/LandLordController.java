@@ -1,9 +1,6 @@
 package com.semicolon.campusnestproject.controller;
 
-import com.semicolon.campusnestproject.dtos.requests.LoginRequest;
-import com.semicolon.campusnestproject.dtos.requests.RegisterLandLordRequest;
-import com.semicolon.campusnestproject.dtos.requests.RegisterStudentRequest;
-import com.semicolon.campusnestproject.dtos.requests.UpdateLandLordApartmentRequest;
+import com.semicolon.campusnestproject.dtos.requests.*;
 import com.semicolon.campusnestproject.dtos.responses.ApiResponse;
 import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
 import com.semicolon.campusnestproject.dtos.responses.DeleteApartmentResponse;
@@ -83,8 +80,7 @@ public class LandLordController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> updateLandLordApartmentDetails(@RequestBody UpdateLandLordApartmentRequest request,
-                                                            @PathVariable Long id){
+    public ResponseEntity<?> updateLandLordApartmentDetails(@RequestBody UpdateLandLordApartmentRequest request, @PathVariable Long id){
         try{
             return ResponseEntity.ok(landLordService.updateLandLordApartmentDetails(id, request));
         }
