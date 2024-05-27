@@ -189,7 +189,7 @@ public class CampusNestLandLordService implements LandLordService {
         mailRequest.setLastName(landLord.getLastName());
         mailRequest.setLastName(landLord.getFirstName());
         mailRequest.setLastName(landLord.getEmail());
-        notificationService.updateLandLordApartmentRequestMail(mailRequest);
+        notificationService.updateLandLordApartmentMail(mailRequest);
     }
 
     private UpdateLandLordResponse buildUpdateLandLordResponse() {
