@@ -39,6 +39,8 @@ import java.util.Optional;
 
 import static com.semicolon.campusnestproject.utils.Verification.*;
 import static com.semicolon.campusnestproject.utils.Verification.verifyPassword;
+import static com.semicolon.campusnestproject.utils.Verification.verifyPassword;
+import static java.util.Arrays.stream;
 import static java.util.Arrays.stream;
 
 @Service
