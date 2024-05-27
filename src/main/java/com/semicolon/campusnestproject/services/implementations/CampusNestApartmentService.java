@@ -82,7 +82,7 @@ public class CampusNestApartmentService implements ApartmentService {
     public Apartment findById(Long apartmentId) {
         return apartmentRepository.findById(apartmentId)
                 .orElseThrow(() -> new UserNotFoundException(
-                        String.format("landlord with id %d not found", apartmentId)));
+                        String.format("apartment with id %d not found", apartmentId)));
     }
 
     @Override

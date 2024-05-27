@@ -193,11 +193,11 @@ public class LandLordServiceTest {
     public void updateLandLordApartmentDetailsTest(){
         UpdateLandLordApartmentRequest request = new UpdateLandLordApartmentRequest();
 //        request.setHouseType("MINIFLAT");
-        request.setLocation("313, Herbert Macaulay , Sabo-Yaba");
+        request.setLocation("313, Herbert Macaulay tyyxxc , Sabo-Yaba");
 
 
         ApiResponse<UpdateLandLordResponse> response =
-                landLordService.updateLandLordApartmentDetails(1L,request);
+                landLordService.updateLandLordApartmentDetails(2L,1L,request);
 
         System.out.println(request);
 
