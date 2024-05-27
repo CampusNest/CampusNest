@@ -29,7 +29,7 @@ public class StudentController {
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                     .contentType(MediaType.APPLICATION_JSON)
-                    .body(Collections.singletonMap("error", e.getMessage()));
+                    .body(e.getMessage());
         }
     }
 

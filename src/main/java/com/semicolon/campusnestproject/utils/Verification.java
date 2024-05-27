@@ -38,13 +38,13 @@ public class Verification {
         }
     }
     public static void  verifyFirstName(String firstName) throws EmptyDetailsException, InvalidDetailsException {
-        if (firstName == null || firstName.trim().isEmpty()) throw new EmptyDetailsException("first name field is empty, please provide your first name");
-        if(!firstName.matches("^[A-z]+$")) throw new InvalidDetailsException("please ensure that first name contains all letters");
+        if (firstName == null || firstName.trim().isEmpty()) throw new EmptyDetailsException("{\"fnerr\" : \"first name field is empty, please provide your first name\"}");
+        if(!firstName.matches("^[A-z]+$")) throw new InvalidDetailsException("{\"fnerr\":\"please ensure that first name contains all letters\"}");
     }
 
     public static void verifyLastName(String lastName) throws EmptyDetailsException, InvalidDetailsException {
-        if (lastName == null || lastName.trim().isEmpty()) throw new EmptyDetailsException("last name field is empty, please kindly provide your lastname");
-        if(!lastName.matches("^[A-z]+$")) throw new InvalidDetailsException("please ensure that last name contains all letters");
+        if (lastName == null || lastName.trim().isEmpty()) throw new EmptyDetailsException("{\"lnerr\" : \"last name field is empty, please kindly provide your lastname\"}");
+        if(!lastName.matches("^[A-z]+$")) throw new InvalidDetailsException("{\"lnerr\" : \"please ensure that last name contains all letters\"}");
     }
     public static void verifyPhoneNumber(String phoneNumber) throws EmptyDetailsException, InvalidDetailsException, NumberParseException {
         if (phoneNumber == null || phoneNumber.trim().isEmpty()) throw new EmptyDetailsException("phone number field is empty, please kindly provide  your phone number");
