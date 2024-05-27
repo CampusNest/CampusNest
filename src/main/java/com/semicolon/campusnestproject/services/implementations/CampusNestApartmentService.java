@@ -89,4 +89,8 @@ public class CampusNestApartmentService implements ApartmentService {
     public void save(Apartment apartment) {
         apartmentRepository.save(apartment);
     }
+
+
+
+
 }

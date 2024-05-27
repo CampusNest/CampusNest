@@ -17,7 +17,6 @@ public interface ApartmentService {
 
     void save(Apartment apartment);
 
-    void deleteApartment(List<Apartment> apartments, Long apartmentId);
     void deleteApartment( Long apartmentId);
 
     List<Image> getApartmentImage( Long apartmentId);

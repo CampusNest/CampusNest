@@ -177,6 +177,7 @@ class StudentServiceTest {
 
         assertThrows(EmptyDetailsException.class,()->studentService.completeRegistration(request,"iamoluchimercy6@gmail.com"));
     }
+//    @Test void studentCanUpdateDetailsTest
 
 
 

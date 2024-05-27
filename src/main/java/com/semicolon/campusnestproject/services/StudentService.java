@@ -7,7 +7,6 @@ import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
 import com.semicolon.campusnestproject.dtos.responses.ForgotPasswordResponse;
 import com.semicolon.campusnestproject.dtos.responses.SearchApartmentResponse;
 import com.semicolon.campusnestproject.exception.BudgetMustOnlyContainNumbersException;
-import sendinblue.ApiResponse;
 
 public interface StudentService {
     AuthenticationResponse register(RegisterStudentRequest request) throws NumberParseException;

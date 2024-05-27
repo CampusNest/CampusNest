@@ -209,7 +209,7 @@ public class LandLordServiceTest {
     @Test
     public void deleteApartmentTest() throws IOException {
         DeleteApartmentRequest deleteApartmentRequest = new DeleteApartmentRequest();
-        deleteApartmentRequest.setId(1L);
+        deleteApartmentRequest.setLandLordId(1L);
         deleteApartmentRequest.setApartmentId(4L);
         DeleteApartmentResponse response =  landLordService.deleteApartment(deleteApartmentRequest);
         assertThat(response).isNotNull();

@@ -88,8 +88,7 @@ public class CampusNestLandLordService implements LandLordService {
         if (landLord.isEmpty()){
             throw new UserExistException("user doesn't exist");
         }
-        UploadApartmentImageResponse imageRequest = uploadService.uploadImage(request.getUploadApartmentImageRequest());
-        Apartment apartment = apartmentService.saveApartment(request, imageRequest);
+
         UploadApartmentImageResponse imageRequest = cloudinaryService.uploadImage(request.getUploadApartmentImageRequest());
         Apartment apartment = apartmentService.saveApartment(request,imageRequest);
         landLord.get().getApartments().add(apartment);
