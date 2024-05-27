@@ -39,6 +39,8 @@ import java.util.Optional;
 
 import static com.semicolon.campusnestproject.utils.Verification.*;
 import static java.util.Arrays.stream;
+import static com.semicolon.campusnestproject.utils.Verification.verifyPassword;
+import static java.util.Arrays.stream;
 
 @Service
 @AllArgsConstructor
@@ -259,11 +261,8 @@ public class CampusNestLandLordService implements LandLordService {
         if (exist(request.getEmail())) throw new UserExistException("a user with that email already exist, please provide another email");
         verifyFirstName(request.getFirstName());
         verifyLastName(request.getLastName());
-        verifyPhoneNumber(request.getPhoneNumber());
         verifyEmail(request.getEmail());
-        verifyStateOfOrigin(request.getStateOfOrigin());
         verifyPassword(request.getPassword());
-        verifyLocation(request.getLocation());
 
     }
 

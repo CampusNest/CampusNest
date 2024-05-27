@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -54,7 +55,8 @@ public class LandLordController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> updateLandLordApartmentDetails(@RequestBody UpdateLandLordApartmentRequest request, @PathVariable Long id){
+    public ResponseEntity<?> updateLandLordApartmentDetails(@RequestBody UpdateLandLordApartmentRequest request,
+                                                            @PathVariable Long id){
         try{
             return ResponseEntity.ok(landLordService.updateLandLordApartmentDetails(id, request));
         }

@@ -135,7 +135,6 @@ public class LandLordServiceTest {
         landLordService.completeRegistration(request,"landlord@gmail.com");
 
     }
-
     @Test void testThatAUserCannotCompleteRegistrationIfNotRegistered() throws NumberParseException {
         CompleteRegistrationRequest request = completeRegistrationRequest("ikeja","09062346551","Ilorin");
         assertThrows(UserNotFoundException.class,()-> landLordService.completeRegistration(request,"deej@gmail.com"));
@@ -179,7 +178,7 @@ public class LandLordServiceTest {
         request.setAnnualRentFee("150000");
         request.setAgreementAndCommission("10000");
         UploadApartmentImageRequest imageRequest = new UploadApartmentImageRequest();
-        File file = new File("C:\\Users\\USER\\Pictures\\1char.png");
+        File file = new File("/home/user/Pictures/mmov.jpg");
         FileInputStream inputStream = new FileInputStream(file);
         MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
         multipartFiles.add(multipartFile);
@@ -197,7 +196,8 @@ public class LandLordServiceTest {
 
 
         ApiResponse<UpdateLandLordResponse> response =
-                landLordService.updateLandLordApartmentDetails(1L,request);
+                landLordService.updateLandLordApartmentDetails(4L,request);
+
 
         System.out.println(request);
 
@@ -210,7 +210,7 @@ public class LandLordServiceTest {
     public void deleteApartmentTest() throws IOException {
         DeleteApartmentRequest deleteApartmentRequest = new DeleteApartmentRequest();
         deleteApartmentRequest.setLandLordId(1L);
-        deleteApartmentRequest.setApartmentId(4L);
+        deleteApartmentRequest.setApartmentId(1L);
         DeleteApartmentResponse response =  landLordService.deleteApartment(deleteApartmentRequest);
         assertThat(response).isNotNull();
     }
