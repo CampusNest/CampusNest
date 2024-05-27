@@ -2,6 +2,7 @@ package com.semicolon.campusnestproject.services;
 
 
 import com.google.i18n.phonenumbers.NumberParseException;
+import com.semicolon.campusnestproject.data.model.Apartment;
 import com.semicolon.campusnestproject.data.model.ApartmentType;
 import com.semicolon.campusnestproject.dtos.UpdateLandLordResponse;
 import com.semicolon.campusnestproject.dtos.requests.*;
@@ -20,11 +21,11 @@ import org.springframework.mock.web.MockMultipartFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
@@ -33,6 +34,9 @@ public class LandLordServiceTest {
 
     @Autowired
     private LandLordService landLordService;
+
+    @Autowired
+    private ApartmentService apartmentService;
 
 
     public RegisterLandLordRequest landlordDetails(String firstName, String lastName, String email,
@@ -175,7 +179,7 @@ public class LandLordServiceTest {
         request.setAnnualRentFee("150000");
         request.setAgreementAndCommission("10000");
         UploadApartmentImageRequest imageRequest = new UploadApartmentImageRequest();
-        File file = new File("/home/user/Pictures/mmov.jpg");
+        File file = new File("C:\\Users\\USER\\Pictures\\1char.png");
         FileInputStream inputStream = new FileInputStream(file);
         MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
         multipartFiles.add(multipartFile);

@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
+import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -30,7 +31,7 @@ public class User implements UserDetails{
     private String location;
     @Enumerated(EnumType.STRING)
     private Role role;
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER , cascade = REMOVE)
     private List<Apartment> apartments;
 
 

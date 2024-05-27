@@ -18,6 +18,13 @@ public interface ApartmentService {
     void save(Apartment apartment);
 
     void deleteApartment(List<Apartment> apartments, Long apartmentId);
+    void deleteApartment( Long apartmentId);
 
-    List<Image> getApartmentImage(List<Apartment> apartments, Long apartmentId);
+    List<Image> getApartmentImage( Long apartmentId);
+
+    Apartment deleteImageFromApartment(Long apartmentId);
+
+    Optional<Apartment> getApartment(Long apartmentId);
+
+    Apartment findApartmentById(Long apartmentId);
 }

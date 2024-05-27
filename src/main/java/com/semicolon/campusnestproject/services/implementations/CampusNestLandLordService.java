@@ -9,6 +9,7 @@ import com.github.fge.jsonpatch.JsonPatchOperation;
 import com.github.fge.jsonpatch.ReplaceOperation;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.semicolon.campusnestproject.data.model.Apartment;
+import com.semicolon.campusnestproject.data.model.Image;
 import com.semicolon.campusnestproject.data.model.Role;
 import com.semicolon.campusnestproject.data.model.User;
 import com.semicolon.campusnestproject.data.repositories.LandLordRepository;
@@ -21,9 +22,13 @@ import com.semicolon.campusnestproject.exception.UserExistException;
 import com.semicolon.campusnestproject.exception.UserNotFoundException;
 import com.semicolon.campusnestproject.services.*;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -41,15 +46,17 @@ import static java.util.Arrays.stream;
 @AllArgsConstructor
 public class CampusNestLandLordService implements LandLordService {
 
+    private static final Logger log = LoggerFactory.getLogger(CampusNestLandLordService.class);
     private final LandLordRepository landLordRepository;
     private final ApartmentService apartmentService;
-    private final CloudinaryImageUploadService uploadService;
+    private final CloudinaryImageUploadService cloudinaryService;
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final NotificationSenderService notificationService;
     private final AuthenticationManager authenticationManager;
     private final AuthenticationService authenticationService;
+    private final ImageService imageService;
 
     @Override
     public AuthenticationResponse register(RegisterLandLordRequest request) throws NumberParseException {
@@ -83,7 +90,10 @@ public class CampusNestLandLordService implements LandLordService {
         }
         UploadApartmentImageResponse imageRequest = uploadService.uploadImage(request.getUploadApartmentImageRequest());
         Apartment apartment = apartmentService.saveApartment(request, imageRequest);
+        UploadApartmentImageResponse imageRequest = cloudinaryService.uploadImage(request.getUploadApartmentImageRequest());
+        Apartment apartment = apartmentService.saveApartment(request,imageRequest);
         landLord.get().getApartments().add(apartment);
+        userRepository.save(landLord.get());
         response.setId(landLord.get().getId());
         return response;
     }
@@ -137,12 +147,24 @@ public class CampusNestLandLordService implements LandLordService {
     @Override
     public DeleteApartmentResponse deleteApartment(DeleteApartmentRequest deleteApartmentRequest) throws IOException {
         DeleteApartmentResponse response = new DeleteApartmentResponse();
-//        Optional<User> landLord = userRepository.findById(deleteApartmentRequest.getId());
-        Optional<User> landLord = userRepository.findById(deleteApartmentRequest.getId());
+        Optional<User> landLord = userRepository.findById(deleteApartmentRequest.getLandLordId());
         if (landLord.isEmpty()) {
-            throw new UserExistException("user doesn't exist");
+            throw new UserNotFoundException("User doesn't exist");
         }
-        return null;
+        List<Image> images = apartmentService.getApartmentImage(deleteApartmentRequest.getApartmentId());
+        Optional<Apartment> apartment = apartmentService.getApartment(deleteApartmentRequest.getApartmentId());
+        Apartment newApartment = apartmentService.deleteImageFromApartment(apartment.get().getId());
+        List<Apartment> updatedApartments = landLord.get().getApartments().stream()
+                .filter(apartment2 -> apartment2.equals(newApartment))
+                .toList();
+        landLord.get().getApartments().clear();
+        landLord.get().getApartments().addAll(updatedApartments);
+        userRepository.save(landLord.get());
+        imageService.deleteImage(images);
+        apartmentService.deleteApartment(deleteApartmentRequest.getApartmentId());
+        cloudinaryService.deleteImage(images);
+        response.setMessage("Deleted");
+        return response;
     }
 
     private void authenticate(LoginRequest request) {
