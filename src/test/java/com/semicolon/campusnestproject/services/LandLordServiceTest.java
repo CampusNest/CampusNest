@@ -200,6 +200,7 @@ public class LandLordServiceTest {
                 landLordService.updateLandLordApartmentDetails(4L,request);
 
 
+
         System.out.println(request);
 
         assertThat(response).isNotNull();
