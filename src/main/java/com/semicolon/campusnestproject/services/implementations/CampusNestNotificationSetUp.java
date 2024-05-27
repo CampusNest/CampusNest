@@ -40,6 +40,5 @@ public class CampusNestNotificationSetUp implements NotificationSetUpService {
             RestTemplate restTemplate = new RestTemplate();
             restTemplate.postForEntity(url,httpEntity, NotificationResponse.class);
         }
-
     }
 }

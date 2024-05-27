@@ -32,7 +32,6 @@ public class CampusNestNotificationSenderService implements NotificationSenderSe
 
     @Override
     public void updateLandLordApartmentMail(UpdateApartmentMessageRequest request) {
-
         NotificationSenderRequest notificationRequest = new NotificationSenderRequest();
         notificationRequest.setEmail("qudusa55@gmail.com");
         notificationRequest.setName("Campus Nest");
@@ -45,6 +44,5 @@ public class CampusNestNotificationSenderService implements NotificationSenderSe
         String subject = "Update Apartment Details";
         String htmlContent = receiverRequest.getName()+" apartment details updated successfully";
         notificationSetUp.sendNotification(notificationRequest,subject, htmlContent);
-
     }
 }
