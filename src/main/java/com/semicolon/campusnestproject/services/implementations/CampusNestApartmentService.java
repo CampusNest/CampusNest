@@ -6,6 +6,7 @@ import com.semicolon.campusnestproject.data.model.Image;
 import com.semicolon.campusnestproject.data.repositories.ApartmentRepository;
 import com.semicolon.campusnestproject.dtos.requests.PostApartmentRequest;
 import com.semicolon.campusnestproject.dtos.responses.UploadApartmentImageResponse;
+import com.semicolon.campusnestproject.exception.UserNotFoundException;
 import com.semicolon.campusnestproject.services.ApartmentService;
 import com.semicolon.campusnestproject.services.ImageService;
 import lombok.AllArgsConstructor;
@@ -75,5 +76,17 @@ public class CampusNestApartmentService implements ApartmentService {
     @Override
     public Apartment findApartmentById(Long apartmentId) {
         return apartmentRepository.findById(apartmentId).get();
+    }
+
+    @Override
+    public Apartment findById(Long apartmentId) {
+        return apartmentRepository.findById(apartmentId)
+                .orElseThrow(() -> new UserNotFoundException(
+                        String.format("landlord with id %d not found", apartmentId)));
+    }
+
+    @Override
+    public void save(Apartment apartment) {
+        apartmentRepository.save(apartment);
     }
 }

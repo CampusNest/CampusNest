@@ -12,6 +12,7 @@ import sendinblue.ApiResponse;
 public interface StudentService {
     AuthenticationResponse register(RegisterStudentRequest request) throws NumberParseException;
     AuthenticationResponse login(LoginRequest request);
+    void completeRegistration(CompleteRegistrationRequest request,String email) throws NumberParseException;
     SearchApartmentResponse searchApartment(SearchApartmentRequest aptRequest) throws BudgetMustOnlyContainNumbersException;
 
 

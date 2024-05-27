@@ -7,6 +7,7 @@ import com.semicolon.campusnestproject.data.model.Role;
 import com.semicolon.campusnestproject.data.model.User;
 import com.semicolon.campusnestproject.data.repositories.LandLordRepository;
 import com.semicolon.campusnestproject.data.repositories.UserRepository;
+import com.semicolon.campusnestproject.dtos.UpdateLandLordResponse;
 import com.semicolon.campusnestproject.dtos.requests.*;
 import com.semicolon.campusnestproject.dtos.responses.*;
 import com.semicolon.campusnestproject.exception.InvalidCredentialsException;
@@ -103,6 +104,11 @@ public class CampusNestLandLordService implements LandLordService {
     }
 
     @Override
+    public void completeRegistration(CompleteRegistrationRequest request, String email) throws NumberParseException {
+
+    }
+
+    @Override
     public ForgotPasswordResponse forgotPassword(ForgotPasswordRequest request) {
         verifyForgotPasswordDetails(request);
         verifyPassword(request.getPassword());
@@ -138,6 +144,11 @@ public class CampusNestLandLordService implements LandLordService {
         cloudinaryService.deleteImage(images);
         response.setMessage("Deleted");
         return response;
+    }
+
+    @Override
+    public ApiResponse<UpdateLandLordResponse> updateLandLordApartmentDetails(Long apartmentId, UpdateLandLordApartmentRequest request) {
+        return null;
     }
 
     private void authenticate(LoginRequest request) {

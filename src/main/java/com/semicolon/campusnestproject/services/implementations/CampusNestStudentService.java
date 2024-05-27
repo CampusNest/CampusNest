@@ -101,6 +101,11 @@ public class CampusNestStudentService implements StudentService {
     }
 
     @Override
+    public void completeRegistration(CompleteRegistrationRequest request, String email) throws NumberParseException {
+
+    }
+
+    @Override
     public ForgotPasswordResponse forgotPassword(ForgotPasswordRequest request) {
         verifyForgotPasswordDetails(request);
         verifyPassword(request.getPassword());

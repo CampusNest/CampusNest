@@ -12,7 +12,7 @@ public interface ApartmentService {
     List<Apartment> findApartmentBy(String apartmentType);
 
     Apartment saveApartment(PostApartmentRequest request,UploadApartmentImageResponse imageRequest);
-
+    Apartment findById(Long apartmentId);
     void deleteApartment( Long apartmentId);
 
     List<Image> getApartmentImage( Long apartmentId);
