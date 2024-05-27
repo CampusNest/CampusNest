@@ -48,13 +48,10 @@ public class CampusNestStudentService implements StudentService {
     public AuthenticationResponse register(RegisterStudentRequest request) throws NumberParseException {
         verifyStudentDetails(request);
         var user = User .builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .phoneNumber(request.getPhoneNumber())
-                .location(request.getLocation())
-                .email(request.getEmail())
-                .stateOfOrigin(request.getStateOfOrigin())
+                .firstName(request.getFirstName().trim())
+                .lastName(request.getLastName().trim())
+                .password(passwordEncoder.encode(request.getPassword().trim()))
+                .email(request.getEmail().trim())
                 .role(Role.STUDENT)
                 .build();
         userRepository.save(user);
@@ -102,16 +99,25 @@ public class CampusNestStudentService implements StudentService {
 
     @Override
     public void completeRegistration(CompleteRegistrationRequest request, String email) throws NumberParseException {
+        verifyPhoneNumber(request.getPhoneNumber());
+        verifyStateOfOrigin(request.getStateOfOrigin());
+        verifyLocation(request.getLocation());
 
+        User user = userRepository.findByEmail(email).orElseThrow(()->new UserNotFoundException("user not found"));
+
+         user.setPhoneNumber(request.getPhoneNumber().trim());
+         user.setLocation(request.getLocation().trim());
+         user.setStateOfOrigin(request.getStateOfOrigin().trim());
+         userRepository.save(user);
     }
 
     @Override
     public ForgotPasswordResponse forgotPassword(ForgotPasswordRequest request) {
         verifyForgotPasswordDetails(request);
         verifyPassword(request.getPassword());
-        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(()-> new UserNotFoundException("user not found"));
+        User user = userRepository.findByEmail(request.getEmail().trim()).orElseThrow(()-> new UserNotFoundException("user not found"));
 
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setPassword(passwordEncoder.encode(request.getPassword().trim()));
         userRepository.save(user);
 
         ForgotPasswordResponse response = new ForgotPasswordResponse();
@@ -129,7 +135,7 @@ public class CampusNestStudentService implements StudentService {
     private void authenticate(LoginRequest request) {
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+                    new UsernamePasswordAuthenticationToken(request.getEmail().trim(), request.getPassword().trim())
             );
         } catch (BadCredentialsException ex) {
 
@@ -148,11 +154,8 @@ public class CampusNestStudentService implements StudentService {
         if (exist(request.getEmail())) throw new UserExistException("a user with that email already exist, please provide another email");
         verifyFirstName(request.getFirstName());
         verifyLastName(request.getLastName());
-        verifyPhoneNumber(request.getPhoneNumber());
         verifyEmail(request.getEmail());
-        verifyStateOfOrigin(request.getStateOfOrigin());
         verifyPassword(request.getPassword());
-        verifyLocation(request.getLocation());
 
     }
 
