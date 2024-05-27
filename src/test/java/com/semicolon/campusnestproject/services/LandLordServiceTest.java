@@ -208,8 +208,8 @@ public class LandLordServiceTest {
     @Test
     public void deleteApartmentTest() throws IOException {
         DeleteApartmentRequest deleteApartmentRequest = new DeleteApartmentRequest();
-        deleteApartmentRequest.setLandLordId(1L);
-        deleteApartmentRequest.setApartmentId(4L);
+        deleteApartmentRequest.setLandLordId(2L);
+        deleteApartmentRequest.setApartmentId(2L);
         DeleteApartmentResponse response =  landLordService.deleteApartment(deleteApartmentRequest);
         assertThat(response).isNotNull();
     }
