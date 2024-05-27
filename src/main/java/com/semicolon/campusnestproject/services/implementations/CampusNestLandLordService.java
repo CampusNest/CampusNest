@@ -67,7 +67,6 @@ public class CampusNestLandLordService implements LandLordService {
 
     }
 
-
     @Override
     public PostApartmentResponse postApartment(PostApartmentRequest request) throws IOException {
         PostApartmentResponse response = new PostApartmentResponse();
