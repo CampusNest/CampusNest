@@ -51,7 +51,7 @@ public class LandLordServiceTest {
 
     }
 
-    public LoginRequest loginDetails(String email, String password) {
+    public LoginRequest loginDetails(String email,String password){
         LoginRequest request = new LoginRequest();
         request.setEmail(email);
         request.setPassword(password);
@@ -135,6 +135,7 @@ public class LandLordServiceTest {
         landLordService.completeRegistration(request,"landlord@gmail.com");
 
     }
+
     @Test void testThatAUserCannotCompleteRegistrationIfNotRegistered() throws NumberParseException {
         CompleteRegistrationRequest request = completeRegistrationRequest("ikeja","09062346551","Ilorin");
         assertThrows(UserNotFoundException.class,()-> landLordService.completeRegistration(request,"deej@gmail.com"));
