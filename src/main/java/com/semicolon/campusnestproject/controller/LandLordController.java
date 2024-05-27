@@ -1,9 +1,11 @@
 package com.semicolon.campusnestproject.controller;
 
-import com.semicolon.campusnestproject.dtos.requests.DeleteApartmentRequest;
-import com.semicolon.campusnestproject.dtos.requests.PostApartmentRequest;
+import com.semicolon.campusnestproject.dtos.requests.LoginRequest;
+import com.semicolon.campusnestproject.dtos.requests.RegisterLandLordRequest;
+import com.semicolon.campusnestproject.dtos.requests.RegisterStudentRequest;
 import com.semicolon.campusnestproject.dtos.requests.UpdateLandLordApartmentRequest;
 import com.semicolon.campusnestproject.dtos.responses.ApiResponse;
+import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
 import com.semicolon.campusnestproject.dtos.responses.DeleteApartmentResponse;
 import com.semicolon.campusnestproject.dtos.responses.PostApartmentResponse;
 import com.semicolon.campusnestproject.exception.CampusNestException;
@@ -25,6 +27,30 @@ import org.springframework.web.bind.annotation.*;
 public class LandLordController {
 
     LandLordService landLordService;
+
+    @PostMapping("/landlordRegister")
+    public ResponseEntity<?> register(@RequestBody RegisterLandLordRequest request) {
+        try {
+            AuthenticationResponse response = landLordService.register(request);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/landlordLogin")
+    public ResponseEntity<?> studentLogin(@RequestBody LoginRequest request){
+        try {
+            AuthenticationResponse response = landLordService.login(request);
+            return ResponseEntity.ok().body(response);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     @PostMapping("/postApartment")
     public ResponseEntity<?> postApartment(@RequestBody PostApartmentRequest request) {

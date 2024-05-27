@@ -33,8 +33,8 @@ public class StudentController {
         }
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request){
+    @PostMapping("/studentLogin")
+    public ResponseEntity<?> studentLogin(@RequestBody LoginRequest request){
         try {
             AuthenticationResponse response = studentService.login(request);
             return ResponseEntity.ok().body(response);

@@ -151,7 +151,7 @@ public class CampusNestStudentService implements StudentService {
 
 
     private void verifyStudentDetails(RegisterStudentRequest request) throws NumberParseException {
-        if (exist(request.getEmail())) throw new UserExistException("a user with that email already exist, please provide another email");
+        if (exist(request.getEmail())) throw new UserExistException("{\"error\" : \"a user with that email already exist, please provide another email\"}");
         verifyFirstName(request.getFirstName());
         verifyLastName(request.getLastName());
         verifyEmail(request.getEmail());
