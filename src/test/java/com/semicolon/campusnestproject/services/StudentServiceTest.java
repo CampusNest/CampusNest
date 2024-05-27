@@ -3,6 +3,7 @@ package com.semicolon.campusnestproject.services;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.semicolon.campusnestproject.dtos.requests.ForgotPasswordRequest;
+import com.semicolon.campusnestproject.dtos.requests.HouseRentPaymentRequest;
 import com.semicolon.campusnestproject.dtos.requests.LoginRequest;
 import com.semicolon.campusnestproject.dtos.requests.RegisterStudentRequest;
 import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import sendinblue.ApiResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -148,6 +150,7 @@ class StudentServiceTest {
         log.info("{}",response);
         assertThat(response).isNotNull();
     }
+
 
 
 

@@ -5,8 +5,8 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class DeleteApartmentRequest {
+public class InitializeTransactionRequest {
 
-    private Long LandLordId;
-    private Long apartmentId;
+    private String email;
+    private String amount;
 }
