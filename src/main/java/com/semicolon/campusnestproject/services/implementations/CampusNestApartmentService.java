@@ -6,15 +6,13 @@ import com.semicolon.campusnestproject.data.model.Image;
 import com.semicolon.campusnestproject.data.repositories.ApartmentRepository;
 import com.semicolon.campusnestproject.dtos.requests.PostApartmentRequest;
 import com.semicolon.campusnestproject.dtos.responses.UploadApartmentImageResponse;
+import com.semicolon.campusnestproject.exception.UserNotFoundException;
 import com.semicolon.campusnestproject.services.ApartmentService;
 import com.semicolon.campusnestproject.services.ImageService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -46,28 +44,49 @@ public class CampusNestApartmentService implements ApartmentService {
         return apartment;
     }
 
-
-
-
     @Override
-    public void deleteApartment(List<Apartment> apartments, Long apartmentId) {
-        for (Apartment apartment : apartments){
-            if (Objects.equals(apartment.getId(), apartmentId)){
-                apartmentRepository.delete(apartment);
-                break;
-            }
-        }
+    public void deleteApartment( Long apartmentId) {
+        apartmentRepository.deleteById(apartmentId);
     }
 
     @Override
-    public List<Image> getApartmentImage(List<Apartment> apartments, Long apartmentId) {
-        List<Image> images = new ArrayList<>();
-        for (Apartment apartment : apartments){
-            if (Objects.equals(apartment.getId(), apartmentId)){
-                images = apartment.getApartmentImage();
-                break;
-            }
-        }
-        return images;
+    public List<Image> getApartmentImage(Long apartmentId) {
+        Optional<Apartment> apartment = apartmentRepository.findById(apartmentId);
+        return apartment.get().getApartmentImage();
     }
+
+    @Override
+    public Apartment deleteImageFromApartment(Long apartmentId) {
+        Optional<Apartment> apartment = apartmentRepository.findById(apartmentId);
+        List<Image> images = apartment.get().getApartmentImage();
+        Iterator<Image> iterator = images.iterator();
+        while (iterator.hasNext()) {
+            Image image = iterator.next();
+            iterator.remove();
+        }
+        apartmentRepository.save(apartment.get());
+        return apartment.get();
+    }
+
+    @Override
+    public Optional<Apartment> getApartment(Long apartmentId) {
+        return apartmentRepository.findById(apartmentId);
+    }
+
+    @Override
+    public Apartment findApartmentById(Long apartmentId) {
+        return apartmentRepository.findById(apartmentId).get();
+    }
+
+    @Override
+    public Apartment findById(Long apartmentId) {
+        return apartmentRepository.findById(apartmentId)
+                .orElseThrow(() -> new UserNotFoundException(
+                        String.format("landlord with id %d not found", apartmentId)));
+    }
+
+//    @Override
+//    public void save(Apartment apartment) {
+//        apartmentRepository.save(apartment);
+//    }
 }

@@ -23,6 +23,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import sendinblue.ApiResponse;
 
 import java.util.List;
 import java.util.Optional;
@@ -125,6 +126,12 @@ public class CampusNestStudentService implements StudentService {
         return response;
     }
 
+    @Override
+    public User findUserById(Long userId) {
+        return userRepository.findById(userId).get();
+    }
+
+
     private void authenticate(LoginRequest request) {
         try {
             authenticationManager.authenticate(
@@ -152,7 +159,7 @@ public class CampusNestStudentService implements StudentService {
 
     }
 
-    private void welcomeMessage(RegisterStudentRequest request) {
+    private void welcomeMessage(RegisterLandLordRequest request) {
         WelcomeMessageRequest welcomeMessageRequest = new WelcomeMessageRequest();
         welcomeMessageRequest.setFirstName(request.getFirstName());
         welcomeMessageRequest.setLastName(request.getLastName());

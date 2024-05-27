@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 import java.util.List;
 
+import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -24,6 +25,8 @@ public class Apartment {
     private String annualRentFee;
     private String agreementAndCommission;
     private String location;
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, cascade = {PERSIST,DETACH,REMOVE})
     private List<Image> apartmentImage;
 }
+
+

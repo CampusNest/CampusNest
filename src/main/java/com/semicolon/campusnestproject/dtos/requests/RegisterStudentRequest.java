@@ -10,4 +10,7 @@ public class RegisterStudentRequest {
     private String lastName;
     private String email;
     private String password;
+    private String stateOfOrigin;
+    private String phoneNumber;
+    private String location;
 }

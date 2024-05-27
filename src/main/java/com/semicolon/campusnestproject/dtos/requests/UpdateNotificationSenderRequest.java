@@ -5,8 +5,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class DeleteApartmentRequest {
+public class UpdateNotificationSenderRequest {
+    private String firstName;
 
-    private Long LandLordId;
-    private Long apartmentId;
 }
