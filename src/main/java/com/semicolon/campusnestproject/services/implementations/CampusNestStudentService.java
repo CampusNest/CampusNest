@@ -86,7 +86,7 @@ public class CampusNestStudentService implements StudentService {
         authenticate(request);
 
         var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("No account found with such details"));
+                .orElseThrow(() -> new UserNotFoundException("{\"error\" : \"No account found with such details\"}"));
 
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
@@ -142,9 +142,9 @@ public class CampusNestStudentService implements StudentService {
             Optional<User> studentOptional = userRepository.findByEmail(request.getEmail());
 
             if (studentOptional.isPresent()) {
-                throw new InvalidCredentialsException("Invalid password");
+                throw new InvalidCredentialsException("{\"error\" : \"Invalid password\"}");
             } else {
-                throw new InvalidCredentialsException("Invalid email");
+                throw new InvalidCredentialsException("{\"error\" : \"Invalid email\"}");
             }
         }
     }

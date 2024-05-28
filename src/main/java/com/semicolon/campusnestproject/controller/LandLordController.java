@@ -1,10 +1,7 @@
 package com.semicolon.campusnestproject.controller;
 
 import com.semicolon.campusnestproject.dtos.requests.*;
-import com.semicolon.campusnestproject.dtos.responses.ApiResponse;
-import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
-import com.semicolon.campusnestproject.dtos.responses.DeleteApartmentResponse;
-import com.semicolon.campusnestproject.dtos.responses.PostApartmentResponse;
+import com.semicolon.campusnestproject.dtos.responses.*;
 import com.semicolon.campusnestproject.exception.CampusNestException;
 import com.semicolon.campusnestproject.services.LandLordService;
 import lombok.AllArgsConstructor;
@@ -40,7 +37,7 @@ public class LandLordController {
     }
 
     @PostMapping("/landlordLogin")
-    public ResponseEntity<?> studentLogin(@RequestBody LoginRequest request){
+    public ResponseEntity<?> landlordLogin(@RequestBody LoginRequest request){
         try {
             AuthenticationResponse response = landLordService.login(request);
             return ResponseEntity.ok().body(response);
@@ -80,13 +77,25 @@ public class LandLordController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> updateLandLordApartmentDetails(@RequestBody UpdateLandLordApartmentRequest request, @PathVariable Long id){
+    public ResponseEntity<?> updateLandLordApartmentDetails(@RequestBody UpdateLandLordApartmentRequest request,
+                                                            @RequestParam Long landLordId,
+                                                            @PathVariable Long id){
         try{
-            return ResponseEntity.ok(landLordService.updateLandLordApartmentDetails(id, request));
+            return ResponseEntity.ok(landLordService.updateLandLordApartmentDetails(id,landLordId, request));
         }
         catch (Exception exception){
             return ResponseEntity.badRequest().body(new ApiResponse<>(exception.getMessage()));
 
+        }
+    }
+
+    @PostMapping("/landlordPassword")
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request){
+        try {
+            ForgotPasswordResponse response = landLordService.forgotPassword(request);
+            return ResponseEntity.ok().body(response);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
