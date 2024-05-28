@@ -7,6 +7,9 @@ import com.semicolon.campusnestproject.dtos.responses.ApiResponse;
 import com.semicolon.campusnestproject.dtos.responses.DeleteApartmentResponse;
 import com.semicolon.campusnestproject.dtos.responses.PostApartmentResponse;
 import com.semicolon.campusnestproject.exception.CampusNestException;
+import com.semicolon.campusnestproject.dtos.requests.*;
+import com.semicolon.campusnestproject.dtos.responses.*;
+import com.semicolon.campusnestproject.exception.CampusNestException;
 import com.semicolon.campusnestproject.services.LandLordService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +20,42 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.Collections;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.Collections;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1")
+@AllArgsConstructor
 public class LandLordController {
 
     LandLordService landLordService;
+
+    @PostMapping("/landlordRegister")
+    public ResponseEntity<?> register(@RequestBody RegisterLandLordRequest request) {
+        try {
+            AuthenticationResponse response = landLordService.register(request);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/landlordLogin")
+    public ResponseEntity<?> landlordLogin(@RequestBody LoginRequest request){
+        try {
+            AuthenticationResponse response = landLordService.login(request);
+            return ResponseEntity.ok().body(response);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     @PostMapping("/postApartment")
     public ResponseEntity<?> postApartment(@RequestBody PostApartmentRequest request) {
@@ -52,19 +85,29 @@ public class LandLordController {
         }
     }
 
-
-
     @GetMapping("/{id}")
     public ResponseEntity<?> updateLandLordApartmentDetails(@RequestBody UpdateLandLordApartmentRequest request,
+                                                            @RequestParam Long landLordId,
                                                             @PathVariable Long id){
         try{
-            return ResponseEntity.ok(landLordService.updateLandLordApartmentDetails(id, request));
+            return ResponseEntity.ok(landLordService.updateLandLordApartmentDetails(id,landLordId, request));
         }
         catch (Exception exception){
             return ResponseEntity.badRequest().body(new ApiResponse<>(exception.getMessage()));
 
         }
     }
+
+    @PostMapping("/landlordPassword")
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request){
+        try {
+            ForgotPasswordResponse response = landLordService.forgotPassword(request);
+            return ResponseEntity.ok().body(response);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 
 
 }

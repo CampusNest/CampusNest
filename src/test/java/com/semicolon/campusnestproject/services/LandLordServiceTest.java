@@ -135,6 +135,9 @@ public class LandLordServiceTest {
         landLordService.completeRegistration(request,"landlord@gmail.com");
 
     }
+
+
+
     @Test void testThatAUserCannotCompleteRegistrationIfNotRegistered() throws NumberParseException {
         CompleteRegistrationRequest request = completeRegistrationRequest("ikeja","09062346551","Ilorin");
         assertThrows(UserNotFoundException.class,()-> landLordService.completeRegistration(request,"deej@gmail.com"));
@@ -188,16 +191,17 @@ public class LandLordServiceTest {
         assertThat(response).isNotNull();
     }
 
+
+
     @Test
     public void updateLandLordApartmentDetailsTest(){
         UpdateLandLordApartmentRequest request = new UpdateLandLordApartmentRequest();
 //        request.setHouseType("MINIFLAT");
-        request.setLocation("313, Herbert Macaulay , Sabo-Yaba");
+        request.setLocation("313, Herbert Macaulay tyyxxc , Sabo-Yaba");
 
 
         ApiResponse<UpdateLandLordResponse> response =
-                landLordService.updateLandLordApartmentDetails(4L,request);
-
+                landLordService.updateLandLordApartmentDetails(2L,2L,request);
 
         System.out.println(request);
 

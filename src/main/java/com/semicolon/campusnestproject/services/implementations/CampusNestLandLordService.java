@@ -40,6 +40,8 @@ import java.util.Optional;
 import static com.semicolon.campusnestproject.utils.Verification.*;
 import static java.util.Arrays.stream;
 import static com.semicolon.campusnestproject.utils.Verification.verifyPassword;
+import static com.semicolon.campusnestproject.utils.Verification.verifyPassword;
+import static java.util.Arrays.stream;
 import static java.util.Arrays.stream;
 
 @Service
@@ -102,7 +104,7 @@ public class CampusNestLandLordService implements LandLordService {
         authenticate(request);
 
         var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("No account found with such details"));
+                .orElseThrow(() -> new UserNotFoundException("{\"error\" :\"No account found with such details\""));
 
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
@@ -131,7 +133,7 @@ public class CampusNestLandLordService implements LandLordService {
     public ForgotPasswordResponse forgotPassword(ForgotPasswordRequest request) {
         verifyForgotPasswordDetails(request);
         verifyPassword(request.getPassword());
-        User user = userRepository.findByEmail(request.getEmail().trim()).orElseThrow(()-> new UserNotFoundException("user not found"));
+        User user = userRepository.findByEmail(request.getEmail().trim()).orElseThrow(()-> new UserNotFoundException("{\"error\" :\"user not found\"}"));
 
         user.setPassword(passwordEncoder.encode(request.getPassword().trim()));
         userRepository.save(user);
@@ -175,24 +177,29 @@ public class CampusNestLandLordService implements LandLordService {
             Optional<User> studentOptional = userRepository.findByEmail(request.getEmail());
 
             if (studentOptional.isPresent()) {
-                throw new InvalidCredentialsException("Invalid password");
+                throw new InvalidCredentialsException("{\"error\" : \"Invalid password\"}");
             } else {
-                throw new InvalidCredentialsException("Invalid email");
+                throw new InvalidCredentialsException("{\"error\" : \"Invalid email\"}");
             }}}
 
 
 
     @Override
-    public ApiResponse<UpdateLandLordResponse> updateLandLordApartmentDetails(Long apartmentId, UpdateLandLordApartmentRequest request) {
-//        User landLord = userRepository.findById(landLordId).orElseThrow();
+    public ApiResponse<UpdateLandLordResponse> updateLandLordApartmentDetails(Long landLordId, Long apartmentId, UpdateLandLordApartmentRequest request) {
+        User landLord = userRepository.findById(landLordId).orElseThrow();
         Apartment apartment = apartmentService.findById(apartmentId);
-
+        List<Apartment> apartments = landLord.getApartments();
+        for (Apartment apartment1 : apartments) {
+            if (apartment1.getId().equals(apartment.getId())) {
                 List<JsonPatchOperation> jsonPatchOperations = new ArrayList<>();
                 buildPatchOperations(request, jsonPatchOperations);
                 apartment = applyPatch(jsonPatchOperations, apartment);
                 apartmentService.save(apartment);
-//                updateApartmentMailSender(landLord);
+                break;
+            }
 
+        }
+//                updateApartmentMailSender(landLord);
         return new ApiResponse<>(buildUpdateLandLordResponse());
     }
 
@@ -258,7 +265,7 @@ public class CampusNestLandLordService implements LandLordService {
 
 
     private void verifyLandlordDetails(RegisterLandLordRequest request) throws NumberParseException {
-        if (exist(request.getEmail())) throw new UserExistException("a user with that email already exist, please provide another email");
+        if (exist(request.getEmail())) throw new UserExistException("{\"error\" : \"a user with that email already exist, please provide another email\"}");
         verifyFirstName(request.getFirstName());
         verifyLastName(request.getLastName());
         verifyEmail(request.getEmail());
