@@ -13,9 +13,6 @@ public interface LandLordService {
     AuthenticationResponse login(LoginRequest request);
     void completeRegistration(CompleteRegistrationRequest request,String email) throws NumberParseException;
     ForgotPasswordResponse forgotPassword(ForgotPasswordRequest request);
-
-
     DeleteApartmentResponse deleteApartment(DeleteApartmentRequest deleteApartmentRequest) throws IOException;
-
-    ApiResponse<UpdateLandLordResponse> updateLandLordApartmentDetails(Long apartmentId, UpdateLandLordApartmentRequest request);
+    ApiResponse<UpdateLandLordResponse> updateLandLordApartmentDetails(Long landlordId, Long apartmentId, UpdateLandLordApartmentRequest request);
 }

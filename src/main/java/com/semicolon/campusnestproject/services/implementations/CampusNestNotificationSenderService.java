@@ -47,4 +47,6 @@ public class CampusNestNotificationSenderService implements NotificationSenderSe
         notificationSetUp.sendNotification(notificationRequest,subject, htmlContent);
 
     }
+
+
 }

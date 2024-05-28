@@ -68,13 +68,15 @@ public class Verification {
 //        }
 //    }
     public static void verifyLoginDetails(LoginRequest request){
+        if (request.getEmail() == null || request.getEmail().trim().isEmpty()){
+            throw new EmptyDetailsException("{\"error\" : \"email field cannot be empty, kindly provide your email\"}");
+        }
+
         if (request.getPassword() == null || request.getPassword().trim().isEmpty()){
             throw new EmptyDetailsException("{\"error\" : \"password field cannot be empty, kindly provide your password\"}");
         }
 
-        if (request.getEmail() == null || request.getEmail().trim().isEmpty()){
-            throw new EmptyDetailsException("{\"error\" : \"email field cannot be empty, kindly provide your email\"}");
-        }
+
     }
 
     public static void verifyForgotPasswordDetails(ForgotPasswordRequest request){

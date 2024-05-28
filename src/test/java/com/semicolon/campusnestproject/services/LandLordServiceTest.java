@@ -51,7 +51,7 @@ public class LandLordServiceTest {
 
     }
 
-    public LoginRequest loginDetails(String email, String password) {
+    public LoginRequest loginDetails(String email,String password){
         LoginRequest request = new LoginRequest();
         request.setEmail(email);
         request.setPassword(password);
@@ -68,7 +68,7 @@ public class LandLordServiceTest {
     }
 
     @Test void testThatALandlordCanRegister() throws NumberParseException {
-        RegisterLandLordRequest request = landlordDetails("Landlord","Musa","landlord@gmail.com","PassKey@123");
+        RegisterLandLordRequest request = landlordDetails("Landlord","Musa","joy828545@gmail.com","PassKey@123");
         AuthenticationResponse response = landLordService.register(request);
         log.info("{}",response);
         assertThat(response).isNotNull();
@@ -135,6 +135,9 @@ public class LandLordServiceTest {
         landLordService.completeRegistration(request,"landlord@gmail.com");
 
     }
+
+
+
     @Test void testThatAUserCannotCompleteRegistrationIfNotRegistered() throws NumberParseException {
         CompleteRegistrationRequest request = completeRegistrationRequest("ikeja","09062346551","Ilorin");
         assertThrows(UserNotFoundException.class,()-> landLordService.completeRegistration(request,"deej@gmail.com"));
@@ -180,7 +183,7 @@ public class LandLordServiceTest {
         UploadApartmentImageRequest imageRequest = new UploadApartmentImageRequest();
         File file = new File("/home/user/Pictures/mmov.jpg");
         FileInputStream inputStream = new FileInputStream(file);
-        MultipartFile multipartFile = new MockMultipartFile("filename", inputStream);
+        MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
         multipartFiles.add(multipartFile);
         imageRequest.setMultipartFiles(multipartFiles);
         request.setUploadApartmentImageRequest(imageRequest);
@@ -188,16 +191,17 @@ public class LandLordServiceTest {
         assertThat(response).isNotNull();
     }
 
+
+
     @Test
     public void updateLandLordApartmentDetailsTest(){
         UpdateLandLordApartmentRequest request = new UpdateLandLordApartmentRequest();
 //        request.setHouseType("MINIFLAT");
-        request.setLocation("313, Herbert Macaulay , Sabo-Yaba");
+        request.setLocation("313, Herbert Macaulay tyyxxc , Sabo-Yaba");
 
 
         ApiResponse<UpdateLandLordResponse> response =
-                landLordService.updateLandLordApartmentDetails(4L,request);
-
+                landLordService.updateLandLordApartmentDetails(2L,2L,request);
 
         System.out.println(request);
 

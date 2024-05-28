@@ -25,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import sendinblue.ApiResponse;
 
+import java.awt.event.WindowListener;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -55,7 +56,7 @@ public class CampusNestStudentService implements StudentService {
                 .role(Role.STUDENT)
                 .build();
         userRepository.save(user);
-//        welcomeMessage(request);
+        welcomeMessage(request);
 
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
@@ -86,7 +87,7 @@ public class CampusNestStudentService implements StudentService {
         authenticate(request);
 
         var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("No account found with such details"));
+                .orElseThrow(() -> new UserNotFoundException("{\"error\" : \"No account found with such details\"}"));
 
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
@@ -115,7 +116,7 @@ public class CampusNestStudentService implements StudentService {
     public ForgotPasswordResponse forgotPassword(ForgotPasswordRequest request) {
         verifyForgotPasswordDetails(request);
         verifyPassword(request.getPassword());
-        User user = userRepository.findByEmail(request.getEmail().trim()).orElseThrow(()-> new UserNotFoundException("user not found"));
+        User user = userRepository.findByEmail(request.getEmail().trim()).orElseThrow(()-> new UserNotFoundException("\"error\" : \"user not found\""));
 
         user.setPassword(passwordEncoder.encode(request.getPassword().trim()));
         userRepository.save(user);
@@ -142,16 +143,16 @@ public class CampusNestStudentService implements StudentService {
             Optional<User> studentOptional = userRepository.findByEmail(request.getEmail());
 
             if (studentOptional.isPresent()) {
-                throw new InvalidCredentialsException("Invalid password");
+                throw new InvalidCredentialsException("{\"error\" : \"Invalid password\"}");
             } else {
-                throw new InvalidCredentialsException("Invalid email");
+                throw new InvalidCredentialsException("{\"error\" : \"Invalid email\"}");
             }
         }
     }
 
 
     private void verifyStudentDetails(RegisterStudentRequest request) throws NumberParseException {
-        if (exist(request.getEmail())) throw new UserExistException("a user with that email already exist, please provide another email");
+        if (exist(request.getEmail())) throw new UserExistException("{\"error\" : \"a user with that email already exist, please provide another email\"}");
         verifyFirstName(request.getFirstName());
         verifyLastName(request.getLastName());
         verifyEmail(request.getEmail());
@@ -159,7 +160,7 @@ public class CampusNestStudentService implements StudentService {
 
     }
 
-    private void welcomeMessage(RegisterLandLordRequest request) {
+    private void welcomeMessage(RegisterStudentRequest request) {
         WelcomeMessageRequest welcomeMessageRequest = new WelcomeMessageRequest();
         welcomeMessageRequest.setFirstName(request.getFirstName());
         welcomeMessageRequest.setLastName(request.getLastName());
