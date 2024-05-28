@@ -17,7 +17,7 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class CampusNestNotificationSetUp implements NotificationSetUpService {
 
-    @Value("${brevo.api.url}")
+    @Value("${brevo.base.url}")
     private String url;
     @Value("${brevo.api.key}")
     private String apiKey;
