@@ -64,24 +64,23 @@ public class CampusNestLandLordService implements LandLordService {
     public AuthenticationResponse register(RegisterLandLordRequest request) throws NumberParseException {
         verifyLandlordDetails(request);
         var user = User.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .email(request.getEmail())
+                .firstName(request.getFirstName().trim())
+                .lastName(request.getLastName().trim())
+                .password(passwordEncoder.encode(request.getPassword().trim()))
+                .email(request.getEmail().trim())
                 .role(Role.LANDLORD)
                 .build();
         userRepository.save(user);
-        WelcomeMessageRequest request1 = new WelcomeMessageRequest();
-        request1.setFirstName(request.getFirstName());
-        request1.setLastName(request.getLastName());
-        request1.setEmail(request.getEmail());
-        welcomeMessage(request1);
+          welcomeMessage(request);
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
+
         authenticationService.saveUserToken(accessToken, refreshToken, user);
+
         return new AuthenticationResponse(accessToken, refreshToken,"User registration was successful");
 
     }
+
 
     @Override
     public PostApartmentResponse postApartment(PostApartmentRequest request) throws IOException {
@@ -274,7 +273,11 @@ public class CampusNestLandLordService implements LandLordService {
 
     }
 
-    private void welcomeMessage(WelcomeMessageRequest welcomeMessageRequest) {
+    private void welcomeMessage(RegisterLandLordRequest request) {
+        WelcomeMessageRequest welcomeMessageRequest = new WelcomeMessageRequest();
+        welcomeMessageRequest.setFirstName(request.getFirstName());
+        welcomeMessageRequest.setLastName(request.getLastName());
+        welcomeMessageRequest.setEmail(request.getEmail());
         notificationService.welcomeMail(welcomeMessageRequest);
     }
 
