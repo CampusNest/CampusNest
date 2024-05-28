@@ -71,13 +71,14 @@ public class CampusNestLandLordService implements LandLordService {
                 .role(Role.LANDLORD)
                 .build();
         userRepository.save(user);
-//        welcomeMessage(request);
-
+        WelcomeMessageRequest request1 = new WelcomeMessageRequest();
+        request1.setFirstName(request.getFirstName());
+        request1.setLastName(request.getLastName());
+        request1.setEmail(request.getEmail());
+        welcomeMessage(request1);
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
-
         authenticationService.saveUserToken(accessToken, refreshToken, user);
-
         return new AuthenticationResponse(accessToken, refreshToken,"User registration was successful");
 
     }
@@ -199,7 +200,7 @@ public class CampusNestLandLordService implements LandLordService {
             }
 
         }
-//                updateApartmentMailSender(landLord);
+        updateApartmentMailSender(landLord);
         return new ApiResponse<>(buildUpdateLandLordResponse());
     }
 
@@ -273,11 +274,7 @@ public class CampusNestLandLordService implements LandLordService {
 
     }
 
-    private void welcomeMessage(RegisterLandLordRequest request) {
-        WelcomeMessageRequest welcomeMessageRequest = new WelcomeMessageRequest();
-        welcomeMessageRequest.setFirstName(request.getFirstName());
-        welcomeMessageRequest.setLastName(request.getLastName());
-        welcomeMessageRequest.setEmail(request.getEmail());
+    private void welcomeMessage(WelcomeMessageRequest welcomeMessageRequest) {
         notificationService.welcomeMail(welcomeMessageRequest);
     }
 

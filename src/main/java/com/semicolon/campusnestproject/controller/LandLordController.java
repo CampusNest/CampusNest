@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1")
-@AllArgsConstructor
 public class LandLordController {
 
     LandLordService landLordService;
