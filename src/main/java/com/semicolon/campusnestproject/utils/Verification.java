@@ -85,7 +85,7 @@ public class Verification {
         }
 
         if (request.getEmail() == null || request.getEmail().trim().isEmpty()){
-            throw new EmptyDetailsException("{\"error\" : \"email field cannot be empty, kindly provide your email\"");
+            throw new EmptyDetailsException("{\"error\" : \"email field cannot be empty, kindly provide your email\"}");
         }
     }
 

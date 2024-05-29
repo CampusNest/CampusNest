@@ -56,11 +56,7 @@ public class CampusNestStudentService implements StudentService {
                 .role(Role.STUDENT)
                 .build();
         userRepository.save(user);
-        WelcomeMessageRequest request1 = new WelcomeMessageRequest();
-        request1.setFirstName(request.getFirstName());
-        request1.setLastName(request.getLastName());
-        request1.setEmail(request.getEmail());
-        welcomeMessage(request1);
+        welcomeMessage(request);
 
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
@@ -120,7 +116,7 @@ public class CampusNestStudentService implements StudentService {
     public ForgotPasswordResponse forgotPassword(ForgotPasswordRequest request) {
         verifyForgotPasswordDetails(request);
         verifyPassword(request.getPassword());
-        User user = userRepository.findByEmail(request.getEmail().trim()).orElseThrow(()-> new UserNotFoundException("user not found"));
+        User user = userRepository.findByEmail(request.getEmail().trim()).orElseThrow(()-> new UserNotFoundException("\"error\" : \"user not found\""));
 
         user.setPassword(passwordEncoder.encode(request.getPassword().trim()));
         userRepository.save(user);
@@ -134,6 +130,13 @@ public class CampusNestStudentService implements StudentService {
     @Override
     public User findUserById(Long userId) {
         return userRepository.findById(userId).get();
+    }
+
+    @Override
+    public User findUserForJwt(String jwt) {
+        String email = jwtService.getEmailFromJwtToken(jwt);
+
+        return userRepository.findByEmail(email).orElseThrow(()->new UserNotFoundException("{\"error\" : \"email is does not exist\"}"));
     }
 
 
@@ -164,7 +167,11 @@ public class CampusNestStudentService implements StudentService {
 
     }
 
-    private void welcomeMessage( WelcomeMessageRequest welcomeMessageRequest) {
+    private void welcomeMessage(RegisterStudentRequest request) {
+        WelcomeMessageRequest welcomeMessageRequest = new WelcomeMessageRequest();
+        welcomeMessageRequest.setFirstName(request.getFirstName());
+        welcomeMessageRequest.setLastName(request.getLastName());
+        welcomeMessageRequest.setEmail(request.getEmail());
         notificationService.welcomeMail(welcomeMessageRequest);
     }
 

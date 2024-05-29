@@ -2,6 +2,7 @@ package com.semicolon.campusnestproject.services;
 
 
 import com.google.i18n.phonenumbers.NumberParseException;
+import com.semicolon.campusnestproject.data.model.User;
 import com.semicolon.campusnestproject.dtos.requests.CompleteRegistrationRequest;
 import com.semicolon.campusnestproject.dtos.requests.ForgotPasswordRequest;
 import com.semicolon.campusnestproject.dtos.requests.HouseRentPaymentRequest;
@@ -53,6 +54,7 @@ class StudentServiceTest {
         return request;
     }
 
+
     public CompleteRegistrationRequest completeRegistrationRequest(String location,String phoneNumber, String stateOfOrigin){
         CompleteRegistrationRequest request = new CompleteRegistrationRequest();
         request.setLocation(location);
@@ -73,6 +75,14 @@ class StudentServiceTest {
     @Test
     void testThatStudentCanRegister2() throws NumberParseException {
         RegisterStudentRequest request = studentDetails("divine","james","Divinenuella62@gmail.com","Password@123");
+        AuthenticationResponse response = studentService.register(request);
+        log.info("->{}",response);
+        assertThat(response).isNotNull();
+    }
+
+    @Test
+    void testThatStudentCanRegister4() throws NumberParseException {
+        RegisterStudentRequest request = studentDetails("divine","james","Divinemercy601@gmail.com","Password@123");
         AuthenticationResponse response = studentService.register(request);
         log.info("->{}",response);
         assertThat(response).isNotNull();
@@ -122,6 +132,7 @@ class StudentServiceTest {
         assertThat(response).isNotNull();
     }
 
+
     @Test void testThatStudentCannotLoginWithWrongPassword(){
         LoginRequest request = loginDetails("iamoluchimercy@gmail.com","Password");
         assertThrows(InvalidCredentialsException.class, ()->studentService.login(request));
@@ -148,11 +159,22 @@ class StudentServiceTest {
         log.info("{}",response);
         assertThat(response).isNotNull();
     }
+
+
     @Test void testThatStudentCanLoginWithChangedPassword(){
         LoginRequest request = loginDetails("iamoluchimercy6@gmail.com","dee@123");
         AuthenticationResponse response = studentService.login(request);
         log.info("{}",response);
         assertThat(response).isNotNull();
+    }
+
+
+    @Test void testThatStudentRegisteredTokenExist(){
+        User user = studentService.findUserForJwt("eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJpYW1vbHVjaGltZXJjeTZAZ21haWwuY29tIiwiaWF0IjoxNzE2OTkxNjczLCJleHAiOjE3MTcwNzgwNzN9._GLSJiOyNJjLYIEVkIIh1QsJDjWat_ZeK7TdgMlyWnJyOyJW-8v3iiXyIoPGaYXt");
+        System.out.println(user.getFirstName());
+        System.out.println(user.getId());
+        System.out.println(user.getEmail());
+
     }
 
     @Test void testThatAUserCanCompleteRegistrationAfterRegistering() throws NumberParseException {
