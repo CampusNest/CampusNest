@@ -4,6 +4,7 @@ package com.semicolon.campusnestproject.services;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.semicolon.campusnestproject.data.model.Apartment;
 import com.semicolon.campusnestproject.data.model.ApartmentType;
+import com.semicolon.campusnestproject.data.model.User;
 import com.semicolon.campusnestproject.dtos.UpdateLandLordResponse;
 import com.semicolon.campusnestproject.dtos.requests.*;
 import com.semicolon.campusnestproject.dtos.responses.ApiResponse;
@@ -58,6 +59,8 @@ public class LandLordServiceTest {
         return request;
     }
 
+
+
     public CompleteRegistrationRequest completeRegistrationRequest(String location,String phoneNumber, String stateOfOrigin){
         CompleteRegistrationRequest request = new CompleteRegistrationRequest();
         request.setLocation(location);
@@ -109,6 +112,14 @@ public class LandLordServiceTest {
         log.info("{}",response);
         assertThat(response).isNotNull();
     }
+
+    @Test void testThatLandlordRegisteredTokenExist(){
+        User user = landLordService.findUserForJwt("eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJsYW5kbG9yZEBnbWFpbC5jb20iLCJpYXQiOjE3MTY5OTA4NDAsImV4cCI6MTcxNzA3NzI0MH0.CztRD7rLVda5rT2Yjq_cJ4cOvIMMtSxvZxot_tLJx8u6IxoNQ5gz-potbHXvCLNt");
+        System.out.println(user.getFirstName());
+        System.out.println(user.getId());
+
+    }
+
 
     @Test void testThatLandlordCannotLoginWithWrongEmail(){
         LoginRequest request = loginDetails("land@gmail.com","PassKey@123");
@@ -218,4 +229,6 @@ public class LandLordServiceTest {
         DeleteApartmentResponse response =  landLordService.deleteApartment(deleteApartmentRequest);
         assertThat(response).isNotNull();
     }
+
+
 }

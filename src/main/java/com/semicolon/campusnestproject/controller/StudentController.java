@@ -1,5 +1,6 @@
 package com.semicolon.campusnestproject.controller;
 
+import com.semicolon.campusnestproject.data.model.User;
 import com.semicolon.campusnestproject.dtos.requests.ForgotPasswordRequest;
 import com.semicolon.campusnestproject.dtos.requests.LoginRequest;
 import com.semicolon.campusnestproject.dtos.requests.RegisterStudentRequest;
@@ -11,6 +12,7 @@ import com.semicolon.campusnestproject.exception.CampusNestException;
 import com.semicolon.campusnestproject.services.implementations.CampusNestStudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -66,5 +68,12 @@ public class StudentController {
         }catch (CampusNestException exception){
             return ResponseEntity.badRequest().body(exception.getMessage());
         }
+    }
+
+    @GetMapping("/studentProfile")
+    public ResponseEntity<User> findUserByJwtToken(@RequestHeader("Authorization") String jwt){
+        User user = studentService.findUserForJwt(jwt);
+        return new ResponseEntity<>(user, HttpStatus.OK);
+
     }
 }

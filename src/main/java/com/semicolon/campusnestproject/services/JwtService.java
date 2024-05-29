@@ -106,4 +106,14 @@ public class JwtService {
         byte[] keyBytes = Decoders.BASE64URL.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
+
+    public String getEmailFromJwtToken(String jwt) {
+
+        if (jwt.startsWith("Bearer ")) {
+            jwt = jwt.substring(7);
+        }
+        Claims claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(jwt).getBody();
+        return String.valueOf(claims.get("sub"));
+    }
 }

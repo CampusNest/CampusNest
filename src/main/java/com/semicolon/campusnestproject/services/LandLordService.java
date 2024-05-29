@@ -1,6 +1,7 @@
 package com.semicolon.campusnestproject.services;
 
 import com.google.i18n.phonenumbers.NumberParseException;
+import com.semicolon.campusnestproject.data.model.User;
 import com.semicolon.campusnestproject.dtos.UpdateLandLordResponse;
 import com.semicolon.campusnestproject.dtos.requests.*;
 import com.semicolon.campusnestproject.dtos.responses.*;
@@ -15,4 +16,6 @@ public interface LandLordService {
     ForgotPasswordResponse forgotPassword(ForgotPasswordRequest request);
     DeleteApartmentResponse deleteApartment(DeleteApartmentRequest deleteApartmentRequest) throws IOException;
     ApiResponse<UpdateLandLordResponse> updateLandLordApartmentDetails(Long landlordId, Long apartmentId, UpdateLandLordApartmentRequest request);
+
+    User findUserForJwt(String jwt);
 }

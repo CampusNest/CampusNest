@@ -104,7 +104,7 @@ public class CampusNestLandLordService implements LandLordService {
         authenticate(request);
 
         var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("{\"error\" :\"No account found with such details\""));
+                .orElseThrow(() -> new UserNotFoundException("{\"error\" :\"No account found with such details\"}"));
 
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
@@ -121,7 +121,7 @@ public class CampusNestLandLordService implements LandLordService {
         verifyStateOfOrigin(request.getStateOfOrigin());
         verifyLocation(request.getLocation());
 
-        User user = userRepository.findByEmail(email).orElseThrow(()->new UserNotFoundException("user not found"));
+        User user = userRepository.findByEmail(email).orElseThrow(()->new UserNotFoundException("{\"error\" : \"user not found\"}"));
 
         user.setPhoneNumber(request.getPhoneNumber());
         user.setLocation(request.getLocation());
@@ -201,6 +201,13 @@ public class CampusNestLandLordService implements LandLordService {
         }
         updateApartmentMailSender(landLord);
         return new ApiResponse<>(buildUpdateLandLordResponse());
+    }
+
+    @Override
+    public User findUserForJwt(String jwt) {
+        String email = jwtService.getEmailFromJwtToken(jwt);
+
+        return userRepository.findByEmail(email).orElseThrow(()->new UserNotFoundException("{\"error\" : \"email is does not exist\"}"));
     }
 
     private void updateApartmentMailSender(User landLord) {

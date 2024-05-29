@@ -132,6 +132,13 @@ public class CampusNestStudentService implements StudentService {
         return userRepository.findById(userId).get();
     }
 
+    @Override
+    public User findUserForJwt(String jwt) {
+        String email = jwtService.getEmailFromJwtToken(jwt);
+
+        return userRepository.findByEmail(email).orElseThrow(()->new UserNotFoundException("{\"error\" : \"email is does not exist\"}"));
+    }
+
 
     private void authenticate(LoginRequest request) {
         try {

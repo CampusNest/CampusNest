@@ -1,5 +1,6 @@
 package com.semicolon.campusnestproject.controller;
 
+import com.semicolon.campusnestproject.data.model.User;
 import com.semicolon.campusnestproject.dtos.requests.DeleteApartmentRequest;
 import com.semicolon.campusnestproject.dtos.requests.PostApartmentRequest;
 import com.semicolon.campusnestproject.dtos.requests.UpdateLandLordApartmentRequest;
@@ -11,8 +12,11 @@ import com.semicolon.campusnestproject.dtos.requests.*;
 import com.semicolon.campusnestproject.dtos.responses.*;
 import com.semicolon.campusnestproject.exception.CampusNestException;
 import com.semicolon.campusnestproject.services.LandLordService;
+import com.semicolon.campusnestproject.services.implementations.CampusNestLandLordService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,17 +24,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.Collections;
-import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
-import java.util.Collections;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1")
-public class LandLordController {
 
-    LandLordService landLordService;
+public class LandLordController {
+@Autowired
+    private LandLordService landLordService;
 
     @PostMapping("/landlordRegister")
     public ResponseEntity<?> register(@RequestBody RegisterLandLordRequest request) {
@@ -47,7 +47,7 @@ public class LandLordController {
     }
 
     @PostMapping("/landlordLogin")
-    public ResponseEntity<?> landlordLogin(@RequestBody LoginRequest request){
+    public ResponseEntity<?> studentLogin(@RequestBody LoginRequest request){
         try {
             AuthenticationResponse response = landLordService.login(request);
             return ResponseEntity.ok().body(response);
@@ -55,7 +55,6 @@ public class LandLordController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
     @PostMapping("/postApartment")
     public ResponseEntity<?> postApartment(@RequestBody PostApartmentRequest request) {
         try {
@@ -105,6 +104,12 @@ public class LandLordController {
         }catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+    @GetMapping("/landlordProfile")
+    public ResponseEntity<User> findUserByJwtToken(@RequestHeader("Authorization") String jwt){
+        User user = landLordService.findUserForJwt(jwt);
+        return new ResponseEntity<>(user, HttpStatus.OK);
+
     }
 
 
