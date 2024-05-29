@@ -30,7 +30,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1")
 public class LandLordController {
 
-    LandLordService landLordService;
+   @Autowired
+   private LandLordService landLordService;
 
     @PostMapping("/landlordRegister")
     public ResponseEntity<?> register(@RequestBody RegisterLandLordRequest request) {

@@ -25,7 +25,6 @@ import java.math.BigDecimal;
 @Service
 public class CampusNestPaymentService implements PaymentService {
 
-
     private final PayStackConfig payStackConfig;
     private final ApartmentService apartmentService;
     private final StudentService studentService;
@@ -40,9 +39,9 @@ public class CampusNestPaymentService implements PaymentService {
                         restTemplate.postForEntity(payStackConfig.getPayStackBaseUrl(),transactionRequest,
                                 PaystackTransactionResponse.class);
         System.out.println(response.getBody().getPaystackTransactionDetails().getAuthorizationUrl());
-        if (response.getBody().isStatus()){
+//        if (response.getBody().isStatus()){
 //            InitializeTransferRequest transferRequest = new InitializeTransferRequest();
-        }
+//        }
         return new ApiResponse<>(response.getBody());
     }
 
