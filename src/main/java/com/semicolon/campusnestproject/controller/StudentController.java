@@ -70,21 +70,20 @@ public class StudentController {
         }
     }
 
-    @GetMapping("/studentProfile")
-    public ResponseEntity<User> findUserByJwtToken(@RequestHeader("Authorization") String jwt){
-        User user = studentService.findUserForJwt(jwt);
+//    @GetMapping("/studentProfile")
+//    public ResponseEntity<User> findUserByJwtToken(@RequestHeader("Authorization") String jwt){
+//        User user = studentService.findUserForJwt(jwt);
+//        return new ResponseEntity<>(user, HttpStatus.OK);
+//
+//    }
+
+    @GetMapping("/studentProfile/{id}")
+    public ResponseEntity<User> findUserByJwtToken(@PathVariable Long id){
+        User user = studentService.findUserBy(id);
         return new ResponseEntity<>(user, HttpStatus.OK);
 
     }
 
-    @PostMapping("/payForRent")
-    public ResponseEntity<?> payForRent(@RequestBody HouseRentPaymentRequest request){
-        try{
-            return ResponseEntity.ok(paymentService.makePaymentForApartment(request));
-        }catch(CampusNestException exception){
-            return ResponseEntity.badRequest().body(exception.getMessage());
-        }
-    }
 }
 
 

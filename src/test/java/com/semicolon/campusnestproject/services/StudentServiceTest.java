@@ -28,6 +28,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class StudentServiceTest {
     @Autowired
     private StudentService studentService;
+    @Autowired
+    private ApartmentService apartmentService;
 
     public RegisterStudentRequest studentDetails(String firstName, String lastName, String email,
                                                  String password){
@@ -198,7 +200,6 @@ class StudentServiceTest {
         assertThrows(EmptyDetailsException.class,()->studentService.completeRegistration(request,"iamoluchimercy6@gmail.com"));
     }
 //    @Test void studentCanUpdateDetailsTest
-
 
 
 }

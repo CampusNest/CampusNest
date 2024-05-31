@@ -3,7 +3,9 @@ package com.semicolon.campusnestproject.services.implementations;
 import com.semicolon.campusnestproject.data.model.Apartment;
 import com.semicolon.campusnestproject.data.model.ApartmentType;
 import com.semicolon.campusnestproject.data.model.Image;
+import com.semicolon.campusnestproject.data.model.User;
 import com.semicolon.campusnestproject.data.repositories.ApartmentRepository;
+import com.semicolon.campusnestproject.data.repositories.UserRepository;
 import com.semicolon.campusnestproject.dtos.requests.PostApartmentRequest;
 import com.semicolon.campusnestproject.dtos.responses.UploadApartmentImageResponse;
 import com.semicolon.campusnestproject.exception.UserNotFoundException;
@@ -20,6 +22,7 @@ public class CampusNestApartmentService implements ApartmentService {
 
     private final ApartmentRepository apartmentRepository;
     private final ImageService imageService;
+    private final UserRepository userRepository;
 
     @Override
     public List<Apartment> findApartmentBy(String apartmentType) {
@@ -79,6 +82,18 @@ public class CampusNestApartmentService implements ApartmentService {
     }
 
     @Override
+    public List<Apartment> findApartmentByUser(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(()->new UserNotFoundException("{\"error\" : \"user not found\"}"));
+
+        return user.getApartments();
+    }
+
+    @Override
+    public List<Apartment> allApartment() {
+        return apartmentRepository.findAll();
+    }
+
+    @Override
     public Apartment findById(Long apartmentId) {
         return apartmentRepository.findById(apartmentId)
                 .orElseThrow(() -> new UserNotFoundException(
@@ -89,6 +104,7 @@ public class CampusNestApartmentService implements ApartmentService {
     public void save(Apartment apartment) {
         apartmentRepository.save(apartment);
     }
+
 
 
 

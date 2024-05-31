@@ -29,8 +29,8 @@ import java.util.Collections;
 @RequestMapping("/api/v1")
 
 public class LandLordController {
-   @Autowired
-   private LandLordService landLordService;
+@Autowired
+    private LandLordService landLordService;
 
     @PostMapping("/landlordRegister")
     public ResponseEntity<?> register(@RequestBody RegisterLandLordRequest request) {
@@ -55,7 +55,6 @@ public class LandLordController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
     @PostMapping("/postApartment")
     public ResponseEntity<?> postApartment(@RequestBody PostApartmentRequest request) {
         try {
@@ -106,9 +105,10 @@ public class LandLordController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    @GetMapping("/landlordProfile")
-    public ResponseEntity<User> findUserByJwtToken(@RequestHeader("Authorization") String jwt){
-        User user = landLordService.findUserForJwt(jwt);
+
+    @GetMapping("/landlordProfile/{id}")
+    public ResponseEntity<User> findUserByJwtToken(@PathVariable Long id){
+        User user = landLordService.findUserById(id);
         return new ResponseEntity<>(user, HttpStatus.OK);
 
     }

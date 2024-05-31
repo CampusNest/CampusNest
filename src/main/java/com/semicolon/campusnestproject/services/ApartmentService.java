@@ -18,4 +18,8 @@ public interface ApartmentService {
     Apartment deleteImageFromApartment(Long apartmentId);
     Optional<Apartment> getApartment(Long apartmentId);
     Apartment findApartmentById(Long apartmentId);
+
+    List<Apartment> findApartmentByUser(Long userId);
+
+    List<Apartment> allApartment();
 }

@@ -20,4 +20,6 @@ public interface StudentService {
 
     User findUserById(Long userId);
     User findUserForJwt(String jwt);
+
+    User findUserBy(Long id);
 }

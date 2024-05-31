@@ -18,7 +18,7 @@ public class PaymentServiceTest {
     @Test
     void testHouseRentPayment(){
         HouseRentPaymentRequest request = new HouseRentPaymentRequest();
-        request.setApartmentId(3L);
+        request.setApartmentId(2L);
         request.setUserId(3L);
         ApiResponse<?> response = paymentService.makePaymentForApartment(request);
         log.info("res-->{}", response);
