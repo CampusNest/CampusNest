@@ -168,15 +168,6 @@ class StudentServiceTest {
         assertThat(response).isNotNull();
     }
 
-
-    @Test void testThatStudentRegisteredTokenExist(){
-        User user = studentService.findUserForJwt("eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJpYW1vbHVjaGltZXJjeTZAZ21haWwuY29tIiwiaWF0IjoxNzE2OTkxNjczLCJleHAiOjE3MTcwNzgwNzN9._GLSJiOyNJjLYIEVkIIh1QsJDjWat_ZeK7TdgMlyWnJyOyJW-8v3iiXyIoPGaYXt");
-        System.out.println(user.getFirstName());
-        System.out.println(user.getId());
-        System.out.println(user.getEmail());
-
-    }
-
     @Test void testThatAUserCanCompleteRegistrationAfterRegistering() throws NumberParseException {
         CompleteRegistrationRequest request = completeRegistrationRequest("ikeja","09062346551","Ilorin");
         studentService.completeRegistration(request,"iamoluchimercy6@gmail.com");

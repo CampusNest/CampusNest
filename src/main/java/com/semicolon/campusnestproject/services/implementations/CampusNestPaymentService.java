@@ -50,7 +50,8 @@ public class CampusNestPaymentService implements PaymentService {
         transactionRequest.setEmail(founduser.getEmail());
         BigDecimal amount = BigDecimal.valueOf(Double.parseDouble(foundApartment.getAnnualRentFee())).add(
                 BigDecimal.valueOf(Double.parseDouble(foundApartment.getAgreementAndCommission())));
-        transactionRequest.setAmount(String.valueOf(amount.multiply(BigDecimal.valueOf(100))));
+        transactionRequest.setAmount(String.valueOf(amount.multiply(BigDecimal.valueOf(100)).
+                add(BigDecimal.valueOf(5000).multiply(BigDecimal.valueOf(100)))));
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set(HttpHeaders.AUTHORIZATION,"Bearer "+payStackConfig.getPayStackApiKey());

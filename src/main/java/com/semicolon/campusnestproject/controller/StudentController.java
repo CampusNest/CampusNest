@@ -1,14 +1,12 @@
 package com.semicolon.campusnestproject.controller;
 
 import com.semicolon.campusnestproject.data.model.User;
-import com.semicolon.campusnestproject.dtos.requests.ForgotPasswordRequest;
-import com.semicolon.campusnestproject.dtos.requests.LoginRequest;
-import com.semicolon.campusnestproject.dtos.requests.RegisterStudentRequest;
-import com.semicolon.campusnestproject.dtos.requests.SearchApartmentRequest;
+import com.semicolon.campusnestproject.dtos.requests.*;
 import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
 import com.semicolon.campusnestproject.dtos.responses.ForgotPasswordResponse;
 import com.semicolon.campusnestproject.dtos.responses.SearchApartmentResponse;
 import com.semicolon.campusnestproject.exception.CampusNestException;
+import com.semicolon.campusnestproject.services.PaymentService;
 import com.semicolon.campusnestproject.services.implementations.CampusNestStudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +23,8 @@ import java.util.Collections;
 public class StudentController {
     @Autowired
     private CampusNestStudentService studentService;
+    @Autowired
+    private PaymentService paymentService;
 
     @PostMapping("/studentRegister")
     public ResponseEntity<?> register(@RequestBody RegisterStudentRequest request) {
@@ -75,6 +75,15 @@ public class StudentController {
         User user = studentService.findUserForJwt(jwt);
         return new ResponseEntity<>(user, HttpStatus.OK);
 
+    }
+
+    @PostMapping("/payForRent")
+    public ResponseEntity<?> payForRent(@RequestBody HouseRentPaymentRequest request){
+        try{
+            return ResponseEntity.ok(paymentService.makePaymentForApartment(request));
+        }catch(CampusNestException exception){
+            return ResponseEntity.badRequest().body(exception.getMessage());
+        }
     }
 }
 
