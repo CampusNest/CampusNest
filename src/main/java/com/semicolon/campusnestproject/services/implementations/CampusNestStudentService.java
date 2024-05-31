@@ -8,6 +8,7 @@ import com.semicolon.campusnestproject.data.model.User;
 import com.semicolon.campusnestproject.data.repositories.UserRepository;
 import com.semicolon.campusnestproject.dtos.requests.*;
 import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
+import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse2;
 import com.semicolon.campusnestproject.dtos.responses.ForgotPasswordResponse;
 import com.semicolon.campusnestproject.dtos.responses.SearchApartmentResponse;
 import com.semicolon.campusnestproject.exception.BudgetMustOnlyContainNumbersException;
@@ -58,12 +59,11 @@ public class CampusNestStudentService implements StudentService {
         userRepository.save(user);
         welcomeMessage(request);
 
-        String accessToken = jwtService.generateAccessToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
 
-        authenticationService.saveUserToken(accessToken, refreshToken, user);
+        AuthenticationResponse response = new AuthenticationResponse();
+        response.setId(user.getId());
 
-        return new AuthenticationResponse(accessToken, refreshToken,"User registration was successful");
+        return response;
 
 
     }
@@ -84,17 +84,21 @@ public class CampusNestStudentService implements StudentService {
     @Override
     public AuthenticationResponse login(LoginRequest request) {
         verifyLoginDetails(request);
-        authenticate(request);
+        System.out.println(request.getEmail());
+        System.out.println(request.getPassword());
 
-        var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("{\"error\" : \"No account found with such details\"}"));
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UserNotFoundException("No account found with such details"));
 
-        String accessToken = jwtService.generateAccessToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new InvalidCredentialsException("Password is not valid");
+        }
+        userRepository.save(user);
 
-        authenticationService.saveUserToken(accessToken, refreshToken, user);
+        AuthenticationResponse response = new AuthenticationResponse();
+        response.setId(user.getId());
 
-        return new AuthenticationResponse(accessToken, refreshToken,"User registration was successful");
+        return response;
 
     }
 
@@ -116,7 +120,7 @@ public class CampusNestStudentService implements StudentService {
     public ForgotPasswordResponse forgotPassword(ForgotPasswordRequest request) {
         verifyForgotPasswordDetails(request);
         verifyPassword(request.getPassword());
-        User user = userRepository.findByEmail(request.getEmail().trim()).orElseThrow(()-> new UserNotFoundException("\"error\" : \"user not found\""));
+        User user = userRepository.findByEmail(request.getEmail().trim()).orElseThrow(()-> new UserNotFoundException("user not found"));
 
         user.setPassword(passwordEncoder.encode(request.getPassword().trim()));
         userRepository.save(user);
@@ -136,7 +140,12 @@ public class CampusNestStudentService implements StudentService {
     public User findUserForJwt(String jwt) {
         String email = jwtService.getEmailFromJwtToken(jwt);
 
-        return userRepository.findByEmail(email).orElseThrow(()->new UserNotFoundException("{\"error\" : \"email is does not exist\"}"));
+        return userRepository.findByEmail(email).orElseThrow(()->new UserNotFoundException("email is does not exist"));
+    }
+
+    @Override
+    public User findUserBy(Long id) {
+        return userRepository.findById(id).orElseThrow(()->new UserNotFoundException("user does not exist"));
     }
 
 
@@ -150,16 +159,16 @@ public class CampusNestStudentService implements StudentService {
             Optional<User> studentOptional = userRepository.findByEmail(request.getEmail());
 
             if (studentOptional.isPresent()) {
-                throw new InvalidCredentialsException("{\"error\" : \"Invalid password\"}");
+                throw new InvalidCredentialsException("Invalid password");
             } else {
-                throw new InvalidCredentialsException("{\"error\" : \"Invalid email\"}");
+                throw new InvalidCredentialsException("Invalid email");
             }
         }
     }
 
 
     private void verifyStudentDetails(RegisterStudentRequest request) throws NumberParseException {
-        if (exist(request.getEmail())) throw new UserExistException("{\"error\" : \"a user with that email already exist, please provide another email\"}");
+        if (exist(request.getEmail())) throw new UserExistException("a user with that email already exist, please provide another email");
         verifyFirstName(request.getFirstName());
         verifyLastName(request.getLastName());
         verifyEmail(request.getEmail());

@@ -30,7 +30,7 @@ import java.util.Collections;
 
 public class LandLordController {
 @Autowired
-    private LandLordService landLordService;
+    private CampusNestLandLordService landLordService;
 
     @PostMapping("/landlordRegister")
     public ResponseEntity<?> register(@RequestBody RegisterLandLordRequest request) {
@@ -47,7 +47,7 @@ public class LandLordController {
     }
 
     @PostMapping("/landlordLogin")
-    public ResponseEntity<?> studentLogin(@RequestBody LoginRequest request){
+    public ResponseEntity<?> landlordLogin(@RequestBody LoginRequest request){
         try {
             AuthenticationResponse response = landLordService.login(request);
             return ResponseEntity.ok().body(response);
@@ -105,12 +105,14 @@ public class LandLordController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    @GetMapping("/landlordProfile")
-    public ResponseEntity<User> findUserByJwtToken(@RequestHeader("Authorization") String jwt){
-        User user = landLordService.findUserForJwt(jwt);
+
+    @GetMapping("/landlordProfile/{id}")
+    public ResponseEntity<User> findUserByJwtToken(@PathVariable Long id){
+        User user = landLordService.findUserById(id);
         return new ResponseEntity<>(user, HttpStatus.OK);
 
     }
+
 
 
 

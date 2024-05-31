@@ -18,4 +18,6 @@ public interface LandLordService {
     ApiResponse<UpdateLandLordResponse> updateLandLordApartmentDetails(Long landlordId, Long apartmentId, UpdateLandLordApartmentRequest request);
 
     User findUserForJwt(String jwt);
+
+    User findUserById(Long id);
 }

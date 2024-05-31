@@ -5,6 +5,7 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.semicolon.campusnestproject.data.model.Apartment;
 import com.semicolon.campusnestproject.data.model.ApartmentType;
 import com.semicolon.campusnestproject.data.model.User;
+import com.semicolon.campusnestproject.data.repositories.UserRepository;
 import com.semicolon.campusnestproject.dtos.UpdateLandLordResponse;
 import com.semicolon.campusnestproject.dtos.requests.*;
 import com.semicolon.campusnestproject.dtos.responses.ApiResponse;
@@ -38,6 +39,8 @@ public class LandLordServiceTest {
 
     @Autowired
     private ApartmentService apartmentService;
+    @Autowired
+    private UserRepository userRepository;
 
 
     public RegisterLandLordRequest landlordDetails(String firstName, String lastName, String email,
@@ -77,7 +80,13 @@ public class LandLordServiceTest {
         assertThat(response).isNotNull();
 
     }
+    @Test void testThatALandlordCanRegister2() throws NumberParseException {
+        RegisterLandLordRequest request = landlordDetails("Landlord","Musa","landlord@gmail.com","PassKey@123");
+        AuthenticationResponse response = landLordService.register(request);
+        log.info("{}",response);
+        assertThat(response).isNotNull();
 
+    }
     @Test void testThatLandlordCannotRegisterWithSameEmail(){
      RegisterLandLordRequest request = landlordDetails("Landlord","Musa","landlord@gmail.com","PassKey@123");
 
@@ -202,6 +211,76 @@ public class LandLordServiceTest {
         assertThat(response).isNotNull();
     }
 
+    @Test
+    public void postApartmentTest2() throws IOException {
+        List<MultipartFile> multipartFiles = new ArrayList<>();
+        PostApartmentRequest request = new PostApartmentRequest();
+        request.setLandLordId(1L);
+        request.setDescription("MIni");
+        request.setLocation("Yaba");
+        request.setApartmentType(ApartmentType.valueOf("MINIFLAT"));
+        request.setAnnualRentFee("150000");
+        request.setAgreementAndCommission("10000");
+        UploadApartmentImageRequest imageRequest = new UploadApartmentImageRequest();
+        File file = new File("/home/user/Pictures/blackgirl.jpg");
+        FileInputStream inputStream = new FileInputStream(file);
+        MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
+        multipartFiles.add(multipartFile);
+        imageRequest.setMultipartFiles(multipartFiles);
+        request.setUploadApartmentImageRequest(imageRequest);
+        PostApartmentResponse response = landLordService.postApartment(request);
+        assertThat(response).isNotNull();
+    }
+
+    @Test
+    public void postApartmentTest3() throws IOException {
+        List<MultipartFile> multipartFiles = new ArrayList<>();
+        PostApartmentRequest request = new PostApartmentRequest();
+        request.setLandLordId(6L);
+        request.setDescription("Studio");
+        request.setLocation("Yaba");
+        request.setApartmentType(ApartmentType.valueOf("MINIFLAT"));
+        request.setAnnualRentFee("150000");
+        request.setAgreementAndCommission("10000");
+        UploadApartmentImageRequest imageRequest = new UploadApartmentImageRequest();
+        File file = new File("/home/user/Pictures/blackgirl.jpg");
+        FileInputStream inputStream = new FileInputStream(file);
+        MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
+        multipartFiles.add(multipartFile);
+        imageRequest.setMultipartFiles(multipartFiles);
+        request.setUploadApartmentImageRequest(imageRequest);
+        PostApartmentResponse response = landLordService.postApartment(request);
+        assertThat(response).isNotNull();
+    }
+
+    @Test
+    public void postApartmentTest4() throws IOException {
+        List<MultipartFile> multipartFiles = new ArrayList<>();
+        PostApartmentRequest request = new PostApartmentRequest();
+        request.setLandLordId(6L);
+        request.setDescription("Studio");
+        request.setLocation("Yaba");
+        request.setApartmentType(ApartmentType.valueOf("MINIFLAT"));
+        request.setAnnualRentFee("150000");
+        request.setAgreementAndCommission("10000");
+        UploadApartmentImageRequest imageRequest = new UploadApartmentImageRequest();
+        File file = new File("/home/user/Videos/hamb.jpg");
+        FileInputStream inputStream = new FileInputStream(file);
+        MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
+        multipartFiles.add(multipartFile);
+        imageRequest.setMultipartFiles(multipartFiles);
+        request.setUploadApartmentImageRequest(imageRequest);
+        PostApartmentResponse response = landLordService.postApartment(request);
+        assertThat(response).isNotNull();
+    }
+  @Test
+  public void findApartment(){
+
+      System.out.println(apartmentService.allApartment());
+
+
+
+  }
 
 
     @Test

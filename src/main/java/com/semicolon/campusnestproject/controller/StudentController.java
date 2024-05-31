@@ -70,9 +70,16 @@ public class StudentController {
         }
     }
 
-    @GetMapping("/studentProfile")
-    public ResponseEntity<User> findUserByJwtToken(@RequestHeader("Authorization") String jwt){
-        User user = studentService.findUserForJwt(jwt);
+//    @GetMapping("/studentProfile")
+//    public ResponseEntity<User> findUserByJwtToken(@RequestHeader("Authorization") String jwt){
+//        User user = studentService.findUserForJwt(jwt);
+//        return new ResponseEntity<>(user, HttpStatus.OK);
+//
+//    }
+
+    @GetMapping("/studentProfile/{id}")
+    public ResponseEntity<User> findUserByJwtToken(@PathVariable Long id){
+        User user = studentService.findUserBy(id);
         return new ResponseEntity<>(user, HttpStatus.OK);
 
     }

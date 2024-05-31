@@ -18,6 +18,7 @@ import com.semicolon.campusnestproject.dtos.UpdateLandLordResponse;
 import com.semicolon.campusnestproject.dtos.requests.*;
 import com.semicolon.campusnestproject.dtos.responses.*;
 import com.semicolon.campusnestproject.exception.InvalidCredentialsException;
+import com.semicolon.campusnestproject.exception.InvalidDetailsException;
 import com.semicolon.campusnestproject.exception.UserExistException;
 import com.semicolon.campusnestproject.exception.UserNotFoundException;
 import com.semicolon.campusnestproject.services.*;
@@ -72,12 +73,15 @@ public class CampusNestLandLordService implements LandLordService {
                 .build();
         userRepository.save(user);
           welcomeMessage(request);
-        String accessToken = jwtService.generateAccessToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
+//        String accessToken = jwtService.generateAccessToken(user);
+//        String refreshToken = jwtService.generateRefreshToken(user);
+//
+//        authenticationService.saveUserToken(accessToken, refreshToken, user);
 
-        authenticationService.saveUserToken(accessToken, refreshToken, user);
-
-        return new AuthenticationResponse(accessToken, refreshToken,"User registration was successful");
+//        return new AuthenticationResponse(accessToken, refreshToken,"User registration was successful");
+        AuthenticationResponse authenticationResponse = new AuthenticationResponse();
+        authenticationResponse.setId(user.getId());
+        return authenticationResponse;
 
     }
 
@@ -101,19 +105,37 @@ public class CampusNestLandLordService implements LandLordService {
     @Override
     public AuthenticationResponse login(LoginRequest request) {
         verifyLoginDetails(request);
-        authenticate(request);
 
-        var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("{\"error\" :\"No account found with such details\"}"));
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UserNotFoundException("No account found with such details"));
 
-        String accessToken = jwtService.generateAccessToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new InvalidCredentialsException("Password is not valid");
+        }
+        userRepository.save(user);
 
-        authenticationService.revokeAllTokenByUser(user);
-       authenticationService.saveUserToken(accessToken, refreshToken, user);
+        AuthenticationResponse response = new AuthenticationResponse();
+        response.setId(user.getId());
 
-        return new AuthenticationResponse(accessToken, refreshToken, "User login was successful");
+        return response;
     }
+
+//    @Override
+//    public AuthenticationResponse login(LoginRequest request) {
+//        verifyLoginDetails(request);
+//        authenticate(request);
+//
+//        var user = userRepository.findByEmail(request.getEmail())
+//                .orElseThrow(() -> new UserNotFoundException("{\"error\" :\"No account found with such details\"}"));
+//
+//        String accessToken = jwtService.generateAccessToken(user);
+//        String refreshToken = jwtService.generateRefreshToken(user);
+//
+//        authenticationService.revokeAllTokenByUser(user);
+//       authenticationService.saveUserToken(accessToken, refreshToken, user);
+//
+//        return new AuthenticationResponse(accessToken, refreshToken, "User login was successful");
+//    }
 
     @Override
     public void completeRegistration(CompleteRegistrationRequest request, String email) throws NumberParseException {
@@ -121,7 +143,7 @@ public class CampusNestLandLordService implements LandLordService {
         verifyStateOfOrigin(request.getStateOfOrigin());
         verifyLocation(request.getLocation());
 
-        User user = userRepository.findByEmail(email).orElseThrow(()->new UserNotFoundException("{\"error\" : \"user not found\"}"));
+        User user = userRepository.findByEmail(email).orElseThrow(()->new UserNotFoundException("user not found"));
 
         user.setPhoneNumber(request.getPhoneNumber());
         user.setLocation(request.getLocation());
@@ -133,7 +155,7 @@ public class CampusNestLandLordService implements LandLordService {
     public ForgotPasswordResponse forgotPassword(ForgotPasswordRequest request) {
         verifyForgotPasswordDetails(request);
         verifyPassword(request.getPassword());
-        User user = userRepository.findByEmail(request.getEmail().trim()).orElseThrow(()-> new UserNotFoundException("{\"error\" :\"user not found\"}"));
+        User user = userRepository.findByEmail(request.getEmail().trim()).orElseThrow(()-> new UserNotFoundException("user not found"));
 
         user.setPassword(passwordEncoder.encode(request.getPassword().trim()));
         userRepository.save(user);
@@ -207,7 +229,12 @@ public class CampusNestLandLordService implements LandLordService {
     public User findUserForJwt(String jwt) {
         String email = jwtService.getEmailFromJwtToken(jwt);
 
-        return userRepository.findByEmail(email).orElseThrow(()->new UserNotFoundException("{\"error\" : \"email is does not exist\"}"));
+        return userRepository.findByEmail(email).orElseThrow(()->new UserNotFoundException("email is does not exist"));
+    }
+
+    @Override
+    public User findUserById(Long id) {
+        return userRepository.findById(id).orElseThrow(()->new UserNotFoundException("user does not exist"));
     }
 
     private void updateApartmentMailSender(User landLord) {
@@ -272,7 +299,7 @@ public class CampusNestLandLordService implements LandLordService {
 
 
     private void verifyLandlordDetails(RegisterLandLordRequest request) throws NumberParseException {
-        if (exist(request.getEmail())) throw new UserExistException("{\"error\" : \"a user with that email already exist, please provide another email\"}");
+        if (exist(request.getEmail())) throw new UserExistException("a user with that email already exist, please provide another email");
         verifyFirstName(request.getFirstName());
         verifyLastName(request.getLastName());
         verifyEmail(request.getEmail());
@@ -292,4 +319,6 @@ public class CampusNestLandLordService implements LandLordService {
         Optional<User> student = userRepository.findByEmail(email);
         return student.isPresent();
     }
+
+
 }

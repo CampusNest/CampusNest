@@ -18,6 +18,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class User implements UserDetails{
     @Id
     @GeneratedValue(strategy = IDENTITY)
