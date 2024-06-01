@@ -38,11 +38,11 @@ public class CampusNestPaymentService implements PaymentService {
         ResponseEntity<PaystackTransactionResponse> response =
                         restTemplate.postForEntity(payStackConfig.getPayStackBaseUrl(),transactionRequest,
                                 PaystackTransactionResponse.class);
-        System.out.println(response.getBody().getPaystackTransactionDetails().getAuthorizationUrl());
+//        System.out.println(response.getBody().getPaystackTransactionDetails().getAuthorizationUrl());
 //        if (response.getBody().isStatus()){
 //            InitializeTransferRequest transferRequest = new InitializeTransferRequest();
 //        }
-        return new ApiResponse<>(response.getBody());
+        return new ApiResponse<>(response.getBody().getPaystackTransactionDetails().getAuthorizationUrl());
     }
 
     private HttpEntity<InitializeTransactionRequest> buildPayment(Apartment foundApartment,User founduser) {

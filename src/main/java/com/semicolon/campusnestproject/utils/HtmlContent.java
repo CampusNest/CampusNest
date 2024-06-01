@@ -2,7 +2,9 @@ package com.semicolon.campusnestproject.utils;
 
 public class HtmlContent {
 
+
     public static String welcomeMessageContent(String name) {
+        String url = String.valueOf((HtmlContent.class.getResource("/utils/asset/Campus nest logo.png")));
         return String.format(
                 "<!DOCTYPE html>\n" +
                         "<html lang=\"en\">\n" +
@@ -14,7 +16,7 @@ public class HtmlContent {
                         "<body>\n" +
                         "<div>\n" +
                         "    <div class=\"logo\" style=\"margin-left: 10%%;\">\n" +
-                        "        <img src=\"image/Campus nest logo.png\"  alt=\"\" width=\"400\" />\n" +
+                        "        <img src=\"" + url + "\" alt=\"Campus Nest Logo\" width=\"400\" />\n" +
                         "        <div class=\"heading-container\">\n" +
                         "            <span class=\"heading-1\" style=\"color: #2c3e50; font-size: 50px;\" ><strong>Welcome to </strong></span>\n" +
                         "            <span class=\"heading-2\" style=\"color: #E8734E; font-size: 50px;\"><strong>[Campus </strong> </span>\n" +

@@ -23,8 +23,6 @@ import java.util.Collections;
 public class StudentController {
     @Autowired
     private CampusNestStudentService studentService;
-    @Autowired
-    private PaymentService paymentService;
 
     @PostMapping("/studentRegister")
     public ResponseEntity<?> register(@RequestBody RegisterStudentRequest request) {
