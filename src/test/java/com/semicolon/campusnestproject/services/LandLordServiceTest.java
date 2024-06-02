@@ -85,8 +85,13 @@ public class LandLordServiceTest {
         AuthenticationResponse response = landLordService.register(request);
         log.info("{}",response);
         assertThat(response).isNotNull();
-
     }
+
+    @Test void testThatALandlordCanRegister4() throws NumberParseException {
+        RegisterLandLordRequest request = landlordDetails("Landlord","Musa","chima11christopher@gmail.com","PassKey@123");
+        AuthenticationResponse response = landLordService.register(request);
+        log.info("{}",response);
+        assertThat(response).isNotNull();}
     @Test void testThatLandlordCannotRegisterWithSameEmail(){
      RegisterLandLordRequest request = landlordDetails("Landlord","Musa","joy8238545@gmail.com","PassKey@123");
 
