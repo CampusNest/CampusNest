@@ -186,7 +186,6 @@ public class LandLordServiceTest {
         assertThrows(InvalidDetailsException.class,()->landLordService.completeRegistration(request,"landlordgmail.com"));
     }
 
-
     @Test
     public void postApartmentTest() throws IOException {
         List<MultipartFile> multipartFiles = new ArrayList<>();
@@ -195,10 +194,51 @@ public class LandLordServiceTest {
         request.setDescription("Fine House");
         request.setLocation("Yaba");
         request.setApartmentType(ApartmentType.valueOf("MINIFLAT"));
-        request.setAnnualRentFee("150000");
+        request.setAnnualRentFee("250000");
         request.setAgreementAndCommission("10000");
         UploadApartmentImageRequest imageRequest = new UploadApartmentImageRequest();
-        File file = new File("C:\\Users\\USER\\Downloads\\applicationImage-removebg-preview.png");
+        File file = new File("/home/user/Pictures/house1.jpeg");
+        FileInputStream inputStream = new FileInputStream(file);
+        MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
+        multipartFiles.add(multipartFile);
+        imageRequest.setMultipartFiles(multipartFiles);
+        request.setUploadApartmentImageRequest(imageRequest);
+        PostApartmentResponse response = landLordService.postApartment(request);
+        assertThat(response).isNotNull();
+    }
+
+    @Test
+    public void postApartmentTest8() throws IOException {
+        List<MultipartFile> multipartFiles = new ArrayList<>();
+        PostApartmentRequest request = new PostApartmentRequest();
+        request.setLandLordId(2L);
+        request.setDescription("Duplex");
+        request.setLocation("Pako");
+        request.setApartmentType(ApartmentType.valueOf("MINIFLAT"));
+        request.setAnnualRentFee("450000");
+        request.setAgreementAndCommission("15000");
+        UploadApartmentImageRequest imageRequest = new UploadApartmentImageRequest();
+        File file = new File("/home/user/Pictures/house2.jpeg");
+        FileInputStream inputStream = new FileInputStream(file);
+        MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
+        multipartFiles.add(multipartFile);
+        imageRequest.setMultipartFiles(multipartFiles);
+        request.setUploadApartmentImageRequest(imageRequest);
+        PostApartmentResponse response = landLordService.postApartment(request);
+        assertThat(response).isNotNull();
+    }
+    @Test
+    public void postApartmentTest7() throws IOException {
+        List<MultipartFile> multipartFiles = new ArrayList<>();
+        PostApartmentRequest request = new PostApartmentRequest();
+        request.setLandLordId(1L);
+        request.setDescription("House");
+        request.setLocation("Yaba");
+        request.setApartmentType(ApartmentType.valueOf("MINIFLAT"));
+        request.setAnnualRentFee("140000");
+        request.setAgreementAndCommission("10000");
+        UploadApartmentImageRequest imageRequest = new UploadApartmentImageRequest();
+        File file = new File("/home/user/Pictures/blackgirl.jpg");
         FileInputStream inputStream = new FileInputStream(file);
         MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
         multipartFiles.add(multipartFile);
@@ -219,7 +259,7 @@ public class LandLordServiceTest {
         request.setAnnualRentFee("150000");
         request.setAgreementAndCommission("10000");
         UploadApartmentImageRequest imageRequest = new UploadApartmentImageRequest();
-        File file = new File("C:\\Users\\USER\\Downloads\\applicationImage-removebg-preview.png");
+        File file = new File("/home/user/Pictures/blackgirl.jpg");
         FileInputStream inputStream = new FileInputStream(file);
         MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
         multipartFiles.add(multipartFile);
@@ -240,7 +280,7 @@ public class LandLordServiceTest {
         request.setAnnualRentFee("250000");
         request.setAgreementAndCommission("5000");
         UploadApartmentImageRequest imageRequest = new UploadApartmentImageRequest();
-        File file = new File("C:\\Users\\USER\\Downloads\\Untitled.jpeg");
+        File file = new File("/home/user/Pictures/blackgirl.jpg");
         FileInputStream inputStream = new FileInputStream(file);
         MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
         multipartFiles.add(multipartFile);
@@ -283,7 +323,7 @@ public class LandLordServiceTest {
         request.setAnnualRentFee("150000");
         request.setAgreementAndCommission("10000");
         UploadApartmentImageRequest imageRequest = new UploadApartmentImageRequest();
-        File file = new File("C:\\Users\\USER\\Downloads\\Untitled.jpeg");
+        File file = new File("/home/user/Pictures/blackgirl.jpg");
         FileInputStream inputStream = new FileInputStream(file);
         MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
         multipartFiles.add(multipartFile);
@@ -292,6 +332,8 @@ public class LandLordServiceTest {
         PostApartmentResponse response = landLordService.postApartment(request);
         assertThat(response).isNotNull();
     }
+
+
   @Test
   public void findApartment(){
 

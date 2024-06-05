@@ -1,6 +1,7 @@
 package com.semicolon.campusnestproject.controller;
 
 import com.semicolon.campusnestproject.dtos.requests.HouseRentPaymentRequest;
+import com.semicolon.campusnestproject.dtos.responses.ApiResponse;
 import com.semicolon.campusnestproject.exception.CampusNestException;
 import com.semicolon.campusnestproject.services.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class PaymentController {
         try{
             return ResponseEntity.ok(paymentService.makePaymentForApartment(request));
         }catch(CampusNestException exception){
-            return ResponseEntity.badRequest().body(exception.getMessage());
+            return ResponseEntity.badRequest().body(new ApiResponse<>(exception.getMessage()));
         }
     }
 }

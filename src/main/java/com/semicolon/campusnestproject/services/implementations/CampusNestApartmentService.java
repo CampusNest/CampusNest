@@ -14,6 +14,7 @@ import com.semicolon.campusnestproject.services.ImageService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -92,6 +93,20 @@ public class CampusNestApartmentService implements ApartmentService {
     public List<Apartment> allApartment() {
         return apartmentRepository.findAll();
     }
+
+//    @Override
+//    public List<Apartment> allApartment() {
+//        List<Apartment> apartments = apartmentRepository.findAll();
+//
+//        for (Apartment apartment : apartments){
+//           BigDecimal money =  new BigDecimal(apartment.getAnnualRentFee()).add(BigDecimal.valueOf(7000));
+//           apartment.setAnnualRentFee(money.toString());
+//            apartmentRepository.save(apartment);
+//        }
+//
+//        return apartmentRepository.findAll();
+//
+//    }
 
     @Override
     public Apartment findById(Long apartmentId) {

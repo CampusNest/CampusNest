@@ -91,7 +91,7 @@ public class LandLordController {
             return ResponseEntity.ok(landLordService.updateLandLordApartmentDetails(id,landLordId, request));
         }
         catch (Exception exception){
-            return ResponseEntity.badRequest().body(new ApiResponse<>(exception.getMessage()));
+            return ResponseEntity.badRequest().body(exception.getMessage());
 
         }
     }

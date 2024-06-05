@@ -2,15 +2,13 @@ package com.semicolon.campusnestproject.dtos.responses;
 
 import lombok.*;
 
+@RequiredArgsConstructor
 @AllArgsConstructor
-@Getter
 @Setter
+@Getter
 @ToString
-@NoArgsConstructor
+public class Response<T> {
+    private String data;
+    private String ref;
 
-
-public class ApiResponse<T> {
-    public T data;
-
-//    public Object reference;
 }
