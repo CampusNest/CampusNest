@@ -6,10 +6,10 @@ import com.semicolon.campusnestproject.exception.CampusNestException;
 import com.semicolon.campusnestproject.services.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 @RestController
@@ -25,6 +25,23 @@ public class PaymentController {
             return ResponseEntity.ok(paymentService.makePaymentForApartment(request));
         }catch(CampusNestException exception){
             return ResponseEntity.badRequest().body(new ApiResponse<>(exception.getMessage()));
+        }
+    }
+
+    @GetMapping("verifyPayment/{ref}")
+    public ResponseEntity<?> verifyPayment(@PathVariable String ref){
+        try {
+            ApiResponse<?> res = paymentService.verifyPayment(ref);
+            String status = null;
+            String responseString = res.getData().toString();
+            Pattern pattern = Pattern.compile("status=(\\w+)");
+            Matcher matcher = pattern.matcher(responseString);
+            if (matcher.find()) {
+                status = matcher.group(1);
+            }
+            return ResponseEntity.ok().body(status);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }
