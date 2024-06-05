@@ -45,7 +45,7 @@ public class CampusNestPaymentService implements PaymentService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + payStackConfig.getPayStackApiKey());
         String url = "https://api.paystack.co/transaction/verify/"+ reference;
-        System.out.println(url);
+
         RestTemplate restTemplate = new RestTemplate();
         HttpEntity<String> entity = new HttpEntity<>(headers);
         return restTemplate.exchange(url, HttpMethod.GET, entity, ApiResponse.class).getBody();
