@@ -2,13 +2,9 @@ package com.semicolon.campusnestproject.services;
 
 
 import com.google.i18n.phonenumbers.NumberParseException;
-import com.semicolon.campusnestproject.data.model.Apartment;
 import com.semicolon.campusnestproject.data.model.ApartmentType;
-import com.semicolon.campusnestproject.data.model.User;
 import com.semicolon.campusnestproject.data.repositories.UserRepository;
-import com.semicolon.campusnestproject.dtos.UpdateLandLordResponse;
 import com.semicolon.campusnestproject.dtos.requests.*;
-import com.semicolon.campusnestproject.dtos.responses.ApiResponse;
 import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
 import com.semicolon.campusnestproject.dtos.responses.DeleteApartmentResponse;
 import com.semicolon.campusnestproject.dtos.responses.PostApartmentResponse;
@@ -211,7 +207,7 @@ public class LandLordServiceTest {
     public void postApartmentTest8() throws IOException {
         List<MultipartFile> multipartFiles = new ArrayList<>();
         PostApartmentRequest request = new PostApartmentRequest();
-        request.setLandLordId(2L);
+        request.setLandLordId(1L);
         request.setDescription("Duplex");
         request.setLocation("Pako");
         request.setApartmentType(ApartmentType.valueOf("MINIFLAT"));
@@ -238,7 +234,7 @@ public class LandLordServiceTest {
         request.setAnnualRentFee("140000");
         request.setAgreementAndCommission("10000");
         UploadApartmentImageRequest imageRequest = new UploadApartmentImageRequest();
-        File file = new File("/home/user/Pictures/blackgirl.jpg");
+        File file = new File("/home/user/Pictures/house3.jpeg");
         FileInputStream inputStream = new FileInputStream(file);
         MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
         multipartFiles.add(multipartFile);
@@ -259,7 +255,7 @@ public class LandLordServiceTest {
         request.setAnnualRentFee("150000");
         request.setAgreementAndCommission("10000");
         UploadApartmentImageRequest imageRequest = new UploadApartmentImageRequest();
-        File file = new File("/home/user/Pictures/blackgirl.jpg");
+        File file = new File("/home/user/Pictures/house4.jpeg");
         FileInputStream inputStream = new FileInputStream(file);
         MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
         multipartFiles.add(multipartFile);
@@ -339,7 +335,7 @@ public class LandLordServiceTest {
 
       System.out.println(apartmentService.allApartment());
 
-
+      System.out.println(apartmentService.getLandLord(1L));
 
   }
 
@@ -364,8 +360,8 @@ public class LandLordServiceTest {
     @Test
     public void deleteApartmentTest() throws IOException {
         DeleteApartmentRequest deleteApartmentRequest = new DeleteApartmentRequest();
-        deleteApartmentRequest.setLandLordId(1L);
-        deleteApartmentRequest.setApartmentId(2L);
+        deleteApartmentRequest.setLandLordId(2L);
+        deleteApartmentRequest.setApartmentId(3L);
         DeleteApartmentResponse response =  landLordService.deleteApartment(deleteApartmentRequest);
         assertThat(response).isNotNull();
     }

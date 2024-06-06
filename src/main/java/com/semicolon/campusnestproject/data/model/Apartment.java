@@ -29,6 +29,7 @@ public class Apartment {
     private String location;
     @OneToMany(fetch = FetchType.EAGER, cascade = {PERSIST,DETACH,REMOVE})
     private List<Image> apartmentImage;
+
 }
 
 

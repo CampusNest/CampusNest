@@ -7,6 +7,6 @@ import lombok.Setter;
 @Getter
 public class DeleteApartmentRequest {
 
-    private Long LandLordId;
+    private Long landLordId;
     private Long apartmentId;
 }

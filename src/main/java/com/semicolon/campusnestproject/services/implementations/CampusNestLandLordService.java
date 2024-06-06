@@ -17,8 +17,8 @@ import com.semicolon.campusnestproject.data.repositories.UserRepository;
 import com.semicolon.campusnestproject.dtos.UpdateLandLordResponse;
 import com.semicolon.campusnestproject.dtos.requests.*;
 import com.semicolon.campusnestproject.dtos.responses.*;
+import com.semicolon.campusnestproject.exception.CampusNestException;
 import com.semicolon.campusnestproject.exception.InvalidCredentialsException;
-import com.semicolon.campusnestproject.exception.InvalidDetailsException;
 import com.semicolon.campusnestproject.exception.UserExistException;
 import com.semicolon.campusnestproject.exception.UserNotFoundException;
 import com.semicolon.campusnestproject.services.*;
@@ -37,12 +37,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.semicolon.campusnestproject.utils.Verification.*;
 import static java.util.Arrays.stream;
 import static com.semicolon.campusnestproject.utils.Verification.verifyPassword;
-import static com.semicolon.campusnestproject.utils.Verification.verifyPassword;
-import static java.util.Arrays.stream;
 import static java.util.Arrays.stream;
 
 @Service
@@ -169,25 +168,33 @@ public class CampusNestLandLordService implements LandLordService {
     @Override
     public DeleteApartmentResponse deleteApartment(DeleteApartmentRequest deleteApartmentRequest) throws IOException {
         DeleteApartmentResponse response = new DeleteApartmentResponse();
+
         Optional<User> landLord = userRepository.findById(deleteApartmentRequest.getLandLordId());
         if (landLord.isEmpty()) {
             throw new UserNotFoundException("User doesn't exist");
         }
+
         List<Image> images = apartmentService.getApartmentImage(deleteApartmentRequest.getApartmentId());
-        Optional<Apartment> apartment = apartmentService.getApartment(deleteApartmentRequest.getApartmentId());
-        Apartment newApartment = apartmentService.deleteImageFromApartment(apartment.get().getId());
+        Apartment apartment = apartmentService.getApartment(deleteApartmentRequest.getApartmentId())
+                .orElseThrow(() -> new CampusNestException("apartment not found"));
+
+
         List<Apartment> updatedApartments = landLord.get().getApartments().stream()
-                .filter(apartment2 -> apartment2.equals(newApartment))
-                .toList();
-        landLord.get().getApartments().clear();
-        landLord.get().getApartments().addAll(updatedApartments);
+                .filter(apartment2 -> !apartment2.equals(apartment))
+                .collect(Collectors.toList());
+
+        landLord.get().setApartments(updatedApartments);
+
         userRepository.save(landLord.get());
+
         imageService.deleteImage(images);
         apartmentService.deleteApartment(deleteApartmentRequest.getApartmentId());
         cloudinaryService.deleteImage(images);
+
         response.setMessage("Deleted");
         return response;
     }
+
 
     private void authenticate(LoginRequest request) {
         try {

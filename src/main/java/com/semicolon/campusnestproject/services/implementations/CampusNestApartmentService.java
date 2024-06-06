@@ -14,7 +14,6 @@ import com.semicolon.campusnestproject.services.ImageService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -92,6 +91,35 @@ public class CampusNestApartmentService implements ApartmentService {
     @Override
     public List<Apartment> allApartment() {
         return apartmentRepository.findAll();
+    }
+
+    @Override
+    public Long getLandLord(Long apartmentId) {
+       Long  user = findLandLordApartment(apartmentId);
+
+       if (user == null){
+           throw new UserNotFoundException("user not found");
+       }
+
+       return user;
+    }
+
+
+
+    public Long findLandLordApartment(Long apartmentId){
+        List<User> users = userRepository.findAll();
+
+
+        for (User user : users){
+            for (Apartment apartment : user.getApartments()){
+                if (apartment.getId() == apartmentId){
+                    return user.getId();
+                }
+
+            }
+        }
+
+        return null;
     }
 
 //    @Override

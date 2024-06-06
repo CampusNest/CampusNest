@@ -69,17 +69,15 @@ public class LandLordController {
         }
     }
 
-    @PostMapping("/deleteApartment")
+    @DeleteMapping("/deleteApartment")
     public ResponseEntity<?> deleteApartment(@RequestBody DeleteApartmentRequest request){
         try {
             DeleteApartmentResponse response = landLordService.deleteApartment(request);
             return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_JSON)
                     .body(response);
-        }catch (CampusNestException | IOException exception){
-            return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(Collections.singletonMap("error",exception.getMessage()));
+        }catch (Exception exception){
+            return ResponseEntity.badRequest()
+                    .body(exception.getMessage());
         }
     }
 
@@ -112,6 +110,8 @@ public class LandLordController {
         return new ResponseEntity<>(user, HttpStatus.OK);
 
     }
+
+
 
 
 

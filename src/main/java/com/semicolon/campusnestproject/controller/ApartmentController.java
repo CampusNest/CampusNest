@@ -2,6 +2,8 @@ package com.semicolon.campusnestproject.controller;
 
 import com.semicolon.campusnestproject.data.model.Apartment;
 import com.semicolon.campusnestproject.data.model.User;
+import com.semicolon.campusnestproject.dtos.requests.DeleteApartmentRequest;
+import com.semicolon.campusnestproject.dtos.responses.DeleteApartmentResponse;
 import com.semicolon.campusnestproject.services.implementations.CampusNestApartmentService;
 import com.semicolon.campusnestproject.services.implementations.CampusNestStudentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,5 +41,17 @@ public class ApartmentController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("/getLandLord/{id}")
+    public ResponseEntity<?> getLandLord(@PathVariable Long id){
+        try {
+            Long user = apartmentService.getLandLord(id);
+            return ResponseEntity.ok().body(user);
+        }catch (Exception exception){
+            return ResponseEntity.badRequest().body(exception.getMessage());
+        }
+    }
+
+
 
 }

@@ -2,7 +2,9 @@ package com.semicolon.campusnestproject.services;
 
 import com.semicolon.campusnestproject.data.model.Apartment;
 import com.semicolon.campusnestproject.data.model.Image;
+import com.semicolon.campusnestproject.dtos.requests.DeleteApartmentRequest;
 import com.semicolon.campusnestproject.dtos.requests.PostApartmentRequest;
+import com.semicolon.campusnestproject.dtos.responses.DeleteApartmentResponse;
 import com.semicolon.campusnestproject.dtos.responses.UploadApartmentImageResponse;
 
 import java.util.List;
@@ -22,4 +24,8 @@ public interface ApartmentService {
     List<Apartment> findApartmentByUser(Long userId);
 
     List<Apartment> allApartment();
+
+    Long getLandLord(Long apartmentId);
+
+
 }
