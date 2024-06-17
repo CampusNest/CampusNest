@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-import static jakarta.persistence.CascadeType.REMOVE;
+import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -34,6 +34,9 @@ public class User implements UserDetails{
     private Role role;
     @OneToMany(fetch = FetchType.EAGER , cascade = REMOVE)
     private List<Apartment> apartments;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = ALL)
+    private List<Apartment2> apartment2s;
 
 
     @Override

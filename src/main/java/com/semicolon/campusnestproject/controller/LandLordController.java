@@ -1,5 +1,6 @@
 package com.semicolon.campusnestproject.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.semicolon.campusnestproject.data.model.User;
 import com.semicolon.campusnestproject.dtos.requests.DeleteApartmentRequest;
 import com.semicolon.campusnestproject.dtos.requests.PostApartmentRequest;
@@ -21,9 +22,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -55,24 +61,32 @@ public class LandLordController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+
     @PostMapping("/postApartment")
-    public ResponseEntity<?> postApartment(@RequestBody PostApartmentRequest request) {
+    public ResponseEntity<?> postApartment(
+            @RequestPart(value = "image", required = false) MultipartFile multipartFile,
+            @ModelAttribute CreatePostRequest request
+    ) {
         try {
-            PostApartmentResponse response = landLordService.postApartment(request);
+            CreatePostResponse response = landLordService.post(request,multipartFile);
+            System.out.println("res " + response);
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(response);
-        } catch (CampusNestException | IOException e){
+        } catch (CampusNestException | IOException e) {
             return ResponseEntity.badRequest()
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(Collections.singletonMap("error", e.getMessage()));
+                    .body(e.getMessage());
         }
     }
 
-    @DeleteMapping("/deleteApartment")
-    public ResponseEntity<?> deleteApartment(@RequestBody DeleteApartmentRequest request){
+
+
+
+    @DeleteMapping("/deleteApartment/{apartmentId}")
+    public ResponseEntity<?> deleteApartment(@PathVariable Long apartmentId){
         try {
-            DeleteApartmentResponse response = landLordService.deleteApartment(request);
+            DeleteApartmentResponse2 response = landLordService.deleteApartment2(apartmentId);
             return ResponseEntity.ok()
                     .body(response);
         }catch (Exception exception){

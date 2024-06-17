@@ -1,7 +1,9 @@
 package com.semicolon.campusnestproject.services;
 
 import com.semicolon.campusnestproject.data.model.Apartment;
+import com.semicolon.campusnestproject.data.model.Apartment2;
 import com.semicolon.campusnestproject.data.model.Image;
+import com.semicolon.campusnestproject.data.model.Image2;
 import com.semicolon.campusnestproject.dtos.requests.DeleteApartmentRequest;
 import com.semicolon.campusnestproject.dtos.requests.PostApartmentRequest;
 import com.semicolon.campusnestproject.dtos.responses.DeleteApartmentResponse;
@@ -16,12 +18,18 @@ public interface ApartmentService {
     void save(Apartment apartment);
     Apartment findById(Long apartmentId);
     void deleteApartment( Long apartmentId);
-    List<Image> getApartmentImage( Long apartmentId);
+//    List<Image> getApartmentImage(Long apartmentId);
+
+    String getApartmentImage(Long apartmentId);
     Apartment deleteImageFromApartment(Long apartmentId);
-    Optional<Apartment> getApartment(Long apartmentId);
+//    Optional<Apartment> getApartment(Long apartmentId);
+
+    Optional<Apartment2> getApartment(Long apartmentId);
     Apartment findApartmentById(Long apartmentId);
 
     List<Apartment> findApartmentByUser(Long userId);
+
+    List<Apartment2> findApartmentUser(Long userId);
 
     List<Apartment> allApartment();
 

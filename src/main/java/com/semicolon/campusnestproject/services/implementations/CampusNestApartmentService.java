@@ -1,13 +1,12 @@
 package com.semicolon.campusnestproject.services.implementations;
 
-import com.semicolon.campusnestproject.data.model.Apartment;
-import com.semicolon.campusnestproject.data.model.ApartmentType;
-import com.semicolon.campusnestproject.data.model.Image;
-import com.semicolon.campusnestproject.data.model.User;
+import com.semicolon.campusnestproject.data.model.*;
 import com.semicolon.campusnestproject.data.repositories.ApartmentRepository;
+import com.semicolon.campusnestproject.data.repositories.ApartmentRepository2;
 import com.semicolon.campusnestproject.data.repositories.UserRepository;
 import com.semicolon.campusnestproject.dtos.requests.PostApartmentRequest;
 import com.semicolon.campusnestproject.dtos.responses.UploadApartmentImageResponse;
+import com.semicolon.campusnestproject.exception.CampusNestException;
 import com.semicolon.campusnestproject.exception.UserNotFoundException;
 import com.semicolon.campusnestproject.services.ApartmentService;
 import com.semicolon.campusnestproject.services.ImageService;
@@ -21,6 +20,7 @@ import java.util.*;
 public class CampusNestApartmentService implements ApartmentService {
 
     private final ApartmentRepository apartmentRepository;
+    private final ApartmentRepository2 apartmentRepository2;
     private final ImageService imageService;
     private final UserRepository userRepository;
 
@@ -52,11 +52,21 @@ public class CampusNestApartmentService implements ApartmentService {
         apartmentRepository.deleteById(apartmentId);
     }
 
-    @Override
-    public List<Image> getApartmentImage(Long apartmentId) {
-        Optional<Apartment> apartment = apartmentRepository.findById(apartmentId);
-        return apartment.get().getApartmentImage();
+//    @Override
+//    public List<Image> getApartmentImage(Long apartmentId) {
+//        Optional<Apartment> apartment = apartmentRepository.findById(apartmentId);
+//        return apartment.get().getApartmentImage();
+//    }
+@Override
+public String getApartmentImage(Long apartmentId) {
+    Optional<Apartment2> apartment = apartmentRepository2.findById(apartmentId);
+
+    if (apartment.isEmpty()){
+        throw new CampusNestException("apartment image not found");
     }
+    return apartment.get().getImage();
+}
+
 
     @Override
     public Apartment deleteImageFromApartment(Long apartmentId) {
@@ -72,8 +82,8 @@ public class CampusNestApartmentService implements ApartmentService {
     }
 
     @Override
-    public Optional<Apartment> getApartment(Long apartmentId) {
-        return apartmentRepository.findById(apartmentId);
+    public Optional<Apartment2> getApartment(Long apartmentId) {
+        return apartmentRepository2.findById(apartmentId);
     }
 
     @Override
@@ -87,6 +97,14 @@ public class CampusNestApartmentService implements ApartmentService {
 
         return user.getApartments();
     }
+
+    @Override
+    public List<Apartment2> findApartmentUser(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(()->new UserNotFoundException("{\"error\" : \"user not found\"}"));
+
+        return user.getApartment2s();
+    }
+
 
     @Override
     public List<Apartment> allApartment() {

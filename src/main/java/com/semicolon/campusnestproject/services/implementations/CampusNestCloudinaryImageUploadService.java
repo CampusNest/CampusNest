@@ -3,6 +3,7 @@ package com.semicolon.campusnestproject.services.implementations;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.semicolon.campusnestproject.data.model.Image;
+import com.semicolon.campusnestproject.data.model.Image2;
 import com.semicolon.campusnestproject.dtos.requests.UploadApartmentImageRequest;
 import com.semicolon.campusnestproject.dtos.responses.UploadApartmentImageResponse;
 import com.semicolon.campusnestproject.exception.CampusNestException;
@@ -38,14 +39,22 @@ public class CampusNestCloudinaryImageUploadService implements CloudinaryImageUp
     }
 
     @Override
-    public void deleteImage(List<Image> images) throws IOException {
-        String url;
-        for (Image image : images){
-            url = image.getImageUrl();
+    public void deleteImage(String url) throws IOException {
+
             String publicId = extractPublicIdFromUrl(url);
             cloudinary.uploader().destroy(publicId,ObjectUtils.emptyMap());
         }
-    }
+
+
+//    @Override
+//    public void deleteImage(List<Image> images) throws IOException {
+//        String url;
+//        for (Image image : images){
+//            url = image.getImageUrl();
+//            String publicId = extractPublicIdFromUrl(url);
+//            cloudinary.uploader().destroy(publicId,ObjectUtils.emptyMap());
+//        }
+//    }
 
     private static String extractPublicIdFromUrl(String url) {
         try {

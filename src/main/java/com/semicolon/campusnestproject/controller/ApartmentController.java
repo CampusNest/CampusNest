@@ -1,6 +1,7 @@
 package com.semicolon.campusnestproject.controller;
 
 import com.semicolon.campusnestproject.data.model.Apartment;
+import com.semicolon.campusnestproject.data.model.Apartment2;
 import com.semicolon.campusnestproject.data.model.User;
 import com.semicolon.campusnestproject.dtos.requests.DeleteApartmentRequest;
 import com.semicolon.campusnestproject.dtos.responses.DeleteApartmentResponse;
@@ -52,6 +53,14 @@ public class ApartmentController {
         }
     }
 
-
+@GetMapping("/apartments/{id}")
+    public ResponseEntity<?> apartmentBy(@PathVariable Long id ){
+    List<Apartment2> apartment = apartmentService.findApartmentUser(id);
+    if (apartment != null) {
+        return new ResponseEntity<>(apartment, HttpStatus.OK);
+    } else {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+}
 
 }
