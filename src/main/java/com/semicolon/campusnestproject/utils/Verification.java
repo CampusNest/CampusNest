@@ -59,15 +59,14 @@ public class Verification {
         if (location == null || location.trim().isEmpty()) throw new EmptyDetailsException("location field is empty, please kindly provide your location");
     }
 
-//    public static void verifyLoginDetails(LoginRequest request){
-//        if (request.getPassword() == null || request.getPassword().trim().isEmpty()){
-//            throw new EmptyDetailsException("password field cannot be empty, kindly provide your password");
-//        }
-//
-//        if (request.getEmail() == null || request.getEmail().trim().isEmpty()){
-//            throw new EmptyDetailsException("email field cannot be empty, kindly provide your email");
-//        }
-//    }
+    public static void verifyBankName(String bankName) throws EmptyDetailsException, InvalidDetailsException {
+        if (bankName == null || bankName.trim().isEmpty()) throw new EmptyDetailsException("state Of origin field is empty, please kindly provide your state Of origin");
+    }
+
+    public static void verifyAccountNumber(String accountName) throws EmptyDetailsException, InvalidDetailsException {
+        if ( accountName == null || accountName.trim().isEmpty()) throw new EmptyDetailsException("state Of origin field is empty, please kindly provide your state Of origin");
+    }
+
     public static void verifyLoginDetails(LoginRequest request){
         if (request.getEmail() == null || request.getEmail().trim().isEmpty()){
             throw new EmptyDetailsException("email field cannot be empty, kindly provide your email");

@@ -87,8 +87,8 @@ public String getApartmentImage(Long apartmentId) {
     }
 
     @Override
-    public Apartment findApartmentById(Long apartmentId) {
-        return apartmentRepository.findById(apartmentId).get();
+    public Apartment2 findApartmentById(Long apartmentId) {
+        return apartmentRepository2.findById(apartmentId).get();
     }
 
     @Override
@@ -107,8 +107,8 @@ public String getApartmentImage(Long apartmentId) {
 
 
     @Override
-    public List<Apartment> allApartment() {
-        return apartmentRepository.findAll();
+    public List<Apartment2> allApartment() {
+        return apartmentRepository2.findAll();
     }
 
     @Override
@@ -129,7 +129,7 @@ public String getApartmentImage(Long apartmentId) {
 
 
         for (User user : users){
-            for (Apartment apartment : user.getApartments()){
+            for (Apartment2 apartment : user.getApartment2s()){
                 if (apartment.getId() == apartmentId){
                     return user.getId();
                 }

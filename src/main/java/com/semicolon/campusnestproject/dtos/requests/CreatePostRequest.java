@@ -13,5 +13,4 @@ public class CreatePostRequest {
     private ApartmentType apartmentType;
     private String annualRentFee;
     private String agreementAndCommission;
-
 }

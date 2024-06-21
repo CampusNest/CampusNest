@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
 
@@ -81,6 +82,19 @@ public class StudentController {
         return new ResponseEntity<>(user, HttpStatus.OK);
 
     }
+
+    @PostMapping("/completeRegistration")
+
+    public ResponseEntity<?> completeStudentRegistration(@RequestPart(value = "image", required = false) MultipartFile multipartFile, CompleteStudentRegistrationRequest request){
+        try {
+            studentService.completeRegistration(request,multipartFile);
+            return ResponseEntity.ok().body("Upload Successful");
+        }catch (Exception exception){
+            return ResponseEntity.badRequest().body(exception.getMessage());
+        }
+    }
+
+
 
 }
 

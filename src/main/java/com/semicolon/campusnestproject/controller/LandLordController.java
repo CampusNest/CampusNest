@@ -1,35 +1,17 @@
 package com.semicolon.campusnestproject.controller;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.semicolon.campusnestproject.data.model.User;
-import com.semicolon.campusnestproject.dtos.requests.DeleteApartmentRequest;
-import com.semicolon.campusnestproject.dtos.requests.PostApartmentRequest;
 import com.semicolon.campusnestproject.dtos.requests.UpdateLandLordApartmentRequest;
-import com.semicolon.campusnestproject.dtos.responses.ApiResponse;
-import com.semicolon.campusnestproject.dtos.responses.DeleteApartmentResponse;
-import com.semicolon.campusnestproject.dtos.responses.PostApartmentResponse;
 import com.semicolon.campusnestproject.exception.CampusNestException;
 import com.semicolon.campusnestproject.dtos.requests.*;
 import com.semicolon.campusnestproject.dtos.responses.*;
-import com.semicolon.campusnestproject.exception.CampusNestException;
 import com.semicolon.campusnestproject.services.LandLordService;
-import com.semicolon.campusnestproject.services.implementations.CampusNestLandLordService;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -125,6 +107,25 @@ public class LandLordController {
 
     }
 
+    @PostMapping("/complete")
+    public ResponseEntity<?> completeRegistration( @RequestPart(value = "image", required = false) MultipartFile multipartFile,CompleteRegistrationRequest request){
+        try {
+            landLordService.completeRegistration(request,multipartFile);
+            return ResponseEntity.ok().body("Upload successful");
+        }catch (Exception exception){
+            return ResponseEntity.badRequest().body(exception.getMessage());
+        }
+    }
+
+    @GetMapping("/user/{id}")
+    public ResponseEntity<?> findLandlord(@PathVariable Long id){
+        try{
+            User user = landLordService.findUserById(id);
+            return ResponseEntity.ok().body(user);
+        }catch (Exception exception){
+            return ResponseEntity.badRequest().body(exception.getMessage());
+        }
+    }
 
 
 

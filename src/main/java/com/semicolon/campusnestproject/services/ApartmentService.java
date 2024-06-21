@@ -25,13 +25,13 @@ public interface ApartmentService {
 //    Optional<Apartment> getApartment(Long apartmentId);
 
     Optional<Apartment2> getApartment(Long apartmentId);
-    Apartment findApartmentById(Long apartmentId);
+    Apartment2 findApartmentById(Long apartmentId);
 
     List<Apartment> findApartmentByUser(Long userId);
 
     List<Apartment2> findApartmentUser(Long userId);
 
-    List<Apartment> allApartment();
+    List<Apartment2> allApartment();
 
     Long getLandLord(Long apartmentId);
 

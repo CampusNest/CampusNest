@@ -13,7 +13,7 @@ public interface LandLordService {
     AuthenticationResponse register(RegisterLandLordRequest request) throws NumberParseException;
 
     AuthenticationResponse login(LoginRequest request);
-    void completeRegistration(CompleteRegistrationRequest request,String email) throws NumberParseException;
+    void completeRegistration(CompleteRegistrationRequest request,MultipartFile file) throws NumberParseException, IOException;
     ForgotPasswordResponse forgotPassword(ForgotPasswordRequest request);
     ApiResponse<UpdateLandLordResponse> updateLandLordApartmentDetails(Long landlordId, Long apartmentId, UpdateLandLordApartmentRequest request);
 

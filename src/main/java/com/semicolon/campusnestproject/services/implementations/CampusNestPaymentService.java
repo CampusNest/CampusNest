@@ -2,6 +2,7 @@ package com.semicolon.campusnestproject.services.implementations;
 
 import com.semicolon.campusnestproject.config.PayStackConfig;
 import com.semicolon.campusnestproject.data.model.Apartment;
+import com.semicolon.campusnestproject.data.model.Apartment2;
 import com.semicolon.campusnestproject.data.model.User;
 import com.semicolon.campusnestproject.dtos.requests.HouseRentPaymentRequest;
 import com.semicolon.campusnestproject.dtos.requests.InitializeTransactionRequest;
@@ -29,7 +30,7 @@ public class CampusNestPaymentService implements PaymentService {
 @Override
     public Response<?> makePaymentForApartment(HouseRentPaymentRequest request) {
         RestTemplate restTemplate = new RestTemplate();
-        Apartment foundApartment = apartmentService.findApartmentById(request.getApartmentId());
+        Apartment2 foundApartment = apartmentService.findApartmentById(request.getApartmentId());
         User foundUser = studentService.findUserById(request.getUserId());
         HttpEntity<InitializeTransactionRequest> transactionRequest = buildPayment(foundApartment, foundUser);
         ResponseEntity<PaystackTransactionResponse> response = restTemplate.postForEntity(payStackConfig.getPayStackBaseUrl(), transactionRequest, PaystackTransactionResponse.class);
@@ -52,7 +53,7 @@ public class CampusNestPaymentService implements PaymentService {
     }
 
 
-    private HttpEntity<InitializeTransactionRequest> buildPayment(Apartment foundApartment,User founduser) {
+    private HttpEntity<InitializeTransactionRequest> buildPayment(Apartment2 foundApartment,User founduser) {
         InitializeTransactionRequest transactionRequest = new InitializeTransactionRequest();
         transactionRequest.setEmail(founduser.getEmail());
         BigDecimal amount = BigDecimal.valueOf(Double.parseDouble(foundApartment.getAnnualRentFee())).add(

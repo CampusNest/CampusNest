@@ -11,12 +11,9 @@ import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
 import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse2;
 import com.semicolon.campusnestproject.dtos.responses.ForgotPasswordResponse;
 import com.semicolon.campusnestproject.dtos.responses.SearchApartmentResponse;
-import com.semicolon.campusnestproject.exception.BudgetMustOnlyContainNumbersException;
+import com.semicolon.campusnestproject.exception.*;
 import com.semicolon.campusnestproject.services.ApartmentService;
 import com.semicolon.campusnestproject.services.StudentService;
-import com.semicolon.campusnestproject.exception.InvalidCredentialsException;
-import com.semicolon.campusnestproject.exception.UserExistException;
-import com.semicolon.campusnestproject.exception.UserNotFoundException;
 import com.semicolon.campusnestproject.services.*;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,9 +21,11 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import sendinblue.ApiResponse;
 
 import java.awt.event.WindowListener;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -45,6 +44,7 @@ public class CampusNestStudentService implements StudentService {
     private final AuthenticationManager authenticationManager;
     private final NotificationSenderService notificationService;
     private final AuthenticationService authenticationService;
+    private final CampusNestCloudinaryService nestCloudinaryService;
 
     @Override
     public AuthenticationResponse register(RegisterStudentRequest request) throws NumberParseException {
@@ -103,18 +103,24 @@ public class CampusNestStudentService implements StudentService {
     }
 
     @Override
-    public void completeRegistration(CompleteRegistrationRequest request, String email) throws NumberParseException {
+    public void completeRegistration(CompleteStudentRegistrationRequest request, MultipartFile file) throws NumberParseException, IOException {
         verifyPhoneNumber(request.getPhoneNumber());
         verifyStateOfOrigin(request.getStateOfOrigin());
-        verifyLocation(request.getLocation());
 
-        User user = userRepository.findByEmail(email).orElseThrow(()->new UserNotFoundException("user not found"));
 
-         user.setPhoneNumber(request.getPhoneNumber().trim());
-         user.setLocation(request.getLocation().trim());
-         user.setStateOfOrigin(request.getStateOfOrigin().trim());
-         userRepository.save(user);
+        User user = userRepository.findById(request.getUserId()).orElseThrow(()->new UserNotFoundException("user not found"));
+
+        if (file == null){
+            throw new EmptyDetailsException("Kindly provide an image");
+        }
+
+        String imageUrl = nestCloudinaryService.uploadImage(file).getImageUrl();
+        user.setImageUrl(imageUrl);
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setStateOfOrigin(request.getStateOfOrigin());
+        userRepository.save(user);
     }
+
 
     @Override
     public ForgotPasswordResponse forgotPassword(ForgotPasswordRequest request) {

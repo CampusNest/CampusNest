@@ -33,9 +33,9 @@ public class ApartmentController {
     }
 
     @GetMapping("/allApartment")
-    public ResponseEntity<List<Apartment>> getALl() {
+    public ResponseEntity<List<Apartment2>> getALl() {
 
-        List<Apartment> apartment = apartmentService.allApartment();
+        List<Apartment2> apartment = apartmentService.allApartment();
         if (apartment != null) {
             return new ResponseEntity<>(apartment, HttpStatus.OK);
         } else {
@@ -62,5 +62,15 @@ public class ApartmentController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
+
+    @GetMapping("/apartment/{id}")
+    public ResponseEntity<?> apartmentById(@PathVariable Long id ){
+        Apartment2 apartment = apartmentService.findApartmentById(id);
+        if (apartment != null) {
+            return new ResponseEntity<>(apartment, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
 }

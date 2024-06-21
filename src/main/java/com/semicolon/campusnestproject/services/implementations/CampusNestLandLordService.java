@@ -104,6 +104,30 @@ public class CampusNestLandLordService implements LandLordService {
         return response;
     }
 
+    @Override
+    public void completeRegistration(CompleteRegistrationRequest request, MultipartFile file) throws NumberParseException, IOException {
+        verifyPhoneNumber(request.getPhoneNumber());
+        verifyStateOfOrigin(request.getStateOfOrigin());
+        verifyLocation(request.getLocation());
+        verifyBankName(request.getBankName());
+        verifyAccountNumber(request.getAccountNumber());
+
+        User user = userRepository.findById(request.getUserId()).orElseThrow(()->new UserNotFoundException("user not found"));
+
+        if (file == null){
+            throw new EmptyDetailsException("Kindly provide an image");
+        }
+
+        String imageUrl = nestCloudinaryService.uploadImage(file).getImageUrl();
+        user.setImageUrl(imageUrl);
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setLocation(request.getLocation());
+        user.setStateOfOrigin(request.getStateOfOrigin());
+        user.setBankName(request.getBankName());
+        user.setAccountNumber(request.getAccountNumber());
+        userRepository.save(user);
+    }
+
 //    @Override
 //    public AuthenticationResponse login(LoginRequest request) {
 //        verifyLoginDetails(request);
@@ -121,19 +145,6 @@ public class CampusNestLandLordService implements LandLordService {
 //        return new AuthenticationResponse(accessToken, refreshToken, "User login was successful");
 //    }
 
-    @Override
-    public void completeRegistration(CompleteRegistrationRequest request, String email) throws NumberParseException {
-        verifyPhoneNumber(request.getPhoneNumber());
-        verifyStateOfOrigin(request.getStateOfOrigin());
-        verifyLocation(request.getLocation());
-
-        User user = userRepository.findByEmail(email).orElseThrow(()->new UserNotFoundException("user not found"));
-
-        user.setPhoneNumber(request.getPhoneNumber());
-        user.setLocation(request.getLocation());
-        user.setStateOfOrigin(request.getStateOfOrigin());
-        userRepository.save(user);
-    }
 
     @Override
     public ForgotPasswordResponse forgotPassword(ForgotPasswordRequest request) {
