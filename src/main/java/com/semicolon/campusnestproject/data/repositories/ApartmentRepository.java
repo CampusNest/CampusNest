@@ -12,4 +12,5 @@ public interface ApartmentRepository extends JpaRepository<Apartment,Long> {
     List<Apartment> findByApartmentType(ApartmentType apartmentType);
 
 
+
 }

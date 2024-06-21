@@ -2,11 +2,8 @@ package com.semicolon.campusnestproject.services;
 
 
 import com.google.i18n.phonenumbers.NumberParseException;
-import com.semicolon.campusnestproject.dtos.requests.CompleteRegistrationRequest;
-import com.semicolon.campusnestproject.dtos.requests.ForgotPasswordRequest;
-import com.semicolon.campusnestproject.dtos.requests.HouseRentPaymentRequest;
-import com.semicolon.campusnestproject.dtos.requests.LoginRequest;
-import com.semicolon.campusnestproject.dtos.requests.RegisterStudentRequest;
+import com.semicolon.campusnestproject.data.model.User;
+import com.semicolon.campusnestproject.dtos.requests.*;
 import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
 import com.semicolon.campusnestproject.dtos.responses.ForgotPasswordResponse;
 import com.semicolon.campusnestproject.exception.EmptyDetailsException;
@@ -17,7 +14,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 import sendinblue.ApiResponse;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -27,6 +31,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class StudentServiceTest {
     @Autowired
     private StudentService studentService;
+    @Autowired
+    private ApartmentService apartmentService;
 
     public RegisterStudentRequest studentDetails(String firstName, String lastName, String email,
                                                  String password){
@@ -53,9 +59,9 @@ class StudentServiceTest {
         return request;
     }
 
-    public CompleteRegistrationRequest completeRegistrationRequest(String location,String phoneNumber, String stateOfOrigin){
-        CompleteRegistrationRequest request = new CompleteRegistrationRequest();
-        request.setLocation(location);
+
+    public CompleteStudentRegistrationRequest completeRegistrationRequest(String phoneNumber, String stateOfOrigin){
+        CompleteStudentRegistrationRequest request = new CompleteStudentRegistrationRequest();
         request.setPhoneNumber(phoneNumber);
         request.setStateOfOrigin(stateOfOrigin);
 
@@ -130,6 +136,7 @@ class StudentServiceTest {
         assertThat(response).isNotNull();
     }
 
+
     @Test void testThatStudentCannotLoginWithWrongPassword(){
         LoginRequest request = loginDetails("iamoluchimercy@gmail.com","Password");
         assertThrows(InvalidCredentialsException.class, ()->studentService.login(request));
@@ -156,6 +163,8 @@ class StudentServiceTest {
         log.info("{}",response);
         assertThat(response).isNotNull();
     }
+
+
     @Test void testThatStudentCanLoginWithChangedPassword(){
         LoginRequest request = loginDetails("iamoluchimercy6@gmail.com","dee@123");
         AuthenticationResponse response = studentService.login(request);
@@ -163,37 +172,48 @@ class StudentServiceTest {
         assertThat(response).isNotNull();
     }
 
-    @Test void testThatAUserCanCompleteRegistrationAfterRegistering() throws NumberParseException {
-        CompleteRegistrationRequest request = completeRegistrationRequest("ikeja","09062346551","Ilorin");
-        studentService.completeRegistration(request,"iamoluchimercy6@gmail.com");
+    @Test void testThatAUserCanCompleteRegistrationAfterRegistering() throws NumberParseException, IOException {
+        CompleteStudentRegistrationRequest request = completeRegistrationRequest("09062346551","Ilorin");
+        File file = new File("/home/user/Pictures/flower.jpg");
+        FileInputStream inputStream = new FileInputStream(file);
+        MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
+        studentService.completeRegistration(request,multipartFile);
 
     }
 
-    @Test void testThatAUserCannotCompleteRegistrationIfNotRegistered() throws NumberParseException {
-        CompleteRegistrationRequest request = completeRegistrationRequest("ikeja","09062346551","Ilorin");
-        assertThrows(UserNotFoundException.class,()-> studentService.completeRegistration(request,"deej@gmail.com"));
+    @Test void testThatAUserCannotCompleteRegistrationIfNotRegistered() throws NumberParseException, IOException {
+        CompleteStudentRegistrationRequest request = completeRegistrationRequest("09062346551","Ilorin");
+
+        File file = new File("/home/user/Pictures/flower.jpg");
+        FileInputStream inputStream = new FileInputStream(file);
+        MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
+
+        assertThrows(UserNotFoundException.class,()-> studentService.completeRegistration(request,multipartFile));
     }
 
 
-    @Test void testThatStateOfOriginFieldCannotBeEmpty(){
-        CompleteRegistrationRequest request = completeRegistrationRequest("Lagos","09062346551","");
+    @Test void testThatStateOfOriginFieldCannotBeEmpty() throws IOException {
+        CompleteStudentRegistrationRequest request = completeRegistrationRequest("09062346551"," ");
 
-        assertThrows(EmptyDetailsException.class,()->studentService.completeRegistration(request,"iamoluchimercy6@gmail.com"));
+        File file = new File("/home/user/Pictures/flower.jpg");
+        FileInputStream inputStream = new FileInputStream(file);
+        MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
+
+        assertThrows(EmptyDetailsException.class,()->studentService.completeRegistration(request,multipartFile));
     }
 
-    @Test void testThatPhoneNumberFieldCannotBeEmpty(){
-        CompleteRegistrationRequest request = completeRegistrationRequest("Lagos","","Ilorin");
+    @Test void testThatPhoneNumberFieldCannotBeEmpty() throws IOException {
+        CompleteStudentRegistrationRequest request = completeRegistrationRequest("","Ilorin");
 
-        assertThrows(EmptyDetailsException.class,()->studentService.completeRegistration(request,"iamoluchimercy6@gmail.com"));
+        File file = new File("/home/user/Pictures/flower.jpg");
+        FileInputStream inputStream = new FileInputStream(file);
+        MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
+
+        assertThrows(EmptyDetailsException.class,()->studentService.completeRegistration(request,multipartFile));
     }
 
-    @Test void testThatLocationFieldCannotBeEmpty(){
-        CompleteRegistrationRequest request = completeRegistrationRequest("","09062346551","Ilorin");
 
-        assertThrows(EmptyDetailsException.class,()->studentService.completeRegistration(request,"iamoluchimercy6@gmail.com"));
-    }
 //    @Test void studentCanUpdateDetailsTest
-
 
 
 }

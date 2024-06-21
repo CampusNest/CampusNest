@@ -7,11 +7,14 @@ import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
 import com.semicolon.campusnestproject.dtos.responses.ForgotPasswordResponse;
 import com.semicolon.campusnestproject.dtos.responses.SearchApartmentResponse;
 import com.semicolon.campusnestproject.exception.BudgetMustOnlyContainNumbersException;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 public interface StudentService {
     AuthenticationResponse register(RegisterStudentRequest request) throws NumberParseException;
     AuthenticationResponse login(LoginRequest request);
-    void completeRegistration(CompleteRegistrationRequest request,String email) throws NumberParseException;
+    void completeRegistration(CompleteStudentRegistrationRequest request, MultipartFile file) throws NumberParseException, IOException;
     SearchApartmentResponse searchApartment(SearchApartmentRequest aptRequest) throws BudgetMustOnlyContainNumbersException;
 
 
@@ -19,4 +22,7 @@ public interface StudentService {
 
 
     User findUserById(Long userId);
+    User findUserForJwt(String jwt);
+
+    User findUserBy(Long id);
 }

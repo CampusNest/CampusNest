@@ -5,6 +5,7 @@ import com.semicolon.campusnestproject.data.model.User;
 import com.semicolon.campusnestproject.data.repositories.TokenRepository;
 import com.semicolon.campusnestproject.data.repositories.UserRepository;
 import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
+import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse2;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -71,7 +72,7 @@ public class AuthenticationService {
             revokeAllTokenByUser(user);
             saveUserToken(accessToken, refreshToken, user);
 
-            return new ResponseEntity(new AuthenticationResponse(accessToken, refreshToken, "New token generated"), HttpStatus.OK);
+            return new ResponseEntity(new AuthenticationResponse2(accessToken, refreshToken, "New token generated"), HttpStatus.OK);
         }
 
         return new ResponseEntity(HttpStatus.UNAUTHORIZED);

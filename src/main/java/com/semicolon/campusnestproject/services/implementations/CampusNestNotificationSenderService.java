@@ -2,6 +2,7 @@ package com.semicolon.campusnestproject.services.implementations;
 
 import com.semicolon.campusnestproject.dtos.requests.*;
 import com.semicolon.campusnestproject.services.NotificationSenderService;
+import com.semicolon.campusnestproject.utils.HtmlContent;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +27,8 @@ public class CampusNestNotificationSenderService implements NotificationSenderSe
         receivers.add(receiverRequest);
         senderRequest.setTo(receivers);
         String subject = "Registration";
-        String htmlContent = receiverRequest.getName()+" welcome";
+        String htmlContent =
+                HtmlContent.welcomeMessageContent(request.getFirstName()+" "+request.getLastName());
         notificationSetUp.sendNotification(senderRequest,subject,htmlContent);
     }
 

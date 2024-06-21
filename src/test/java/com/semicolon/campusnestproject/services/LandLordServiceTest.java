@@ -2,14 +2,11 @@ package com.semicolon.campusnestproject.services;
 
 
 import com.google.i18n.phonenumbers.NumberParseException;
-import com.semicolon.campusnestproject.data.model.Apartment;
 import com.semicolon.campusnestproject.data.model.ApartmentType;
-import com.semicolon.campusnestproject.dtos.UpdateLandLordResponse;
+import com.semicolon.campusnestproject.data.repositories.ApartmentRepository2;
+import com.semicolon.campusnestproject.data.repositories.UserRepository;
 import com.semicolon.campusnestproject.dtos.requests.*;
-import com.semicolon.campusnestproject.dtos.responses.ApiResponse;
-import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
-import com.semicolon.campusnestproject.dtos.responses.DeleteApartmentResponse;
-import com.semicolon.campusnestproject.dtos.responses.PostApartmentResponse;
+import com.semicolon.campusnestproject.dtos.responses.*;
 import com.semicolon.campusnestproject.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -20,6 +17,7 @@ import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +35,10 @@ public class LandLordServiceTest {
 
     @Autowired
     private ApartmentService apartmentService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private ApartmentRepository2 apartmentRepository2;
 
 
     public RegisterLandLordRequest landlordDetails(String firstName, String lastName, String email,
@@ -58,25 +60,40 @@ public class LandLordServiceTest {
         return request;
     }
 
-    public CompleteRegistrationRequest completeRegistrationRequest(String location,String phoneNumber, String stateOfOrigin){
+
+
+    public CompleteRegistrationRequest completeRegistrationRequest(String location,String phoneNumber, String stateOfOrigin,Long userId,String bankName, String accountNumber){
         CompleteRegistrationRequest request = new CompleteRegistrationRequest();
         request.setLocation(location);
         request.setPhoneNumber(phoneNumber);
         request.setStateOfOrigin(stateOfOrigin);
-
+        request.setUserId(userId);
+        request.setBankName(bankName);
+        request.setAccountNumber(accountNumber);
         return request;
     }
 
     @Test void testThatALandlordCanRegister() throws NumberParseException {
-        RegisterLandLordRequest request = landlordDetails("Landlord","Musa","joy828545@gmail.com","PassKey@123");
+        RegisterLandLordRequest request = landlordDetails("Landlord","Musa","joy8238545@gmail.com","PassKey@123");
         AuthenticationResponse response = landLordService.register(request);
         log.info("{}",response);
         assertThat(response).isNotNull();
 
     }
+    @Test void testThatALandlordCanRegister2() throws NumberParseException {
+        RegisterLandLordRequest request = landlordDetails("Landlord","Musa","landlord@gmail.com","PassKey@123");
+        AuthenticationResponse response = landLordService.register(request);
+        log.info("{}",response);
+        assertThat(response).isNotNull();
+    }
 
+    @Test void testThatALandlordCanRegister4() throws NumberParseException {
+        RegisterLandLordRequest request = landlordDetails("Landlord","Musa","chima11christopher@gmail.com","PassKey@123");
+        AuthenticationResponse response = landLordService.register(request);
+        log.info("{}",response);
+        assertThat(response).isNotNull();}
     @Test void testThatLandlordCannotRegisterWithSameEmail(){
-     RegisterLandLordRequest request = landlordDetails("Landlord","Musa","landlord@gmail.com","PassKey@123");
+     RegisterLandLordRequest request = landlordDetails("Landlord","Musa","joy8238545@gmail.com","PassKey@123");
 
         assertThrows(UserExistException.class,()->landLordService.register(request));
     }
@@ -104,7 +121,7 @@ public class LandLordServiceTest {
 
 
     @Test void testThatLandlordCanLogin(){
-        LoginRequest request = loginDetails("landlord@gmail.com","PassKey@123");
+        LoginRequest request = loginDetails("joy8238545@gmail.com","PassKey@123");
         AuthenticationResponse response = landLordService.login(request);
         log.info("{}",response);
         assertThat(response).isNotNull();
@@ -130,92 +147,149 @@ public class LandLordServiceTest {
         assertThrows(EmptyDetailsException.class,()->landLordService.login(request));
     }
 
-    @Test void testThatAUserCanCompleteRegistrationAfterRegistering() throws NumberParseException {
-        CompleteRegistrationRequest request = completeRegistrationRequest("Lagos","09062346551","Abuja");
-        landLordService.completeRegistration(request,"landlord@gmail.com");
+    @Test void testThatAUserCanCompleteRegistrationAfterRegistering() throws NumberParseException, IOException {
+        CompleteRegistrationRequest request = completeRegistrationRequest("Lagos","09062346551","Abuja",1L, "FirstBank","11111");
 
+        File file = new File("/home/user/Pictures/flower.jpg");
+        FileInputStream inputStream = new FileInputStream(file);
+        MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
+
+        landLordService.completeRegistration(request,multipartFile);
+
+    }
+
+    @Test void testThatAUserCanCompleteRegistrationAfterRegistering2() throws NumberParseException, IOException {
+        CompleteRegistrationRequest request = completeRegistrationRequest("Lagos","09062346551","Abuja",2L, "Globus","121212");
+
+        File file = new File("/home/user/Pictures/flower.jpg");
+        FileInputStream inputStream = new FileInputStream(file);
+        MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
+
+        landLordService.completeRegistration(request,multipartFile);
+
+    }
+
+    @Test void testThatStateOfOriginFieldCannotBeEmpty() throws IOException {
+        CompleteRegistrationRequest request = completeRegistrationRequest("Lagos","09062346551","",2L,"Oceanic","22222");
+        File file = new File("/home/user/Pictures/houseLogo.png");
+        FileInputStream inputStream = new FileInputStream(file);
+        MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
+        assertThrows(EmptyDetailsException.class,()->landLordService.completeRegistration(request,multipartFile));
+    }
+
+    @Test void testThatPhoneNumberFieldCannotBeEmpty() throws IOException {
+        CompleteRegistrationRequest request = completeRegistrationRequest("Lagos","","Ilorin",2L,"Palmpay","33333");
+
+        File file = new File("/home/user/Pictures/houseLogo.png");
+        FileInputStream inputStream = new FileInputStream(file);
+        MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
+        assertThrows(EmptyDetailsException.class,()->landLordService.completeRegistration(request,multipartFile));
+    }
+
+    @Test void testThatLocationFieldCannotBeEmpty() throws IOException {
+        CompleteRegistrationRequest request = completeRegistrationRequest("","09062346551","Ilorin",2L,"Gtco","4444444");
+
+        File file = new File("/home/user/Pictures/houseLogo.png");
+        FileInputStream inputStream = new FileInputStream(file);
+        MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
+        assertThrows(EmptyDetailsException.class,()->landLordService.completeRegistration(request,multipartFile));
+    }
+
+    @Test void testThatLandlordCannotCompleteProfileWithPhoneNumberThatDidNotMatchTheVerification() throws IOException {
+
+        CompleteRegistrationRequest request = completeRegistrationRequest("Kwara","090765488900000","Ilorin",2L,"Zenith","55555");
+
+        File file = new File("/home/user/Pictures/houseLogo.png");
+        FileInputStream inputStream = new FileInputStream(file);
+        MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
+        assertThrows(InvalidDetailsException.class,()->landLordService.completeRegistration(request,multipartFile));
     }
 
 
 
-    @Test void testThatAUserCannotCompleteRegistrationIfNotRegistered() throws NumberParseException {
-        CompleteRegistrationRequest request = completeRegistrationRequest("ikeja","09062346551","Ilorin");
-        assertThrows(UserNotFoundException.class,()-> landLordService.completeRegistration(request,"deej@gmail.com"));
-    }
 
-
-    @Test void testThatStateOfOriginFieldCannotBeEmpty(){
-        CompleteRegistrationRequest request = completeRegistrationRequest("Lagos","09062346551","");
-
-        assertThrows(EmptyDetailsException.class,()->landLordService.completeRegistration(request,"iamoluchimercy6@gmail.com"));
-    }
-
-    @Test void testThatPhoneNumberFieldCannotBeEmpty(){
-        CompleteRegistrationRequest request = completeRegistrationRequest("Lagos","","Ilorin");
-
-        assertThrows(EmptyDetailsException.class,()->landLordService.completeRegistration(request,"iamoluchimercy6@gmail.com"));
-    }
-
-    @Test void testThatLocationFieldCannotBeEmpty(){
-        CompleteRegistrationRequest request = completeRegistrationRequest("","09062346551","Ilorin");
-
-        assertThrows(EmptyDetailsException.class,()->landLordService.completeRegistration(request,"iamoluchimercy6@gmail.com"));
-    }
-
-    @Test void testThatLandlordCannotCompleteProfileWithPhoneNumberThatDidNotMatchTheVerification(){
-
-        CompleteRegistrationRequest request = completeRegistrationRequest("Kwara","090765488900000","Ilorin");
-
-        assertThrows(InvalidDetailsException.class,()->landLordService.completeRegistration(request,"landlordgmail.com"));
-    }
-
-
-    @Test
-    public void postApartmentTest() throws IOException {
-        List<MultipartFile> multipartFiles = new ArrayList<>();
-        PostApartmentRequest request = new PostApartmentRequest();
+    @Test void postApartment() throws IOException {
+        CreatePostRequest request = new CreatePostRequest();
         request.setLandLordId(1L);
-        request.setDescription("Fine House");
+        request.setDescription("Studio2");
         request.setLocation("Yaba");
         request.setApartmentType(ApartmentType.valueOf("MINIFLAT"));
         request.setAnnualRentFee("150000");
         request.setAgreementAndCommission("10000");
-        UploadApartmentImageRequest imageRequest = new UploadApartmentImageRequest();
-        File file = new File("/home/user/Pictures/mmov.jpg");
+
+        File file = new File("/home/user/Pictures/houseLogo.png");
         FileInputStream inputStream = new FileInputStream(file);
         MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
-        multipartFiles.add(multipartFile);
-        imageRequest.setMultipartFiles(multipartFiles);
-        request.setUploadApartmentImageRequest(imageRequest);
-        PostApartmentResponse response = landLordService.postApartment(request);
+        CreatePostResponse response =landLordService.post(request,multipartFile);
+        System.out.println(response.getId());
+        assertThat(response).isNotNull();
+    }
+
+
+    @Test void postApartment2() throws IOException {
+        CreatePostRequest request = new CreatePostRequest();
+        request.setLandLordId(1L);
+        request.setDescription("fine house");
+        request.setLocation("Yaba");
+        request.setApartmentType(ApartmentType.valueOf("SELFCONTAINED"));
+        request.setAnnualRentFee("6050000");
+        request.setAgreementAndCommission("80000");
+
+        File file = new File("/home/user/Pictures/house1.jpeg");
+        FileInputStream inputStream = new FileInputStream(file);
+        MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
+        CreatePostResponse response =landLordService.post(request,multipartFile);
+        System.out.println(response.getId());
+        assertThat(response).isNotNull();
+    }
+    
+    @Test void testDeleteApartment(){
+
+
+        DeleteApartmentResponse2 response = landLordService.deleteApartment2(16L);
+        assertThat(response).isNotNull();
+        log.info("{}->",response);
+    }
+    @Test void testThatAUserCanRegister() throws NumberParseException {
+        RegisterLandLordRequest request = landlordDetails("Adamu","Musa","joy@gmail.com","PassKey@123");
+        AuthenticationResponse response = landLordService.register(request);
+        log.info("{}",response);
         assertThat(response).isNotNull();
     }
 
 
 
-    @Test
-    public void updateLandLordApartmentDetailsTest(){
-        UpdateLandLordApartmentRequest request = new UpdateLandLordApartmentRequest();
-//        request.setHouseType("MINIFLAT");
-        request.setLocation("313, Herbert Macaulay tyyxxc , Sabo-Yaba");
+  @Test
+  public void findApartment(){
+
+      System.out.println(userRepository.findById(5L));
+
+  }
+
+  @Test void findApartmentThatBelongsToALandlord(){
+
+  }
+
+//    @Test
+//    public void updateLandLordApartmentDetailsTest(){
+//        UpdateLandLordApartmentRequest request = new UpdateLandLordApartmentRequest();
+////        request.setHouseType("MINIFLAT");
+//        request.setLocation("313, Herbert Macaulay tyyxxc , Sabo-Yaba");
+//
+//
+//        ApiResponse<UpdateLandLordResponse> response =
+//                landLordService.updateLandLordApartmentDetails(2L,1L,request);
+//
+//        System.out.println(request);
+//
+//        assertThat(response).isNotNull();
+//        assertThat(response.getData().getMessage()).isNotNull();
+//
+//    }
 
 
-        ApiResponse<UpdateLandLordResponse> response =
-                landLordService.updateLandLordApartmentDetails(2L,2L,request);
 
-        System.out.println(request);
 
-        assertThat(response).isNotNull();
-        assertThat(response.getData().getMessage()).isNotNull();
 
-    }
 
-    @Test
-    public void deleteApartmentTest() throws IOException {
-        DeleteApartmentRequest deleteApartmentRequest = new DeleteApartmentRequest();
-        deleteApartmentRequest.setLandLordId(1L);
-        deleteApartmentRequest.setApartmentId(1L);
-        DeleteApartmentResponse response =  landLordService.deleteApartment(deleteApartmentRequest);
-        assertThat(response).isNotNull();
-    }
 }

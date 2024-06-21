@@ -8,19 +8,18 @@ import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchOperation;
 import com.github.fge.jsonpatch.ReplaceOperation;
 import com.google.i18n.phonenumbers.NumberParseException;
-import com.semicolon.campusnestproject.data.model.Apartment;
-import com.semicolon.campusnestproject.data.model.Image;
-import com.semicolon.campusnestproject.data.model.Role;
-import com.semicolon.campusnestproject.data.model.User;
+import com.semicolon.campusnestproject.data.model.*;
+import com.semicolon.campusnestproject.data.repositories.ApartmentRepository2;
+import com.semicolon.campusnestproject.data.repositories.ImageRepository2;
 import com.semicolon.campusnestproject.data.repositories.LandLordRepository;
 import com.semicolon.campusnestproject.data.repositories.UserRepository;
 import com.semicolon.campusnestproject.dtos.UpdateLandLordResponse;
 import com.semicolon.campusnestproject.dtos.requests.*;
 import com.semicolon.campusnestproject.dtos.responses.*;
-import com.semicolon.campusnestproject.exception.InvalidCredentialsException;
-import com.semicolon.campusnestproject.exception.UserExistException;
-import com.semicolon.campusnestproject.exception.UserNotFoundException;
+import com.semicolon.campusnestproject.exception.*;
 import com.semicolon.campusnestproject.services.*;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,27 +28,25 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.semicolon.campusnestproject.utils.Verification.*;
 import static java.util.Arrays.stream;
 import static com.semicolon.campusnestproject.utils.Verification.verifyPassword;
-import static com.semicolon.campusnestproject.utils.Verification.verifyPassword;
-import static java.util.Arrays.stream;
 import static java.util.Arrays.stream;
 
 @Service
 @AllArgsConstructor
 public class CampusNestLandLordService implements LandLordService {
 
-    private static final Logger log = LoggerFactory.getLogger(CampusNestLandLordService.class);
-    private final LandLordRepository landLordRepository;
+//    private static final Logger log = LoggerFactory.getLogger(CampusNestLandLordService.class);
+//    private final LandLordRepository landLordRepository;
     private final ApartmentService apartmentService;
     private final CloudinaryImageUploadService cloudinaryService;
     private final JwtService jwtService;
@@ -59,6 +56,9 @@ public class CampusNestLandLordService implements LandLordService {
     private final AuthenticationManager authenticationManager;
     private final AuthenticationService authenticationService;
     private final ImageService imageService;
+    private final CampusNestCloudinaryService nestCloudinaryService;
+    private final ImageRepository2 repository2;
+    private final ApartmentRepository2 apartmentRepository2;
 
     @Override
     public AuthenticationResponse register(RegisterLandLordRequest request) throws NumberParseException {
@@ -72,68 +72,85 @@ public class CampusNestLandLordService implements LandLordService {
                 .build();
         userRepository.save(user);
           welcomeMessage(request);
-        String accessToken = jwtService.generateAccessToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
+//        String accessToken = jwtService.generateAccessToken(user);
+//        String refreshToken = jwtService.generateRefreshToken(user);
+//
+//        authenticationService.saveUserToken(accessToken, refreshToken, user);
 
-        authenticationService.saveUserToken(accessToken, refreshToken, user);
-
-        return new AuthenticationResponse(accessToken, refreshToken,"User registration was successful");
+//        return new AuthenticationResponse(accessToken, refreshToken,"User registration was successful");
+        AuthenticationResponse authenticationResponse = new AuthenticationResponse();
+        authenticationResponse.setId(user.getId());
+        return authenticationResponse;
 
     }
 
 
-    @Override
-    public PostApartmentResponse postApartment(PostApartmentRequest request) throws IOException {
-        PostApartmentResponse response = new PostApartmentResponse();
-        Optional<User> landLord = userRepository.findById(request.getLandLordId());
-        if (landLord.isEmpty()){
-            throw new UserExistException("user doesn't exist");
-        }
-
-        UploadApartmentImageResponse imageRequest = cloudinaryService.uploadImage(request.getUploadApartmentImageRequest());
-        Apartment apartment = apartmentService.saveApartment(request,imageRequest);
-        landLord.get().getApartments().add(apartment);
-        userRepository.save(landLord.get());
-        response.setId(landLord.get().getId());
-        return response;
-    }
 
     @Override
     public AuthenticationResponse login(LoginRequest request) {
         verifyLoginDetails(request);
-        authenticate(request);
 
-        var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("{\"error\" :\"No account found with such details\""));
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UserNotFoundException("No account found with such details"));
 
-        String accessToken = jwtService.generateAccessToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new InvalidCredentialsException("Password is not valid");
+        }
+        userRepository.save(user);
 
-        authenticationService.revokeAllTokenByUser(user);
-       authenticationService.saveUserToken(accessToken, refreshToken, user);
+        AuthenticationResponse response = new AuthenticationResponse();
+        response.setId(user.getId());
 
-        return new AuthenticationResponse(accessToken, refreshToken, "User login was successful");
+        return response;
     }
 
     @Override
-    public void completeRegistration(CompleteRegistrationRequest request, String email) throws NumberParseException {
+    public void completeRegistration(CompleteRegistrationRequest request, MultipartFile file) throws NumberParseException, IOException {
         verifyPhoneNumber(request.getPhoneNumber());
         verifyStateOfOrigin(request.getStateOfOrigin());
         verifyLocation(request.getLocation());
+        verifyBankName(request.getBankName());
+        verifyAccountNumber(request.getAccountNumber());
 
-        User user = userRepository.findByEmail(email).orElseThrow(()->new UserNotFoundException("user not found"));
+        User user = userRepository.findById(request.getUserId()).orElseThrow(()->new UserNotFoundException("user not found"));
 
+        if (file == null){
+            throw new EmptyDetailsException("Kindly provide an image");
+        }
+
+        String imageUrl = nestCloudinaryService.uploadImage(file).getImageUrl();
+        user.setImageUrl(imageUrl);
         user.setPhoneNumber(request.getPhoneNumber());
         user.setLocation(request.getLocation());
         user.setStateOfOrigin(request.getStateOfOrigin());
+        user.setBankName(request.getBankName());
+        user.setAccountNumber(request.getAccountNumber());
         userRepository.save(user);
     }
+
+//    @Override
+//    public AuthenticationResponse login(LoginRequest request) {
+//        verifyLoginDetails(request);
+//        authenticate(request);
+//
+//        var user = userRepository.findByEmail(request.getEmail())
+//                .orElseThrow(() -> new UserNotFoundException("{\"error\" :\"No account found with such details\"}"));
+//
+//        String accessToken = jwtService.generateAccessToken(user);
+//        String refreshToken = jwtService.generateRefreshToken(user);
+//
+//        authenticationService.revokeAllTokenByUser(user);
+//       authenticationService.saveUserToken(accessToken, refreshToken, user);
+//
+//        return new AuthenticationResponse(accessToken, refreshToken, "User login was successful");
+//    }
+
 
     @Override
     public ForgotPasswordResponse forgotPassword(ForgotPasswordRequest request) {
         verifyForgotPasswordDetails(request);
         verifyPassword(request.getPassword());
-        User user = userRepository.findByEmail(request.getEmail().trim()).orElseThrow(()-> new UserNotFoundException("{\"error\" :\"user not found\"}"));
+        User user = userRepository.findByEmail(request.getEmail().trim()).orElseThrow(()-> new UserNotFoundException("user not found"));
 
         user.setPassword(passwordEncoder.encode(request.getPassword().trim()));
         userRepository.save(user);
@@ -144,28 +161,6 @@ public class CampusNestLandLordService implements LandLordService {
         return response;
     }
 
-    @Override
-    public DeleteApartmentResponse deleteApartment(DeleteApartmentRequest deleteApartmentRequest) throws IOException {
-        DeleteApartmentResponse response = new DeleteApartmentResponse();
-        Optional<User> landLord = userRepository.findById(deleteApartmentRequest.getLandLordId());
-        if (landLord.isEmpty()) {
-            throw new UserNotFoundException("User doesn't exist");
-        }
-        List<Image> images = apartmentService.getApartmentImage(deleteApartmentRequest.getApartmentId());
-        Optional<Apartment> apartment = apartmentService.getApartment(deleteApartmentRequest.getApartmentId());
-        Apartment newApartment = apartmentService.deleteImageFromApartment(apartment.get().getId());
-        List<Apartment> updatedApartments = landLord.get().getApartments().stream()
-                .filter(apartment2 -> apartment2.equals(newApartment))
-                .toList();
-        landLord.get().getApartments().clear();
-        landLord.get().getApartments().addAll(updatedApartments);
-        userRepository.save(landLord.get());
-        imageService.deleteImage(images);
-        apartmentService.deleteApartment(deleteApartmentRequest.getApartmentId());
-        cloudinaryService.deleteImage(images);
-        response.setMessage("Deleted");
-        return response;
-    }
 
     private void authenticate(LoginRequest request) {
         try {
@@ -201,6 +196,72 @@ public class CampusNestLandLordService implements LandLordService {
         }
         updateApartmentMailSender(landLord);
         return new ApiResponse<>(buildUpdateLandLordResponse());
+    }
+
+    @Override
+    public User findUserForJwt(String jwt) {
+        String email = jwtService.getEmailFromJwtToken(jwt);
+
+        return userRepository.findByEmail(email).orElseThrow(()->new UserNotFoundException("email is does not exist"));
+    }
+
+    @Override
+    public User findUserById(Long id) {
+        return userRepository.findById(id).orElseThrow(()->new UserNotFoundException("user does not exist"));
+    }
+
+    @Override
+    public CreatePostResponse post(CreatePostRequest request, MultipartFile file) throws IOException {
+        verifyCreatePostRequest(request);
+        if (file == null){
+            throw new EmptyDetailsException("Kindly provide an image");
+        }
+
+        User user = userRepository.findById(request.getLandLordId()).orElseThrow(()-> new UserNotFoundException("user does not exist"));
+        Apartment2 apartment2 = new Apartment2();
+
+        String imageUrl = nestCloudinaryService.uploadImage(file).getImageUrl();
+        apartment2.setImage(imageUrl);
+
+        apartment2.setDescription(request.getDescription());
+        apartment2.setLocation(request.getLocation());
+        apartment2.setAnnualRentFee(request.getAnnualRentFee());
+        apartment2.setApartmentType(request.getApartmentType());
+        apartment2.setAgreementAndCommission(request.getAgreementAndCommission());
+        apartment2.setUser(user);
+        Apartment2 apartmentValue = apartmentRepository2.save(apartment2);
+
+        user.getApartment2s().add(apartment2);
+        userRepository.save(user);
+
+
+        CreatePostResponse response= new CreatePostResponse();
+        response.setId(apartmentValue.getId());
+        response.setMessage("Post Created successfully");
+
+        return response;
+    }
+
+    @Override
+    public DeleteApartmentResponse2 deleteApartment2(Long apartmentId) {
+
+        Apartment2 apartment = apartmentRepository2.findById(apartmentId)
+                .orElseThrow(() -> new CampusNestException("Apartment not found"));
+
+
+        User user = apartment.getUser();
+
+
+        user.getApartment2s().remove(apartment);
+
+        userRepository.save(user);
+
+        apartmentRepository2.delete(apartment);
+
+        DeleteApartmentResponse2  response2= new DeleteApartmentResponse2();
+        response2.setMessage("deleted successfully");
+    return response2;
+
     }
 
     private void updateApartmentMailSender(User landLord) {
@@ -265,7 +326,7 @@ public class CampusNestLandLordService implements LandLordService {
 
 
     private void verifyLandlordDetails(RegisterLandLordRequest request) throws NumberParseException {
-        if (exist(request.getEmail())) throw new UserExistException("{\"error\" : \"a user with that email already exist, please provide another email\"}");
+        if (exist(request.getEmail())) throw new UserExistException("a user with that email already exist, please provide another email");
         verifyFirstName(request.getFirstName());
         verifyLastName(request.getLastName());
         verifyEmail(request.getEmail());
@@ -285,4 +346,6 @@ public class CampusNestLandLordService implements LandLordService {
         Optional<User> student = userRepository.findByEmail(email);
         return student.isPresent();
     }
+
+
 }

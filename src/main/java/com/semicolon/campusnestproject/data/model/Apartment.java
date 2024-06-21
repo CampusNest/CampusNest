@@ -4,6 +4,7 @@ package com.semicolon.campusnestproject.data.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Entity
 @Setter
 @Getter
+@ToString
 public class Apartment {
 
     @Id
@@ -27,6 +29,7 @@ public class Apartment {
     private String location;
     @OneToMany(fetch = FetchType.EAGER, cascade = {PERSIST,DETACH,REMOVE})
     private List<Image> apartmentImage;
+
 }
 
 

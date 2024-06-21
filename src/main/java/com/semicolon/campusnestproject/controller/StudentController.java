@@ -1,19 +1,20 @@
 package com.semicolon.campusnestproject.controller;
 
-import com.semicolon.campusnestproject.dtos.requests.ForgotPasswordRequest;
-import com.semicolon.campusnestproject.dtos.requests.LoginRequest;
-import com.semicolon.campusnestproject.dtos.requests.RegisterStudentRequest;
-import com.semicolon.campusnestproject.dtos.requests.SearchApartmentRequest;
+import com.semicolon.campusnestproject.data.model.User;
+import com.semicolon.campusnestproject.dtos.requests.*;
 import com.semicolon.campusnestproject.dtos.responses.AuthenticationResponse;
 import com.semicolon.campusnestproject.dtos.responses.ForgotPasswordResponse;
 import com.semicolon.campusnestproject.dtos.responses.SearchApartmentResponse;
 import com.semicolon.campusnestproject.exception.CampusNestException;
+import com.semicolon.campusnestproject.services.PaymentService;
 import com.semicolon.campusnestproject.services.implementations.CampusNestStudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
 
@@ -67,4 +68,35 @@ public class StudentController {
             return ResponseEntity.badRequest().body(exception.getMessage());
         }
     }
+
+//    @GetMapping("/studentProfile")
+//    public ResponseEntity<User> findUserByJwtToken(@RequestHeader("Authorization") String jwt){
+//        User user = studentService.findUserForJwt(jwt);
+//        return new ResponseEntity<>(user, HttpStatus.OK);
+//
+//    }
+
+    @GetMapping("/studentProfile/{id}")
+    public ResponseEntity<User> findUserByJwtToken(@PathVariable Long id){
+        User user = studentService.findUserBy(id);
+        return new ResponseEntity<>(user, HttpStatus.OK);
+
+    }
+
+    @PostMapping("/completeRegistration")
+
+    public ResponseEntity<?> completeStudentRegistration(@RequestPart(value = "image", required = false) MultipartFile multipartFile, CompleteStudentRegistrationRequest request){
+        try {
+            studentService.completeRegistration(request,multipartFile);
+            return ResponseEntity.ok().body("Upload Successful");
+        }catch (Exception exception){
+            return ResponseEntity.badRequest().body(exception.getMessage());
+        }
+    }
+
+
+
 }
+
+
+

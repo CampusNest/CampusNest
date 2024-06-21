@@ -1,36 +1,24 @@
 package com.semicolon.campusnestproject.controller;
-
-import com.semicolon.campusnestproject.dtos.requests.DeleteApartmentRequest;
-import com.semicolon.campusnestproject.dtos.requests.PostApartmentRequest;
+import com.semicolon.campusnestproject.data.model.User;
 import com.semicolon.campusnestproject.dtos.requests.UpdateLandLordApartmentRequest;
-import com.semicolon.campusnestproject.dtos.responses.ApiResponse;
-import com.semicolon.campusnestproject.dtos.responses.DeleteApartmentResponse;
-import com.semicolon.campusnestproject.dtos.responses.PostApartmentResponse;
 import com.semicolon.campusnestproject.exception.CampusNestException;
 import com.semicolon.campusnestproject.dtos.requests.*;
 import com.semicolon.campusnestproject.dtos.responses.*;
-import com.semicolon.campusnestproject.exception.CampusNestException;
 import com.semicolon.campusnestproject.services.LandLordService;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
-import java.util.Collections;
-import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
-import java.util.Collections;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1")
-public class LandLordController {
 
-    LandLordService landLordService;
+public class LandLordController {
+@Autowired
+    private LandLordService landLordService;
 
     @PostMapping("/landlordRegister")
     public ResponseEntity<?> register(@RequestBody RegisterLandLordRequest request) {
@@ -56,31 +44,36 @@ public class LandLordController {
         }
     }
 
+
     @PostMapping("/postApartment")
-    public ResponseEntity<?> postApartment(@RequestBody PostApartmentRequest request) {
+    public ResponseEntity<?> postApartment(
+            @RequestPart(value = "image", required = false) MultipartFile multipartFile,
+            @ModelAttribute CreatePostRequest request
+    ) {
         try {
-            PostApartmentResponse response = landLordService.postApartment(request);
+            CreatePostResponse response = landLordService.post(request,multipartFile);
+            System.out.println("res " + response);
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(response);
-        } catch (CampusNestException | IOException e){
+        } catch (CampusNestException | IOException e) {
             return ResponseEntity.badRequest()
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(Collections.singletonMap("error", e.getMessage()));
+                    .body(e.getMessage());
         }
     }
 
-    @PostMapping("/deleteApartment")
-    public ResponseEntity<?> deleteApartment(@RequestBody DeleteApartmentRequest request){
+
+
+
+    @DeleteMapping("/deleteApartment/{apartmentId}")
+    public ResponseEntity<?> deleteApartment(@PathVariable Long apartmentId){
         try {
-            DeleteApartmentResponse response = landLordService.deleteApartment(request);
+            DeleteApartmentResponse2 response = landLordService.deleteApartment2(apartmentId);
             return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_JSON)
                     .body(response);
-        }catch (CampusNestException | IOException exception){
-            return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(Collections.singletonMap("error",exception.getMessage()));
+        }catch (Exception exception){
+            return ResponseEntity.badRequest()
+                    .body(exception.getMessage());
         }
     }
 
@@ -92,7 +85,7 @@ public class LandLordController {
             return ResponseEntity.ok(landLordService.updateLandLordApartmentDetails(id,landLordId, request));
         }
         catch (Exception exception){
-            return ResponseEntity.badRequest().body(new ApiResponse<>(exception.getMessage()));
+            return ResponseEntity.badRequest().body(exception.getMessage());
 
         }
     }
@@ -106,6 +99,34 @@ public class LandLordController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/landlordProfile/{id}")
+    public ResponseEntity<User> findUserByJwtToken(@PathVariable Long id){
+        User user = landLordService.findUserById(id);
+        return new ResponseEntity<>(user, HttpStatus.OK);
+
+    }
+
+    @PostMapping("/complete")
+    public ResponseEntity<?> completeRegistration( @RequestPart(value = "image", required = false) MultipartFile multipartFile,CompleteRegistrationRequest request){
+        try {
+            landLordService.completeRegistration(request,multipartFile);
+            return ResponseEntity.ok().body("Upload successful");
+        }catch (Exception exception){
+            return ResponseEntity.badRequest().body(exception.getMessage());
+        }
+    }
+
+    @GetMapping("/user/{id}")
+    public ResponseEntity<?> findLandlord(@PathVariable Long id){
+        try{
+            User user = landLordService.findUserById(id);
+            return ResponseEntity.ok().body(user);
+        }catch (Exception exception){
+            return ResponseEntity.badRequest().body(exception.getMessage());
+        }
+    }
+
 
 
 
