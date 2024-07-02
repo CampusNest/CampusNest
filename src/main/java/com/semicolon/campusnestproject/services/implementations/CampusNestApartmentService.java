@@ -4,6 +4,7 @@ import com.semicolon.campusnestproject.data.model.*;
 import com.semicolon.campusnestproject.data.repositories.ApartmentRepository;
 import com.semicolon.campusnestproject.data.repositories.ApartmentRepository2;
 import com.semicolon.campusnestproject.data.repositories.UserRepository;
+import com.semicolon.campusnestproject.dtos.requests.DeleteGalleryRequest;
 import com.semicolon.campusnestproject.dtos.requests.PostApartmentRequest;
 import com.semicolon.campusnestproject.dtos.responses.UploadApartmentImageResponse;
 import com.semicolon.campusnestproject.exception.CampusNestException;
@@ -122,6 +123,27 @@ public String getApartmentImage(Long apartmentId) {
        return user;
     }
 
+    @Override
+    public List<String> getGallery(Long apartmentId) {
+        Apartment2 apartment2 = apartmentRepository2.findById(apartmentId).orElseThrow(() -> new CampusNestException("Apartment not found"));
+
+       return apartment2.getGallery();
+    }
+
+    @Override
+    public void deleteFileFromGallery(DeleteGalleryRequest request) {
+      Apartment2 apartment2 = apartmentRepository2.findById(request.getApartmentId()).orElseThrow(()-> new CampusNestException("Apartment not found"));
+
+      if (apartment2.getGallery().isEmpty()){
+          throw new CampusNestException("gallery is empty");
+      }
+
+      List<String> apt = apartment2.getGallery();
+
+        apt.removeIf(apartments -> apartments.equals(request.getImageUrl()));
+
+        apartmentRepository2.save(apartment2);
+    }
 
 
     public Long findLandLordApartment(Long apartmentId){

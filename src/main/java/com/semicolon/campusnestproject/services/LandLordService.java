@@ -1,6 +1,7 @@
 package com.semicolon.campusnestproject.services;
 
 import com.google.i18n.phonenumbers.NumberParseException;
+import com.semicolon.campusnestproject.data.model.Apartment2;
 import com.semicolon.campusnestproject.data.model.User;
 import com.semicolon.campusnestproject.dtos.UpdateLandLordResponse;
 import com.semicolon.campusnestproject.dtos.requests.*;
@@ -23,4 +24,6 @@ public interface LandLordService {
 
     CreatePostResponse post(CreatePostRequest request, MultipartFile file) throws IOException;
     DeleteApartmentResponse2 deleteApartment2(Long apartmentId);
+
+    void addMoreImageToApartment(MultipartFile file, Long apartmentId) throws IOException;
 }

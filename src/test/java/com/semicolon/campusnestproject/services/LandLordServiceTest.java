@@ -242,6 +242,57 @@ public class LandLordServiceTest {
         System.out.println(response.getId());
         assertThat(response).isNotNull();
     }
+
+    @Test void postApartment3() throws IOException {
+        CreatePostRequest request = new CreatePostRequest();
+        request.setLandLordId(1L);
+        request.setDescription("## A Serene Urban Haven: The Perfect Apartment\n" +
+                "\n" +
+                "Nestled in the heart of a bustling city, this charming apartment offers the ideal blend of modern convenience and serene comfort. Designed with a keen eye for detail and an emphasis on functionality, it provides a sanctuary for those seeking a peaceful retreat amidst the urban landscape.\n" +
+                "\n" +
+                "### Location\n" +
+                "\n" +
+                "Located in a prime area, the apartment is just a stone’s throw away from essential amenities and vibrant city life. With a variety of cafes, restaurants, and shops lining the streets, everything you need is within walking distance. Excellent public transportation options, including buses and subway lines, ensure that the entire city is easily accessible, making commuting a breeze.\n" +
+                "\n" +
+                "### Living Space\n" +
+                "\n" +
+                "The apartment features an open-concept design, creating a spacious and airy atmosphere. As you step inside, you are greeted by a bright and welcoming living room with large windows that allow natural light to flood the space. The neutral color palette of the walls and flooring enhances the feeling of openness and provides a blank canvas for personalization.\n" +
+                "\n" +
+                "### Kitchen\n" +
+                "\n" +
+                "Adjacent to the living room is a sleek, modern kitchen equipped with state-of-the-art appliances. The kitchen boasts ample counter space and cabinetry, making it a joy for both everyday cooking and entertaining guests. The stainless steel appliances, including a refrigerator, oven, and dishwasher, add a touch of sophistication and ensure that all your culinary needs are met.\n" +
+                "\n" +
+                "### Bedrooms\n" +
+                "\n" +
+                "The apartment includes two well-appointed bedrooms, each offering a tranquil retreat from the hustle and bustle of city life. The master bedroom features a spacious layout with a large closet, ensuring plenty of storage space. The second bedroom can serve as a guest room, home office, or a cozy space for relaxation. Both rooms are designed with comfort in mind, providing a serene environment for restful nights.\n" +
+                "\n" +
+                "### Bathroom\n" +
+                "\n" +
+                "The modern bathroom is a perfect blend of style and functionality. It features contemporary fixtures, a sleek vanity, and a large mirror that adds a sense of space. The bathtub with a shower offers a relaxing escape after a long day, and the high-quality finishes throughout add a touch of luxury.\n" +
+                "\n" +
+                "### Additional Features\n" +
+                "\n" +
+                "This apartment goes above and beyond with additional features that enhance the overall living experience. A private balcony provides an outdoor space where you can enjoy morning coffee or unwind with a book. In-unit laundry facilities offer convenience and eliminate the need for trips to the laundromat. Additionally, the building includes amenities such as a fitness center, a rooftop terrace, and secure parking, ensuring that all your lifestyle needs are catered to.\n" +
+                "\n" +
+                "### Community\n" +
+                "\n" +
+                "Living in this apartment also means becoming part of a friendly and welcoming community. The building management organizes regular events and gatherings, fostering a sense of camaraderie among residents. Whether it’s a rooftop barbecue or a yoga session in the fitness center, there are plenty of opportunities to connect with neighbors and make new friends.\n" +
+                "\n" +
+                "### Conclusion\n" +
+                "\n" +
+                "This apartment is more than just a place to live; it’s a lifestyle choice. With its prime location, modern amenities, and thoughtful design, it offers the perfect balance of urban excitement and peaceful retreat. Whether you’re a young professional, a couple, or a small family, this apartment provides a beautiful and comfortable space to call home. Experience the best of city living in a serene and stylish setting – your perfect urban haven awaits.");
+        request.setLocation("Yaba");
+        request.setApartmentType(ApartmentType.valueOf("TWOBEDROOM"));
+        request.setAnnualRentFee("6050000");
+        request.setAgreementAndCommission("80000");
+
+        File file = new File("/home/user/Pictures/house9.jpeg");
+        FileInputStream inputStream = new FileInputStream(file);
+        MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
+        CreatePostResponse response =landLordService.post(request,multipartFile);
+        System.out.println(response.getId());
+        assertThat(response).isNotNull();
+    }
     
     @Test void testDeleteApartment(){
 
@@ -266,10 +317,58 @@ public class LandLordServiceTest {
 
   }
 
-  @Test void findApartmentThatBelongsToALandlord(){
+  @Test void addToApartmentGallery() throws IOException {
+      File file = new File("/home/user/Pictures/house4.jpeg");
+      FileInputStream inputStream = new FileInputStream(file);
+      MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
 
+    landLordService.addMoreImageToApartment(multipartFile,6L);
   }
+    @Test void addMultipleImagesToApartmentGallery() throws IOException {
+        File file = new File("/home/user/Pictures/house3.jpeg");
+        FileInputStream inputStream = new FileInputStream(file);
+        MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
 
+        landLordService.addMoreImageToApartment(multipartFile,6L);
+
+        File file2 = new File("/home/user/Pictures/house2.jpeg");
+        FileInputStream inputStream2 = new FileInputStream(file2);
+        MultipartFile multipartFile2 = new MockMultipartFile("filename",inputStream2);
+
+        landLordService.addMoreImageToApartment(multipartFile2,6L);
+    }
+
+    @Test void addMultipleImagesToApartmentGallery2() throws IOException {
+        File file = new File("/home/user/Pictures/house1.jpeg");
+        FileInputStream inputStream = new FileInputStream(file);
+        MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
+
+        landLordService.addMoreImageToApartment(multipartFile,6L);
+
+        File file2 = new File("/home/user/Pictures/house4.jpeg");
+        FileInputStream inputStream2 = new FileInputStream(file2);
+        MultipartFile multipartFile2 = new MockMultipartFile("filename",inputStream2);
+
+        landLordService.addMoreImageToApartment(multipartFile2,6L);
+    }
+
+    @Test void addMultipleImagesToApartmentGallery3() throws IOException {
+        File file = new File("/home/user/Pictures/house5.jpeg");
+        FileInputStream inputStream = new FileInputStream(file);
+        MultipartFile multipartFile = new MockMultipartFile("filename",inputStream);
+
+        landLordService.addMoreImageToApartment(multipartFile,6L);
+
+        File file2 = new File("/home/user/Pictures/house6.jpeg");
+        FileInputStream inputStream2 = new FileInputStream(file2);
+        MultipartFile multipartFile2 = new MockMultipartFile("filename",inputStream2);
+
+        landLordService.addMoreImageToApartment(multipartFile2,6L);
+    }
+
+    @Test void findGalleryImages(){
+        System.out.println(landLordService.findUserById(1L).getApartment2s());
+    }
 //    @Test
 //    public void updateLandLordApartmentDetailsTest(){
 //        UpdateLandLordApartmentRequest request = new UpdateLandLordApartmentRequest();
