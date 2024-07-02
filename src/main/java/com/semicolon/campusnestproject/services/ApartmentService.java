@@ -5,6 +5,7 @@ import com.semicolon.campusnestproject.data.model.Apartment2;
 import com.semicolon.campusnestproject.data.model.Image;
 import com.semicolon.campusnestproject.data.model.Image2;
 import com.semicolon.campusnestproject.dtos.requests.DeleteApartmentRequest;
+import com.semicolon.campusnestproject.dtos.requests.DeleteGalleryRequest;
 import com.semicolon.campusnestproject.dtos.requests.PostApartmentRequest;
 import com.semicolon.campusnestproject.dtos.responses.DeleteApartmentResponse;
 import com.semicolon.campusnestproject.dtos.responses.UploadApartmentImageResponse;
@@ -34,6 +35,9 @@ public interface ApartmentService {
     List<Apartment2> allApartment();
 
     Long getLandLord(Long apartmentId);
+    List<String> getGallery(Long apartmentId);
+
+    void deleteFileFromGallery(DeleteGalleryRequest request);
 
 
 }

@@ -264,6 +264,21 @@ public class CampusNestLandLordService implements LandLordService {
 
     }
 
+    @Override
+    public void addMoreImageToApartment(MultipartFile file, Long apartmentId) throws IOException {
+        Apartment2 apartment2 = apartmentRepository2.findById(apartmentId).orElseThrow(()-> new CampusNestException("Apartment not found"));
+
+        if (file == null){
+            throw new CampusNestException("image not found");
+        }
+
+        String imageUrl = nestCloudinaryService.uploadImage(file).getImageUrl();
+        apartment2.getGallery().add(imageUrl);
+
+        apartmentRepository2.save(apartment2);
+
+    }
+
     private void updateApartmentMailSender(User landLord) {
         UpdateApartmentMessageRequest mailRequest = new UpdateApartmentMessageRequest();
         mailRequest.setLastName(landLord.getLastName());

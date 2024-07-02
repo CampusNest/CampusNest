@@ -4,6 +4,7 @@ import com.semicolon.campusnestproject.data.model.Apartment;
 import com.semicolon.campusnestproject.data.model.Apartment2;
 import com.semicolon.campusnestproject.data.model.User;
 import com.semicolon.campusnestproject.dtos.requests.DeleteApartmentRequest;
+import com.semicolon.campusnestproject.dtos.requests.DeleteGalleryRequest;
 import com.semicolon.campusnestproject.dtos.responses.DeleteApartmentResponse;
 import com.semicolon.campusnestproject.services.implementations.CampusNestApartmentService;
 import com.semicolon.campusnestproject.services.implementations.CampusNestStudentService;
@@ -70,6 +71,26 @@ public class ApartmentController {
             return new ResponseEntity<>(apartment, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/apartmentGallery/{id}")
+    public ResponseEntity<?> apartmentGallery(@PathVariable Long id){
+        try {
+           List<String> apartments = apartmentService.getGallery(id);
+           return ResponseEntity.ok().body(apartments);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/deleteGallery")
+    public ResponseEntity<?> deleteApt(@RequestBody DeleteGalleryRequest request){
+        try {
+            apartmentService.deleteFileFromGallery(request);
+            return ResponseEntity.ok().body("deleted");
+        }catch (Exception exception){
+            return ResponseEntity.badRequest().body(exception.getMessage());
         }
     }
 

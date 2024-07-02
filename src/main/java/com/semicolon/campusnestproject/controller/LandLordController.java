@@ -127,6 +127,16 @@ public class LandLordController {
         }
     }
 
+    @PostMapping("/gallery/{id}")
+    public ResponseEntity<?> addToGallery(@RequestPart(value = "image" ,required = false) MultipartFile file, @PathVariable Long id){
+        try {
+            landLordService.addMoreImageToApartment(file,id);
+            return ResponseEntity.ok().body("Added");
+        }catch (Exception exception){
+            return ResponseEntity.badRequest().body(exception.getMessage());
+        }
+    }
+
 
 
 
